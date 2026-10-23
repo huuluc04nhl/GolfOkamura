@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/responsive.dart';
+import '../../shared_widgets/ai_floating_button.dart';
 import '../../shared_widgets/mode_switch_banner.dart';
 
 /// Khung điều hướng chuẩn 100% Mobile App cho Khách hàng (User)
@@ -101,6 +102,9 @@ class UserShell extends StatelessWidget {
 
             // Nút chuyển chế độ Admin dạng floating góc trên bên phải
             const ModeSwitchFloatingButton(isAdminMode: false),
+
+            // Nút trợ lý AI Caddie nổi góc dưới bên phải
+            const AiFloatingButton(),
           ],
         ),
       ),

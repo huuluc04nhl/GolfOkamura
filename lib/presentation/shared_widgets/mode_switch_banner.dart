@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../shared/models/golfer_model.dart';
 import '../../shared/providers/booking_provider.dart';
+import 'ai_chat_bottom_sheet.dart';
 import 'golfer_vip_card.dart';
 
 /// Nút chuyển đổi chế độ xem nổi (Floating Pill) tinh tế, phân quyền rõ ràng giữa Khách hàng và Admin
@@ -44,6 +45,34 @@ class ModeSwitchFloatingButton extends StatelessWidget {
               ),
             ),
             const Spacer(),
+            InkWell(
+              onTap: () => AiChatBottomSheet.show(context),
+              borderRadius: BorderRadius.circular(20),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1E293B),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.primaryGold.withValues(alpha: 0.6)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: const [
+                    Icon(Icons.auto_awesome, size: 14, color: AppColors.primaryGold),
+                    SizedBox(width: 6),
+                    Text(
+                      'Trợ Lý AI Caddie',
+                      style: TextStyle(
+                        color: AppColors.primaryGold,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
             InkWell(
               onTap: () {
                 try {

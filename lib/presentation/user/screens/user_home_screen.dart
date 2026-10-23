@@ -9,6 +9,7 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../shared/models/room_model.dart';
 import '../../../shared/providers/booking_provider.dart';
+import '../../shared_widgets/ai_chat_bottom_sheet.dart';
 
 /// Màn hình Trang chủ User cao cấp:
 /// - Giàu hiệu ứng thị giác (Ambient Glow, Pulsing Radar, Auto-sliding Hero Carousel, Live Telemetry Ticker)
@@ -337,6 +338,8 @@ class _UserHomeScreenState extends State<UserHomeScreen>
       children: [
         _buildHeroBanner(context),
         const SizedBox(height: 14),
+        _buildAiCaddieCard(context),
+        const SizedBox(height: 14),
         _buildLiveTelemetryStrip(context),
         const SizedBox(height: 16),
         _buildQuickPerksBar(context),
@@ -401,6 +404,8 @@ class _UserHomeScreenState extends State<UserHomeScreen>
             children: [
               _buildHeroBanner(context),
               const SizedBox(height: 12),
+              _buildAiCaddieCard(context),
+              const SizedBox(height: 12),
               _buildLiveTelemetryStrip(context),
               const SizedBox(height: 14),
               _buildQuickPerksBar(context),
@@ -451,6 +456,103 @@ class _UserHomeScreenState extends State<UserHomeScreen>
           ),
         ),
       ],
+    );
+  }
+
+  /// Thẻ gọi nhanh Trợ lý AI Caddie trên Trang chủ
+  Widget _buildAiCaddieCard(BuildContext context) {
+    return InkWell(
+      onTap: () => AiChatBottomSheet.show(context),
+      borderRadius: BorderRadius.circular(14),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              const Color(0xFF1E293B),
+              AppColors.primaryGold.withValues(alpha: 0.15),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+          ),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: AppColors.primaryGold.withValues(alpha: 0.45),
+            width: 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.25),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(7),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [AppColors.primaryGold, Color(0xFFB69568)],
+                ),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Icon(Icons.auto_awesome, color: Colors.black, size: 17),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
+                    'HỎI OKAMURA AI CADDIE',
+                    style: TextStyle(
+                      color: AppColors.primaryGold,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.4,
+                    ),
+                  ),
+                  SizedBox(height: 2),
+                  Text(
+                    'Tư vấn chọn Bay, giờ chơi 18 hố & menu quầy Bar 24/7',
+                    style: TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: 11,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.primaryGold.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: AppColors.primaryGold.withValues(alpha: 0.6)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Text(
+                    'Chat ngay',
+                    style: TextStyle(
+                      color: AppColors.primaryGold,
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 3),
+                  Icon(Icons.arrow_forward_ios_rounded, color: AppColors.primaryGold, size: 10),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

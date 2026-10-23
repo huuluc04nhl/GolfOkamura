@@ -49,3 +49,10 @@ app.*.map.json
 
 # Agent related
 .agents/
+
+# Environment Variables & Secrets
+.env
+*.env
+.env.*
+ai_secrets.json
+lib/core/config/ai_secrets.dart
