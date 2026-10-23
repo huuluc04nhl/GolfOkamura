@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/localization/app_translations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/responsive.dart';
@@ -94,7 +95,7 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
     return Scaffold(
       backgroundColor: AppColors.userBgDark,
       appBar: AppBar(
-        title: const Text('ĐẶT PHÒNG GOLFZON'),
+        title: Text(context.tr('booking_screen_title')),
         centerTitle: true,
         backgroundColor: AppColors.userBgDark,
         elevation: 0,
@@ -288,20 +289,20 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
       child: Row(
         children: [
           Expanded(
-            child: _buildStepPill(1, 'Ngày chơi', Icons.calendar_today_rounded),
+            child: _buildStepPill(1, context.tr('step_1_date'), Icons.calendar_today_rounded),
           ),
           const Icon(Icons.chevron_right, size: 14, color: AppColors.userBorder),
           Expanded(
-            child: _buildStepPill(2, 'Khung giờ', Icons.access_time_rounded),
+            child: _buildStepPill(2, context.tr('step_2_time'), Icons.access_time_rounded),
           ),
           const Icon(Icons.chevron_right, size: 14, color: AppColors.userBorder),
           Expanded(
-            child: _buildStepPill(3, 'Chọn phòng', Icons.meeting_room_rounded),
+            child: _buildStepPill(3, context.tr('step_3_room'), Icons.meeting_room_rounded),
           ),
           if (isGuest) ...[
             const Icon(Icons.chevron_right, size: 14, color: AppColors.userBorder),
             Expanded(
-              child: _buildStepPill(4, 'Nhập TT', Icons.person_pin_rounded),
+              child: _buildStepPill(4, context.tr('step_4_info'), Icons.person_pin_rounded),
             ),
           ],
         ],

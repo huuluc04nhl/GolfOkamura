@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import '../../core/localization/app_translations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../shared/models/golfer_model.dart';
 import '../../shared/providers/booking_provider.dart';
 import 'ai_chat_bottom_sheet.dart';
 import 'golfer_vip_card.dart';
+import 'language_selector_pill.dart';
 
 /// Nút chuyển đổi chế độ xem nổi (Floating Pill) tinh tế, phân quyền rõ ràng giữa Khách hàng và Admin
 typedef ModeSwitchBanner = ModeSwitchFloatingButton;
@@ -57,12 +59,12 @@ class ModeSwitchFloatingButton extends StatelessWidget {
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.auto_awesome, size: 14, color: AppColors.primaryGold),
-                    SizedBox(width: 6),
+                  children: [
+                    const Icon(Icons.auto_awesome, size: 14, color: AppColors.primaryGold),
+                    const SizedBox(width: 6),
                     Text(
-                      'Trợ Lý AI Caddie',
-                      style: TextStyle(
+                      context.tr('ai_caddie'),
+                      style: const TextStyle(
                         color: AppColors.primaryGold,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -72,6 +74,8 @@ class ModeSwitchFloatingButton extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(width: 10),
+            const LanguageSelectorPill(),
             const SizedBox(width: 10),
             InkWell(
               onTap: () {
@@ -88,12 +92,12 @@ class ModeSwitchFloatingButton extends StatelessWidget {
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.phone_iphone, size: 14, color: Colors.black),
-                    SizedBox(width: 6),
+                  children: [
+                    const Icon(Icons.phone_iphone, size: 14, color: Colors.black),
+                    const SizedBox(width: 6),
                     Text(
-                      'Xem App Khách (User)',
-                      style: TextStyle(
+                      context.tr('view_user_app'),
+                      style: const TextStyle(
                         color: Colors.black,
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
@@ -118,6 +122,10 @@ class ModeSwitchFloatingButton extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Bộ chuyển đổi ngôn ngữ chuẩn quốc tế
+          const LanguageSelectorPill(compact: true),
+          const SizedBox(width: 8),
+
           // 1. Nếu là Khách vãng lai: Hiển thị duy nhất nút "Đăng nhập"
           if (isGuest)
             Material(
@@ -140,12 +148,12 @@ class ModeSwitchFloatingButton extends StatelessWidget {
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
-                    children: const [
-                      Icon(Icons.login_rounded, size: 14, color: Colors.black),
-                      SizedBox(width: 5),
+                    children: [
+                      const Icon(Icons.login_rounded, size: 14, color: Colors.black),
+                      const SizedBox(width: 5),
                       Text(
-                        'Đăng nhập',
-                        style: TextStyle(
+                        context.tr('auth_login'),
+                        style: const TextStyle(
                           color: Colors.black,
                           fontSize: 11.5,
                           fontWeight: FontWeight.bold,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import '../../../core/localization/app_translations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/responsive.dart';
@@ -95,9 +96,9 @@ class _UserServicesScreenState extends State<UserServicesScreen>
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Flexible(
+            Flexible(
               child: Text(
-                'ORDER DỊCH VỤ & TIỆN ÍCH',
+                context.tr('services_screen_title'),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),

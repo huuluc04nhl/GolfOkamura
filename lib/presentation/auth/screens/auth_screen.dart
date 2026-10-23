@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../shared/providers/booking_provider.dart';
+import '../../shared_widgets/language_selector_pill.dart';
 
 /// Màn hình Đăng Nhập & Đăng Ký tài khoản chuẩn Okamura Golfzon Lounge
 /// Tự động phân quyền:
@@ -175,6 +176,13 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                 ),
               ),
             ),
+          ),
+
+          // Bộ chuyển đổi ngôn ngữ quốc tế ở góc trên bên phải
+          Positioned(
+            top: MediaQuery.paddingOf(context).top + 16,
+            right: 18,
+            child: const LanguageSelectorPill(),
           ),
 
           // Nội dung chính

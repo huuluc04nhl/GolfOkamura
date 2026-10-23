@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:provider/provider.dart';
 import 'core/constants/app_constants.dart';
+import 'core/localization/app_language_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/user_theme.dart';
 import 'shared/providers/booking_provider.dart';
@@ -25,6 +26,7 @@ class GolfBookingApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => AppLanguageProvider()),
         ChangeNotifierProvider(create: (_) => BookingProvider()),
       ],
       child: MaterialApp.router(

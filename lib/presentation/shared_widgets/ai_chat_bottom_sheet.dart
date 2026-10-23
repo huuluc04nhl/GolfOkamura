@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../core/config/ai_key_vault.dart';
+import '../../core/localization/app_language_provider.dart';
+import '../../core/localization/app_translations.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/responsive.dart';
 import '../../shared/models/chat_message_model.dart';
 import '../../shared/providers/booking_provider.dart';
 import '../../shared/services/gemini_ai_service.dart';
+import 'language_selector_pill.dart';
 
 /// Hộp thoại Chatbot Trợ lý AI Caddie phong cách Quiet Luxury cho Okamura Golfzon
 class AiChatBottomSheet extends StatefulWidget {
@@ -130,11 +133,13 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
     _scrollToBottom();
 
     try {
+      final langCode = Provider.of<AppLanguageProvider?>(context, listen: false)?.languageCode ?? 'vi';
       final aiReply = await _aiService.sendMessage(
         prompt: query,
         currentUserName: userName,
         userRole: userRole,
         availableRoomsCount: availableRooms,
+        languageCode: langCode,
       );
 
       if (!mounted) return;
@@ -403,6 +408,7 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
                     ],
                   ),
                 ),
+                const LanguageSelectorPill(compact: true),
                 IconButton(
                   tooltip: 'Cài đặt khóa API',
                   icon: const Icon(Icons.tune_rounded, color: AppColors.textMuted, size: 19),
@@ -701,12 +707,12 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
               child: TextField(
                 controller: _textController,
                 style: const TextStyle(color: Colors.white, fontSize: 13),
-                decoration: const InputDecoration(
-                  hintText: 'Hỏi AI Caddie về phòng chơi, giá vé, dịch vụ...',
-                  hintStyle: TextStyle(color: AppColors.textMuted, fontSize: 12),
+                decoration: InputDecoration(
+                  hintText: context.tr('ai_ask_hint'),
+                  hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 12),
                   border: InputBorder.none,
                   isDense: true,
-                  contentPadding: EdgeInsets.symmetric(vertical: 12),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 onSubmitted: (_) => _handleSendMessage(),
               ),

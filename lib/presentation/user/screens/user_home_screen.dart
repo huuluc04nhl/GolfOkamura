@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/localization/app_translations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/responsive.dart';
@@ -350,10 +351,10 @@ class _UserHomeScreenState extends State<UserHomeScreen>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Expanded(
+            Expanded(
               child: Text(
-                'DANH SÁCH PHÒNG CHƠI',
-                style: TextStyle(
+                context.tr('room_list_title'),
+                style: const TextStyle(
                   color: AppColors.textLight,
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
@@ -365,18 +366,18 @@ class _UserHomeScreenState extends State<UserHomeScreen>
             ),
             GestureDetector(
               onTap: () => context.go('/booking'),
-              child: const Row(
+              child: Row(
                 children: [
                   Text(
-                    'Xem lịch đặt',
-                    style: TextStyle(
+                    context.tr('view_schedule'),
+                    style: const TextStyle(
                       color: AppColors.primaryGold,
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
-                  SizedBox(width: 2),
-                  Icon(Icons.chevron_right, size: 16, color: AppColors.primaryGold),
+                  const SizedBox(width: 2),
+                  const Icon(Icons.chevron_right, size: 16, color: AppColors.primaryGold),
                 ],
               ),
             ),
@@ -504,20 +505,20 @@ class _UserHomeScreenState extends State<UserHomeScreen>
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Text(
-                    'HỎI OKAMURA AI CADDIE',
-                    style: TextStyle(
+                    context.tr('ask_ai_caddie_title'),
+                    style: const TextStyle(
                       color: AppColors.primaryGold,
                       fontSize: 12,
                       fontWeight: FontWeight.w900,
                       letterSpacing: 0.4,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
-                    'Tư vấn chọn Bay, giờ chơi 18 hố & menu quầy Bar 24/7',
-                    style: TextStyle(
+                    context.tr('ask_ai_caddie_desc'),
+                    style: const TextStyle(
                       color: AppColors.textMuted,
                       fontSize: 11,
                     ),
@@ -536,17 +537,17 @@ class _UserHomeScreenState extends State<UserHomeScreen>
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
-                children: const [
+                children: [
                   Text(
-                    'Chat ngay',
-                    style: TextStyle(
+                    context.tr('chat_now'),
+                    style: const TextStyle(
                       color: AppColors.primaryGold,
                       fontSize: 10.5,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(width: 3),
-                  Icon(Icons.arrow_forward_ios_rounded, color: AppColors.primaryGold, size: 10),
+                  const SizedBox(width: 3),
+                  const Icon(Icons.arrow_forward_ios_rounded, color: AppColors.primaryGold, size: 10),
                 ],
               ),
             ),

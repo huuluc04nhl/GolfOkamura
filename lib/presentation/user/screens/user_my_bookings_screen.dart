@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../core/localization/app_translations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../core/utils/responsive.dart';
@@ -83,7 +84,7 @@ class _UserMyBookingsScreenState extends State<UserMyBookingsScreen> {
     return Scaffold(
       backgroundColor: AppColors.userBgDark,
       appBar: AppBar(
-        title: const Text('VÉ & LỊCH ĐẶT PHÒNG CỦA TÔI'),
+        title: Text(context.tr('my_bookings_title')),
         centerTitle: true,
         backgroundColor: AppColors.userBgDark,
       ),

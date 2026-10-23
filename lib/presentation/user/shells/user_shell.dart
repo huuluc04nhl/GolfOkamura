@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../core/localization/app_translations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/responsive.dart';
 import '../../shared_widgets/ai_floating_button.dart';
@@ -152,7 +153,7 @@ class UserShell extends StatelessWidget {
                         selectedIndex: selectedIndex,
                         icon: Icons.home_outlined,
                         activeIcon: Icons.home_rounded,
-                        label: 'Trang chủ',
+                        label: context.tr('nav_home'),
                         context: context,
                       ),
                     ),
@@ -163,7 +164,7 @@ class UserShell extends StatelessWidget {
                         selectedIndex: selectedIndex,
                         icon: Icons.calendar_month_outlined,
                         activeIcon: Icons.calendar_month_rounded,
-                        label: 'Đặt phòng',
+                        label: context.tr('nav_booking'),
                         context: context,
                       ),
                     ),
@@ -174,7 +175,7 @@ class UserShell extends StatelessWidget {
                         selectedIndex: selectedIndex,
                         icon: Icons.room_service_outlined,
                         activeIcon: Icons.room_service_rounded,
-                        label: 'Dịch vụ',
+                        label: context.tr('nav_services'),
                         context: context,
                       ),
                     ),
@@ -185,7 +186,7 @@ class UserShell extends StatelessWidget {
                         selectedIndex: selectedIndex,
                         icon: Icons.confirmation_number_outlined,
                         activeIcon: Icons.confirmation_number_rounded,
-                        label: 'Vé của tôi',
+                        label: context.tr('nav_my_bookings'),
                         context: context,
                       ),
                     ),

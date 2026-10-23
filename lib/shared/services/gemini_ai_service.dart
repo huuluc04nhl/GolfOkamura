@@ -24,18 +24,29 @@ class GeminiAiService {
     String? currentUserName,
     String? userRole,
     int? availableRoomsCount,
+    String languageCode = 'vi',
   }) {
     final userLabel = currentUserName ?? 'Quý khách';
     final roleLabel = userRole == 'admin' ? 'Quản trị viên' : (userRole == 'customer' ? 'Hội viên' : 'Khách vãng lai');
     final bayInfo = availableRoomsCount != null ? 'Hiện có $availableRoomsCount phòng đang sẵn sàng đón khách.' : '';
 
+    String langGuideline = 'NGÔN NGỮ PHẢN HỒI: Tiếng Việt chuẩn mực, lịch thiệp.';
+    if (languageCode == 'en') {
+      langGuideline = 'RESPONSE LANGUAGE: Always respond in natural, professional English.';
+    } else if (languageCode == 'ko') {
+      langGuideline = '응답 언어: 골프존 전문 용어를 포함하여 정중하고 세련된 한국어로 답변해주세요.';
+    } else if (languageCode == 'ja') {
+      langGuideline = '回答言語: オカムラゴルフの精神に則り、丁寧で上質な日本語でお答えください。';
+    }
+
     return '''
 Bạn là Okamura AI Caddie — Trợ lý ảo & Chuyên gia đồng hành độc quyền của tổ hợp Golf 3D trong nhà cao cấp OKAMURA GOLFZON LOUNGE.
 Bạn đang trò chuyện với: $userLabel (Vai trò: $roleLabel). $bayInfo
+$langGuideline
 
 PHONG CÁCH GIAO TIẾP:
 - Lịch thiệp, tinh tế, niềm nở, chuẩn mực hiếu khách Omotenashi (Nhật Bản) kết hợp phong thái sang trọng của môn thể thao Golf.
-- Sử dụng tiếng Việt chuẩn mực, xưng hô "Em" hoặc "Okamura AI", gọi khách là "Quý khách" hoặc "Anh/Chị $userLabel".
+- Sử dụng ngôn ngữ chuẩn mực, xưng hô tôn trọng, gọi khách là "Quý khách" hoặc "Anh/Chị $userLabel".
 - Trả lời súc tích, ngắn gọn, dùng gạch đầu dòng rõ ràng, tránh nói dông dài.
 
 KIẾN THỨC VẬN HÀNH & DỊCH VỤ CỦA OKAMURA GOLFZON:
@@ -72,6 +83,7 @@ Nếu câu hỏi về đồ uống/món ăn, khuyên khách xem Menu Dịch vụ
     String? currentUserName,
     String? userRole,
     int? availableRoomsCount,
+    String languageCode = 'vi',
   }) async {
     final apiKey = await AiKeyVault.getApiKey();
 
@@ -90,6 +102,7 @@ Nếu câu hỏi về đồ uống/món ăn, khuyên khách xem Menu Dịch vụ
       currentUserName: currentUserName,
       userRole: userRole,
       availableRoomsCount: availableRoomsCount,
+      languageCode: languageCode,
     );
 
     String? responseText;
