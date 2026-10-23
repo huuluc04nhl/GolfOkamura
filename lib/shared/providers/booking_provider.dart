@@ -467,6 +467,7 @@ class BookingProvider extends ChangeNotifier {
   Future<bool> createBooking({
     required String customerName,
     required String customerPhone,
+    String? customerEmail,
     required RoomModel room,
     required DateTime bookingDate,
     required String timeSlot,
@@ -493,6 +494,9 @@ class BookingProvider extends ChangeNotifier {
     final totalPrice = room.pricePerHour * hours;
 
     final List<String> noteParts = [];
+    if (customerEmail != null && customerEmail.trim().isNotEmpty) {
+      noteParts.add('Email: ${customerEmail.trim()}');
+    }
     if (playerCount != null && playerCount > 0) {
       noteParts.add('$playerCount Golfer • ${hours}h');
     } else if (hours != 2) {
@@ -510,6 +514,7 @@ class BookingProvider extends ChangeNotifier {
       id: bookingId,
       customerName: customerName.trim(),
       customerPhone: customerPhone.trim(),
+      customerEmail: customerEmail?.trim(),
       roomId: room.id,
       roomName: room.name,
       bookingDate: bookingDate,

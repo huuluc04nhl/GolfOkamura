@@ -25,6 +25,7 @@ class BookingModel {
   final String id;
   final String customerName;
   final String customerPhone;
+  final String? customerEmail;
   final String roomId;
   final String roomName;
   final DateTime bookingDate;
@@ -38,6 +39,7 @@ class BookingModel {
     required this.id,
     required this.customerName,
     required this.customerPhone,
+    this.customerEmail,
     required this.roomId,
     required this.roomName,
     required this.bookingDate,
@@ -52,6 +54,7 @@ class BookingModel {
     String? id,
     String? customerName,
     String? customerPhone,
+    String? customerEmail,
     String? roomId,
     String? roomName,
     DateTime? bookingDate,
@@ -65,6 +68,7 @@ class BookingModel {
       id: id ?? this.id,
       customerName: customerName ?? this.customerName,
       customerPhone: customerPhone ?? this.customerPhone,
+      customerEmail: customerEmail ?? this.customerEmail,
       roomId: roomId ?? this.roomId,
       roomName: roomName ?? this.roomName,
       bookingDate: bookingDate ?? this.bookingDate,
@@ -81,6 +85,7 @@ class BookingModel {
       'id': id,
       'customerName': customerName,
       'customerPhone': customerPhone,
+      if (customerEmail != null) 'customerEmail': customerEmail,
       'roomId': roomId,
       'roomName': roomName,
       'bookingDate': bookingDate.toIso8601String(),
@@ -97,6 +102,7 @@ class BookingModel {
       id: map['id'] as String,
       customerName: map['customerName'] as String,
       customerPhone: map['customerPhone'] as String,
+      customerEmail: map['customerEmail'] as String?,
       roomId: map['roomId'] as String,
       roomName: map['roomName'] as String,
       bookingDate: DateTime.parse(map['bookingDate'] as String),

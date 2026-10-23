@@ -182,5 +182,36 @@ void main() {
         BookingStatus.completed,
       );
     });
+
+    test('Khách vãng lai đặt phòng với bước nhập thông tin liên hệ và email', () async {
+      final provider = BookingProvider(autoSyncFirebase: false);
+      await provider.initFuture;
+      await provider.continueAsGuest();
+      expect(provider.isGuest, true);
+
+      final room = provider.rooms.first;
+      final testDate = DateTime.now().add(const Duration(days: 30));
+      const testTimeSlot = '14:00 - 16:00';
+
+      final success = await provider.createBooking(
+        customerName: 'Trần Văn Nam',
+        customerPhone: '0912345678',
+        customerEmail: 'nam.tran@gmail.com',
+        room: room,
+        bookingDate: testDate,
+        timeSlot: testTimeSlot,
+        durationHours: 3,
+        playerCount: 3,
+        notes: 'Cần gậy TaylorMade',
+      );
+
+      expect(success, true);
+      final booking = provider.bookings.firstWhere((b) => b.customerPhone == '0912345678');
+      expect(booking.customerName, 'Trần Văn Nam');
+      expect(booking.customerEmail, 'nam.tran@gmail.com');
+      expect(booking.notes, contains('Email: nam.tran@gmail.com'));
+      expect(booking.notes, contains('3 Golfer • 3h'));
+      expect(booking.notes, contains('Cần gậy TaylorMade'));
+    });
   });
 }
