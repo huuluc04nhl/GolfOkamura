@@ -226,14 +226,25 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
 
                       const SizedBox(height: 18),
 
-                      // Trải nghiệm khách vãng lai
+                      // Tiếp tục mà không cần đăng nhập (Khách vãng lai)
                       Center(
                         child: TextButton.icon(
-                          onPressed: () => context.go('/'),
-                          icon: const Icon(Icons.explore_outlined, size: 15, color: Colors.white54),
+                          onPressed: () async {
+                            final provider = context.read<BookingProvider>();
+                            await provider.continueAsGuest();
+                            if (context.mounted) {
+                              context.go('/');
+                            }
+                          },
+                          icon: const Icon(Icons.arrow_forward_rounded, size: 15, color: Colors.white60),
                           label: const Text(
-                            'Trải nghiệm App với tư cách Khách Vãng Lai',
-                            style: TextStyle(color: Colors.white54, fontSize: 12),
+                            'Tiếp tục mà không cần đăng nhập',
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w600,
+                              decoration: TextDecoration.underline,
+                            ),
                           ),
                         ),
                       ),

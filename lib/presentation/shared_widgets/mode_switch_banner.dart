@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../shared/models/golfer_model.dart';
 import '../../shared/providers/booking_provider.dart';
+import 'golfer_vip_card.dart';
 
 /// Nút chuyển đổi chế độ xem nổi (Floating Pill) tinh tế, phân quyền rõ ràng giữa Khách hàng và Admin
 typedef ModeSwitchBanner = ModeSwitchFloatingButton;
@@ -78,90 +79,127 @@ class ModeSwitchFloatingButton extends StatelessWidget {
       );
     }
 
-    // Với User Mobile: Cụm nút nổi tinh tế ở góc phải trên cùng (Tài khoản + Nút Admin có phân quyền)
+    // Với User Mobile: Cụm nút nổi tinh tế ở góc phải trên cùng
+    final isActualAdmin = provider.currentGolfer.isAdmin;
+    final isGuest = provider.isGuest;
+
     return Positioned(
       top: MediaQuery.of(context).padding.top + 8,
       right: 12,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Nút Tài khoản & Đăng xuất
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () => _showAccountMenu(context, provider),
-              borderRadius: BorderRadius.circular(20),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.8),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.white24, width: 1),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.account_circle_outlined, size: 14, color: AppColors.primaryGold),
-                    const SizedBox(width: 4),
-                    Text(
-                      provider.currentGolfer.name.split(' ').last,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w600,
+          // 1. Nếu là Khách vãng lai: Hiển thị duy nhất nút "Đăng nhập"
+          if (isGuest)
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => context.go('/login'),
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryGold,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primaryGold.withValues(alpha: 0.35),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
                       ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.login_rounded, size: 14, color: Colors.black),
+                      SizedBox(width: 5),
+                      Text(
+                        'Đăng nhập',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 11.5,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            )
+          // 2. Nếu là Thành viên/Admin: Hiển thị chip tài khoản
+          else
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => _showAccountMenu(context, provider),
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.85),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isActualAdmin ? AppColors.primaryGold : provider.currentGolfer.tier.color,
+                      width: 1,
                     ),
-                  ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        isActualAdmin ? Icons.admin_panel_settings : Icons.account_circle,
+                        size: 14,
+                        color: isActualAdmin ? AppColors.primaryGold : provider.currentGolfer.tier.color,
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        provider.currentGolfer.name.split(' ').last,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(width: 6),
 
-          // Nút Admin (Kiểm tra quyền truy cập)
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                if (provider.currentGolfer.isAdmin) {
-                  context.go('/admin/dashboard');
-                } else {
-                  _showAdminAccessDialog(context, provider);
-                }
-              },
-              borderRadius: BorderRadius.circular(20),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.8),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColors.primaryGold.withValues(alpha: 0.6), width: 1),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primaryGold.withValues(alpha: 0.2),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: const [
-                    Icon(Icons.admin_panel_settings_outlined, size: 13, color: AppColors.primaryGold),
-                    SizedBox(width: 4),
-                    Text(
-                      'Admin',
-                      style: TextStyle(
-                        color: AppColors.primaryGold,
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
+          // 3. CHỈ DUY NHẤT TÀI KHOẢN ADMIN MỚI CÓ NÚT CHUYỂN VÀO ADMIN (Khách hàng & Khách vãng lai bị ẩn hoàn toàn)
+          if (isActualAdmin) ...[
+            const SizedBox(width: 6),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () => context.go('/admin/dashboard'),
+                borderRadius: BorderRadius.circular(20),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryGold,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Icon(Icons.dashboard_rounded, size: 13, color: Colors.black),
+                      SizedBox(width: 4),
+                      Text(
+                        'Về Admin',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -217,6 +255,16 @@ class ModeSwitchFloatingButton extends StatelessWidget {
               const Divider(color: Color(0xFF1E293B)),
               ListTile(
                 contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.edit_note_rounded, color: AppColors.primaryGold),
+                title: const Text('Cập nhật thông tin cá nhân', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                subtitle: const Text('Họ tên, SĐT, Email và điểm HCP', style: TextStyle(color: Colors.white54, fontSize: 11.5)),
+                onTap: () {
+                  Navigator.pop(sheetCtx);
+                  GolferVipCard.showEditGolferDialog(context, provider);
+                },
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
                 leading: const Icon(Icons.logout_rounded, color: Colors.redAccent),
                 title: const Text('Đăng xuất tài khoản', style: TextStyle(color: Colors.redAccent, fontWeight: FontWeight.w600)),
                 onTap: () async {
@@ -230,47 +278,6 @@ class ModeSwitchFloatingButton extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  void _showAdminAccessDialog(BuildContext context, BookingProvider provider) {
-    showDialog(
-      context: context,
-      builder: (dialogCtx) => AlertDialog(
-        backgroundColor: const Color(0xFF0F172A),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: AppColors.primaryGold, width: 1.2),
-        ),
-        title: Row(
-          children: const [
-            Icon(Icons.lock_person_rounded, color: AppColors.primaryGold, size: 22),
-            SizedBox(width: 10),
-            Text('Phân Quyền Hệ Thống', style: TextStyle(color: Colors.white, fontSize: 15)),
-          ],
-        ),
-        content: Text(
-          'Tài khoản hiện tại (${provider.currentGolfer.name}) là Khách hàng (Hội viên).\n\nKhu vực Quản trị POS & Thiết bị chỉ dành riêng cho Admin Okamura. Bạn có muốn đăng nhập tài khoản Quản trị viên không?',
-          style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogCtx),
-            child: const Text('Ở lại App Khách', style: TextStyle(color: Colors.white54)),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(dialogCtx);
-              context.go('/login');
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryGold,
-              foregroundColor: Colors.black,
-            ),
-            child: const Text('Đăng nhập Admin', style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-        ],
       ),
     );
   }

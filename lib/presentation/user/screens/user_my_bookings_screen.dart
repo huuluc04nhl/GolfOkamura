@@ -166,14 +166,67 @@ class _UserMyBookingsScreenState extends State<UserMyBookingsScreen> {
               ),
             ),
 
-            // Thẻ Hạng Hội Viên Golfer VIP & Tích Lũy Điểm Thưởng
-            Padding(
-              padding: EdgeInsets.fromLTRB(hPadding, 0, hPadding, 4),
-              child: GolferVipCard(
-                golfer: provider.currentGolfer,
-                onEditProfile: () => GolferVipCard.showEditGolferDialog(context, provider),
+            // Thẻ Hạng Hội Viên Golfer VIP hoặc Banner Khách Vãng Lai
+            if (provider.isGuest)
+              Padding(
+                padding: EdgeInsets.fromLTRB(hPadding, 0, hPadding, 6),
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF131C31),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: AppColors.primaryGold.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: AppColors.primaryGold.withValues(alpha: 0.15),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.person_outline_rounded, color: AppColors.primaryGold, size: 20),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Text(
+                              'Duyệt với tư cách Khách Vãng Lai',
+                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                            ),
+                            SizedBox(height: 2),
+                            Text(
+                              'Đăng nhập để tích lũy điểm thưởng VIP, hưởng ưu đãi giờ chơi và lưu mã QR vé.',
+                              style: TextStyle(color: Colors.white54, fontSize: 11),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: () => context.go('/login'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primaryGold,
+                          foregroundColor: Colors.black,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        child: const Text('Đăng nhập', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            else
+              Padding(
+                padding: EdgeInsets.fromLTRB(hPadding, 0, hPadding, 4),
+                child: GolferVipCard(
+                  golfer: provider.currentGolfer,
+                  onEditProfile: () => GolferVipCard.showEditGolferDialog(context, provider),
+                ),
               ),
-            ),
 
             // Danh sách vé đặt phòng thực tế: Hỗ trợ vuốt xuống làm mới & vuốt ngang thẻ vé
             Expanded(

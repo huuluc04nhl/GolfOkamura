@@ -489,6 +489,20 @@ class FirebaseRealtimeService {
     }
   }
 
+  /// Xóa hồ sơ hội viên Golfer khỏi Firebase (/golfers/{phone}) khi đổi số điện thoại
+  static Future<bool> deleteGolfer(String phone) async {
+    try {
+      final safeKey = phone.replaceAll(RegExp(r'[^\d]'), '');
+      if (safeKey.isEmpty) return false;
+      final url = Uri.parse('$_baseUrl/golfers/$safeKey.json');
+      final response = await http.delete(url).timeout(const Duration(seconds: 10));
+      return response.statusCode == 200;
+    } catch (e) {
+      debugPrint('Lỗi deleteGolfer trên Firebase: $e');
+      return false;
+    }
+  }
+
   /// Lấy hồ sơ hội viên Golfer từ Firebase (/golfers/{phone})
   static Future<GolferModel?> fetchGolfer(String phone) async {
     try {

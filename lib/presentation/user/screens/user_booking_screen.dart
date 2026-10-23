@@ -1258,6 +1258,30 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                     ),
                     const SizedBox(height: 12),
 
+                    if (context.read<BookingProvider>().isGuest) ...[
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.amber.withValues(alpha: 0.12),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          children: const [
+                            Icon(Icons.info_outline_rounded, color: Colors.amber, size: 15),
+                            SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                'Bạn đang đặt phòng với tư cách Khách vãng lai (không tích lũy điểm VIP)',
+                                style: TextStyle(color: Colors.amber, fontSize: 11),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+
                     // Họ tên
                     TextFormField(
                       controller: _nameController,

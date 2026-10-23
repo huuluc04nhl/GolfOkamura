@@ -105,6 +105,75 @@ void main() {
       expect(regResult['success'], false);
     });
 
+    test('Tiếp tục sử dụng ứng dụng với tư cách Khách vãng lai', () async {
+      final provider = BookingProvider(autoSyncFirebase: false);
+      await provider.initFuture;
+
+      await provider.continueAsGuest();
+      expect(provider.isGuest, true);
+      expect(provider.isLoggedIn, false);
+      expect(provider.currentGolfer.name, 'Khách vãng lai');
+    });
+
+    test('Bẫy lỗi dữ liệu khi cập nhật thông tin cá nhân (Validation Trapping)', () async {
+      final provider = BookingProvider(autoSyncFirebase: false);
+      await provider.initFuture;
+
+      // Đăng nhập tài khoản anh Hào
+      await provider.login(usernameOrPhone: '0354378606', password: '123456');
+
+      // 1. Tên chứa số / ký tự đặc biệt -> Phải thất bại
+      final res1 = await provider.updateGolferProfileWithValidation(
+        name: 'Hao 123@#',
+        phone: '0354378606',
+        email: 'haosimla365@gmail.com',
+        handicap: 15.6,
+      );
+      expect(res1['success'], false);
+      expect(res1['message'].toString().contains('ký tự đặc biệt'), true);
+
+      // 2. Số điện thoại sai định dạng (chỉ có 8 số) -> Phải thất bại
+      final res2 = await provider.updateGolferProfileWithValidation(
+        name: 'Nguyễn Xuân Hào',
+        phone: '09123456',
+        email: 'haosimla365@gmail.com',
+        handicap: 15.6,
+      );
+      expect(res2['success'], false);
+      expect(res2['message'].toString().contains('Số điện thoại không hợp lệ'), true);
+
+      // 3. Email sai cú pháp -> Phải thất bại
+      final res3 = await provider.updateGolferProfileWithValidation(
+        name: 'Nguyễn Xuân Hào',
+        phone: '0354378606',
+        email: 'haosimla-sai-dinh-dang',
+        handicap: 15.6,
+      );
+      expect(res3['success'], false);
+      expect(res3['message'].toString().contains('email'), true);
+
+      // 4. Điểm Handicap vượt trần WHS (> 54.0) -> Phải thất bại
+      final res4 = await provider.updateGolferProfileWithValidation(
+        name: 'Nguyễn Xuân Hào',
+        phone: '0354378606',
+        email: 'haosimla365@gmail.com',
+        handicap: 75.0,
+      );
+      expect(res4['success'], false);
+      expect(res4['message'].toString().contains('Handicap'), true);
+
+      // 5. Cập nhật thông tin chuẩn -> Phải thành công
+      final resSuccess = await provider.updateGolferProfileWithValidation(
+        name: 'Nguyễn Xuân Hào VIP',
+        phone: '0354378606',
+        email: 'haosimla365@gmail.com',
+        handicap: 14.8,
+      );
+      expect(resSuccess['success'], true);
+      expect(provider.currentGolfer.name, 'Nguyễn Xuân Hào VIP');
+      expect(provider.currentGolfer.handicap, 14.8);
+    });
+
     test('Đăng xuất tài khoản', () async {
       final provider = BookingProvider(autoSyncFirebase: false);
       await provider.initFuture;
@@ -116,7 +185,7 @@ void main() {
       expect(provider.isLoggedIn, false);
     });
 
-    testWidgets('Giao diện AuthScreen hiển thị đầy đủ form đăng nhập & đăng ký sang trọng', (tester) async {
+    testWidgets('Giao diện AuthScreen hiển thị form sang trọng và nút Tiếp tục mà không cần đăng nhập', (tester) async {
       tester.view.physicalSize = const Size(1280, 800);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -138,7 +207,7 @@ void main() {
       expect(find.text('OKAMURA GOLFZON LOUNGE'), findsOneWidget);
       expect(find.text('ĐĂNG NHẬP'), findsOneWidget);
       expect(find.text('ĐĂNG KÝ HỘI VIÊN'), findsOneWidget);
-      expect(find.text('Trải nghiệm App với tư cách Khách Vãng Lai'), findsOneWidget);
+      expect(find.text('Tiếp tục mà không cần đăng nhập'), findsOneWidget);
     });
   });
 }

@@ -98,7 +98,8 @@ class GolferModel {
   });
 
   bool get isAdmin => role == 'admin';
-  bool get isCustomer => role != 'admin';
+  bool get isCustomer => role == 'customer';
+  bool get isGuest => role == 'guest' || id == 'golfer_guest';
 
   GolferModel copyWith({
     String? id,
@@ -207,6 +208,21 @@ class GolferModel {
     memberSince: DateTime(2025, 6, 15),
     role: 'customer',
     password: '123456',
+  );
+
+  /// Tài khoản Khách vãng lai (không đăng nhập)
+  static GolferModel get guestProfile => GolferModel(
+    id: 'golfer_guest',
+    name: 'Khách vãng lai',
+    phone: '',
+    email: null,
+    handicap: 18.0,
+    tier: GolferTier.standard,
+    loyaltyPoints: 0,
+    totalSpend: 0.0,
+    memberSince: DateTime(2026, 1, 1),
+    role: 'guest',
+    password: '',
   );
 
   /// Mặc định hệ thống

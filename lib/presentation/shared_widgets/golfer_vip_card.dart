@@ -293,7 +293,7 @@ class GolferVipCard extends StatelessWidget {
     );
   }
 
-  /// Dialog chỉnh sửa hồ sơ Golfer / Hội viên
+  /// Dialog chỉnh sửa hồ sơ Golfer / Hội viên có bẫy lỗi trường dữ liệu chặt chẽ và đồng bộ Firebase
   static void showEditGolferDialog(BuildContext context, BookingProvider provider) {
     final current = provider.currentGolfer;
     final nameCtrl = TextEditingController(text: current.name);
@@ -301,121 +301,221 @@ class GolferVipCard extends StatelessWidget {
     final emailCtrl = TextEditingController(text: current.email ?? '');
     final hcpCtrl = TextEditingController(text: current.handicap.toStringAsFixed(1));
 
+    String? dialogError;
+    bool isSaving = false;
+
     showDialog(
       context: context,
-      builder: (dialogCtx) => AlertDialog(
-        backgroundColor: const Color(0xFF16151D),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: AppColors.primaryGold.withValues(alpha: 0.3)),
-        ),
-        title: Row(
-          children: const [
-            Icon(Icons.badge_outlined, color: AppColors.primaryGold),
-            SizedBox(width: 8),
-            Text(
-              'Hồ Sơ Định Danh Hội Viên',
-              style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+      builder: (dialogCtx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          backgroundColor: const Color(0xFF131C31),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: AppColors.primaryGold, width: 1.2),
+          ),
+          title: Row(
+            children: const [
+              Icon(Icons.badge_outlined, color: AppColors.primaryGold),
+              SizedBox(width: 8),
+              Text(
+                'Cập Nhật Hồ Sơ Hội Viên',
+                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+          content: SizedBox(
+            width: 380,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Banner thông báo lỗi bẫy dữ liệu (nếu có)
+                  if (dialogError != null) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.redAccent.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.redAccent.withValues(alpha: 0.6)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 18),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              dialogError!,
+                              style: const TextStyle(color: Colors.redAccent, fontSize: 12, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
+
+                  const Text('Họ và tên Golfer *:', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                  const SizedBox(height: 4),
+                  TextField(
+                    controller: nameCtrl,
+                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                    decoration: InputDecoration(
+                      hintText: 'Ví dụ: Nguyễn Xuân Hào',
+                      hintStyle: const TextStyle(color: Colors.white30, fontSize: 13),
+                      filled: true,
+                      fillColor: const Color(0xFF0F172A),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Color(0xFF1E293B)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.primaryGold),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  const Text('Số điện thoại đăng ký (10 số) *:', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                  const SizedBox(height: 4),
+                  TextField(
+                    controller: phoneCtrl,
+                    keyboardType: TextInputType.phone,
+                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                    decoration: InputDecoration(
+                      hintText: 'Ví dụ: 0354378606',
+                      hintStyle: const TextStyle(color: Colors.white30, fontSize: 13),
+                      filled: true,
+                      fillColor: const Color(0xFF0F172A),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Color(0xFF1E293B)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.primaryGold),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  const Text('Handicap chính thức (HCP từ 0.0 đến 54.0) *:', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                  const SizedBox(height: 4),
+                  TextField(
+                    controller: hcpCtrl,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    style: const TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 13),
+                    decoration: InputDecoration(
+                      hintText: 'Ví dụ: 15.6',
+                      hintStyle: const TextStyle(color: Colors.white30, fontSize: 13),
+                      filled: true,
+                      fillColor: const Color(0xFF0F172A),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Color(0xFF1E293B)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.primaryGold),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  const Text('Email nhận thông báo & hóa đơn:', style: TextStyle(color: Colors.white70, fontSize: 12)),
+                  const SizedBox(height: 4),
+                  TextField(
+                    controller: emailCtrl,
+                    keyboardType: TextInputType.emailAddress,
+                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                    decoration: InputDecoration(
+                      hintText: 'Ví dụ: haosimla365@gmail.com',
+                      hintStyle: const TextStyle(color: Colors.white30, fontSize: 13),
+                      filled: true,
+                      fillColor: const Color(0xFF0F172A),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: Color(0xFF1E293B)),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: const BorderSide(color: AppColors.primaryGold),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: isSaving ? null : () => Navigator.pop(dialogCtx),
+              child: const Text('Hủy', style: TextStyle(color: Colors.white60)),
+            ),
+            ElevatedButton(
+              onPressed: isSaving
+                  ? null
+                  : () async {
+                      setDialogState(() {
+                        isSaving = true;
+                        dialogError = null;
+                      });
+
+                      final parsedHcp = double.tryParse(hcpCtrl.text.trim());
+                      if (parsedHcp == null) {
+                        setDialogState(() {
+                          isSaving = false;
+                          dialogError = 'Điểm Handicap phải là số hợp lệ (ví dụ: 15.6)!';
+                        });
+                        return;
+                      }
+
+                      final result = await provider.updateGolferProfileWithValidation(
+                        name: nameCtrl.text,
+                        phone: phoneCtrl.text,
+                        email: emailCtrl.text,
+                        handicap: parsedHcp,
+                      );
+
+                      if (result['success'] == true) {
+                        if (dialogCtx.mounted) Navigator.pop(dialogCtx);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Row(
+                                children: [
+                                  const Icon(Icons.check_circle_rounded, color: Color(0xFF10B981)),
+                                  const SizedBox(width: 8),
+                                  Expanded(child: Text(result['message'] as String)),
+                                ],
+                              ),
+                              backgroundColor: const Color(0xFF1E293B),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
+                      } else {
+                        setDialogState(() {
+                          isSaving = false;
+                          dialogError = result['message'] as String?;
+                        });
+                      }
+                    },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryGold,
+                foregroundColor: Colors.black,
+              ),
+              child: isSaving
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
+                    )
+                  : const Text('Lưu Thay Đổi', style: TextStyle(fontWeight: FontWeight.bold)),
             ),
           ],
         ),
-        content: SizedBox(
-          width: 360,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Họ và tên Golfer:', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                const SizedBox(height: 4),
-                TextField(
-                  controller: nameCtrl,
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: const Color(0xFF232028),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Text('Số điện thoại đăng ký:', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                const SizedBox(height: 4),
-                TextField(
-                  controller: phoneCtrl,
-                  keyboardType: TextInputType.phone,
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: const Color(0xFF232028),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Text('Handicap chính thức (HCP):', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                const SizedBox(height: 4),
-                TextField(
-                  controller: hcpCtrl,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  style: const TextStyle(color: AppColors.primaryGold, fontWeight: FontWeight.bold, fontSize: 13),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: const Color(0xFF232028),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                const Text('Email nhận hóa đơn:', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                const SizedBox(height: 4),
-                TextField(
-                  controller: emailCtrl,
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: const Color(0xFF232028),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogCtx),
-            child: const Text('Hủy', style: TextStyle(color: Colors.white60)),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final newName = nameCtrl.text.trim();
-              final newPhone = phoneCtrl.text.trim();
-              if (newName.isEmpty || newPhone.isEmpty) return;
-
-              final parsedHcp = double.tryParse(hcpCtrl.text.trim()) ?? current.handicap;
-              final updated = current.copyWith(
-                name: newName,
-                phone: newPhone,
-                handicap: parsedHcp,
-                email: emailCtrl.text.trim().isEmpty ? null : emailCtrl.text.trim(),
-              );
-
-              await provider.updateGolferProfile(updated);
-              if (dialogCtx.mounted) Navigator.pop(dialogCtx);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Đã cập nhật hồ sơ hội viên thành công!'),
-                    backgroundColor: Color(0xFF10B981),
-                  ),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryGold,
-              foregroundColor: Colors.black,
-            ),
-            child: const Text('Lưu Thay Đổi', style: TextStyle(fontWeight: FontWeight.bold)),
-          ),
-        ],
       ),
     );
   }

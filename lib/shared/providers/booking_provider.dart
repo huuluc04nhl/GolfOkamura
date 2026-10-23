@@ -38,6 +38,7 @@ class BookingProvider extends ChangeNotifier {
   List<GolfCategoryModel> get golfCategories => _golfCategories;
   GolferModel get currentGolfer => _currentGolfer;
   bool get isLoggedIn => _isLoggedIn;
+  bool get isGuest => _currentGolfer.isGuest || !_isLoggedIn;
   bool get isLoading => _isLoading;
   bool get isSyncingFirebase => _isSyncingFirebase;
 
@@ -333,6 +334,109 @@ class BookingProvider extends ChangeNotifier {
     _isLoggedIn = false;
     await StorageService.setLoggedIn(false);
     notifyListeners();
+  }
+
+  /// Tiếp tục sử dụng ứng dụng với tư cách Khách vãng lai (không đăng nhập)
+  Future<void> continueAsGuest() async {
+    _currentGolfer = GolferModel.guestProfile;
+    _isLoggedIn = false;
+    await StorageService.setLoggedIn(false);
+    await StorageService.saveGolferProfile(_currentGolfer);
+    notifyListeners();
+  }
+
+  /// Cập nhật thông tin cá nhân kèm BẪY DỮ LIỆU CHẶT CHẼ và đồng bộ Firebase
+  Future<Map<String, dynamic>> updateGolferProfileWithValidation({
+    required String name,
+    required String phone,
+    String? email,
+    required double handicap,
+  }) async {
+    // 1. BẪY DỮ LIỆU TÊN:
+    final cleanName = name.trim();
+    if (cleanName.isEmpty) {
+      return {'success': false, 'message': 'Họ và tên không được để trống!'};
+    }
+    if (cleanName.length < 2) {
+      return {'success': false, 'message': 'Họ và tên quá ngắn (tối thiểu 2 ký tự)!'};
+    }
+    final nameRegex = RegExp(r"^[a-zA-ZÀ-ỹ\s]+$");
+    if (!nameRegex.hasMatch(cleanName)) {
+      return {'success': false, 'message': 'Họ và tên không được chứa số hoặc ký tự đặc biệt!'};
+    }
+
+    // 2. BẪY DỮ LIỆU SỐ ĐIỆN THOẠI (10 số, đầu số VN hợp lệ):
+    final cleanPhone = phone.replaceAll(RegExp(r'[^\d]'), '');
+    final phoneRegex = RegExp(r'^(03|05|07|08|09)\d{8}$');
+    if (!phoneRegex.hasMatch(cleanPhone)) {
+      return {
+        'success': false,
+        'message': 'Số điện thoại không hợp lệ (cần 10 chữ số, bắt đầu bằng 03, 05, 07, 08, 09)!'
+      };
+    }
+    if (cleanPhone == '0901234567' && !_currentGolfer.isAdmin) {
+      return {'success': false, 'message': 'Số điện thoại này thuộc về Quản trị viên!'};
+    }
+
+    // 3. BẪY DỮ LIỆU EMAIL (nếu có):
+    final cleanEmail = email?.trim() ?? '';
+    if (cleanEmail.isNotEmpty) {
+      final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+      if (!emailRegex.hasMatch(cleanEmail)) {
+        return {'success': false, 'message': 'Định dạng email không hợp lệ (Ví dụ: haosimla365@gmail.com)!'};
+      }
+    }
+
+    // 4. BẪY DỮ LIỆU HANDICAP (Giới hạn chuẩn WHS: 0.0 - 54.0):
+    if (handicap < 0.0 || handicap > 54.0) {
+      return {'success': false, 'message': 'Điểm Handicap không hợp lệ (chuẩn WHS quốc tế từ 0.0 đến 54.0)!'};
+    }
+
+    // 5. BẪY TRÙNG SỐ ĐIỆN THOẠI NẾU ĐỔI SĐT KHÁC:
+    final oldPhone = _currentGolfer.phone;
+    if (cleanPhone != oldPhone && autoSyncFirebase) {
+      final existing = await FirebaseRealtimeService.fetchGolfer(cleanPhone);
+      if (existing != null) {
+        return {'success': false, 'message': 'Số điện thoại mới ($cleanPhone) đã được đăng ký bởi tài khoản khác!'};
+      }
+    }
+
+    // 6. CẬP NHẬT DỮ LIỆU HỘI VIÊN:
+    final updated = _currentGolfer.copyWith(
+      name: cleanName,
+      phone: cleanPhone,
+      email: cleanEmail.isNotEmpty ? cleanEmail : null,
+      handicap: handicap,
+    );
+
+    _currentGolfer = updated;
+    await StorageService.saveGolferProfile(updated);
+    if (updated.isCustomer) {
+      await StorageService.saveCustomerProfile(updated.name, updated.phone);
+    }
+    notifyListeners();
+
+    // 7. ĐỒNG BỘ TRỰC TIẾP LÊN FIREBASE REALTIME DATABASE:
+    if (autoSyncFirebase) {
+      // Nếu số điện thoại thay đổi: Xóa key cũ trên Firebase để tránh dữ liệu mồ côi
+      if (oldPhone.isNotEmpty && oldPhone != cleanPhone) {
+        await FirebaseRealtimeService.deleteGolfer(oldPhone);
+      }
+      final saved = await FirebaseRealtimeService.saveGolfer(updated);
+      if (!saved) {
+        return {
+          'success': true,
+          'message': 'Đã lưu cục bộ (Đang chờ đồng bộ Cloud Firebase)',
+          'user': updated,
+        };
+      }
+    }
+
+    return {
+      'success': true,
+      'message': 'Cập nhật thông tin cá nhân và đồng bộ Firebase thành công!',
+      'user': updated,
+    };
   }
 
   /// Kiểm tra trạng thái thực tế của một phòng tại một ngày và khung giờ cụ thể
