@@ -1,0 +1,144 @@
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:golf_booking/core/theme/user_theme.dart';
+import 'package:golf_booking/presentation/auth/screens/auth_screen.dart';
+import 'package:golf_booking/shared/models/golfer_model.dart';
+import 'package:golf_booking/shared/providers/booking_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  HttpOverrides.global = null;
+
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
+  group('Kiểm thử Xác thực & Phân quyền Đăng nhập (Auth & Role-Based Routing)', () {
+    test('Đăng nhập tài khoản Quản trị viên (OKAMURA ADMIN)', () async {
+      final provider = BookingProvider(autoSyncFirebase: false);
+      await provider.initFuture;
+
+      final result = await provider.login(
+        usernameOrPhone: 'admin',
+        password: '123456',
+      );
+
+      expect(result['success'], true);
+      expect(result['role'], 'admin');
+      expect(provider.currentGolfer.isAdmin, true);
+      expect(provider.currentGolfer.name, 'OKAMURA ADMIN');
+      expect(provider.isLoggedIn, true);
+    });
+
+    test('Đăng nhập tài khoản Khách hàng thực tế (Nguyễn Xuân Hào)', () async {
+      final provider = BookingProvider(autoSyncFirebase: false);
+      await provider.initFuture;
+
+      final result = await provider.login(
+        usernameOrPhone: '0354378606',
+        password: '123456',
+      );
+
+      expect(result['success'], true);
+      expect(result['role'], 'customer');
+      expect(provider.currentGolfer.isCustomer, true);
+      expect(provider.currentGolfer.name, 'Nguyễn Xuân Hào');
+      expect(provider.currentGolfer.phone, '0354378606');
+      expect(provider.currentGolfer.email, 'haosimla365@gmail.com');
+      expect(provider.currentGolfer.tier, GolferTier.gold);
+      expect(provider.isLoggedIn, true);
+
+      // Đăng nhập bằng Email
+      final emailResult = await provider.login(
+        usernameOrPhone: 'haosimla365@gmail.com',
+        password: '123456',
+      );
+      expect(emailResult['success'], true);
+    });
+
+    test('Đăng nhập sai mật khẩu phải trả về lỗi rõ ràng', () async {
+      final provider = BookingProvider(autoSyncFirebase: false);
+      await provider.initFuture;
+
+      final result = await provider.login(
+        usernameOrPhone: '0354378606',
+        password: 'wrong_password_999',
+      );
+
+      expect(result['success'], false);
+      expect(result['message'], isNotEmpty);
+    });
+
+    test('Đăng ký tài khoản hội viên mới thành công', () async {
+      final provider = BookingProvider(autoSyncFirebase: false);
+      await provider.initFuture;
+
+      final regResult = await provider.register(
+        name: 'Trần Văn Nam',
+        phone: '0912334455',
+        email: 'nam.tran@gmail.com',
+        password: 'mypassword123',
+        handicap: 14.5,
+      );
+
+      expect(regResult['success'], true);
+      expect(regResult['role'], 'customer');
+      expect(provider.currentGolfer.name, 'Trần Văn Nam');
+      expect(provider.currentGolfer.isCustomer, true);
+      expect(provider.currentGolfer.loyaltyPoints, 100);
+      expect(provider.isLoggedIn, true);
+    });
+
+    test('Không cho phép đăng ký trùng số điện thoại Admin', () async {
+      final provider = BookingProvider(autoSyncFirebase: false);
+      await provider.initFuture;
+
+      final regResult = await provider.register(
+        name: 'Giả Mạo Admin',
+        phone: '0901234567',
+        password: '123',
+      );
+
+      expect(regResult['success'], false);
+    });
+
+    test('Đăng xuất tài khoản', () async {
+      final provider = BookingProvider(autoSyncFirebase: false);
+      await provider.initFuture;
+
+      await provider.login(usernameOrPhone: 'admin', password: '123456');
+      expect(provider.isLoggedIn, true);
+
+      await provider.logout();
+      expect(provider.isLoggedIn, false);
+    });
+
+    testWidgets('Giao diện AuthScreen hiển thị đầy đủ form đăng nhập & đăng ký sang trọng', (tester) async {
+      tester.view.physicalSize = const Size(1280, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final provider = BookingProvider(autoSyncFirebase: false);
+      await provider.initFuture;
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<BookingProvider>.value(
+          value: provider,
+          child: MaterialApp(
+            theme: UserTheme.theme,
+            home: const AuthScreen(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('OKAMURA GOLFZON LOUNGE'), findsOneWidget);
+      expect(find.text('ĐĂNG NHẬP'), findsOneWidget);
+      expect(find.text('ĐĂNG KÝ HỘI VIÊN'), findsOneWidget);
+      expect(find.text('Trải nghiệm App với tư cách Khách Vãng Lai'), findsOneWidget);
+    });
+  });
+}

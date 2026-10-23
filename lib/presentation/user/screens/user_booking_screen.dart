@@ -54,12 +54,18 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
   }
 
   Future<void> _loadPreviousCustomerProfile() async {
+    final provider = context.read<BookingProvider>();
     final profile = await StorageService.loadCustomerProfile();
-    if (profile['name']!.isNotEmpty && mounted) {
+    if (!mounted) return;
+    if (profile['name']!.isNotEmpty) {
       _nameController.text = profile['name']!;
+    } else if (provider.currentGolfer.isCustomer) {
+      _nameController.text = provider.currentGolfer.name;
     }
-    if (profile['phone']!.isNotEmpty && mounted) {
+    if (profile['phone']!.isNotEmpty) {
       _phoneController.text = profile['phone']!;
+    } else if (provider.currentGolfer.isCustomer) {
+      _phoneController.text = provider.currentGolfer.phone;
     }
   }
 

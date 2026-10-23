@@ -36,8 +36,12 @@ class _UserMyBookingsScreenState extends State<UserMyBookingsScreen> {
   }
 
   Future<void> _loadSavedPhone() async {
+    final provider = context.read<BookingProvider>();
     final profile = await StorageService.loadCustomerProfile();
-    final phone = profile['phone'] ?? '';
+    var phone = profile['phone'] ?? '';
+    if (phone.isEmpty && provider.currentGolfer.isCustomer) {
+      phone = provider.currentGolfer.phone;
+    }
     if (phone.isNotEmpty && mounted) {
       setState(() {
         _searchPhoneController.text = phone;

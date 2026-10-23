@@ -387,15 +387,19 @@ class FirebaseRealtimeService {
             'id': 'admin_okamura',
             'username': 'admin',
             'name': 'OKAMURA ADMIN',
-            'role': 'Super Admin & Operations Director',
+            'role': 'admin',
             'email': 'admin@okamura-golf.vn',
             'phone': '0901234567',
             'branch': 'Okamura Golfzon Lounge',
             'status': 'active',
-            'createdAt': DateTime.now().toIso8601String(),
+            'password': 'admin',
+            'createdAt': DateTime(2025, 1, 1).toIso8601String(),
           }),
         ),
       );
+
+      // Nạp tài khoản Khách hàng thực tế duy nhất theo yêu cầu: NGUYỄN XUÂN HÀO
+      await saveGolfer(GolferModel.customerHaoProfile);
 
       debugPrint('Đã hoàn thành nạp dữ liệu khởi tạo Okamura Golfzon lên Firebase.');
     } catch (e) {
@@ -500,6 +504,49 @@ class FirebaseRealtimeService {
       }
     } catch (e) {
       debugPrint('Lỗi fetchGolfer từ Firebase: $e');
+    }
+    return null;
+  }
+
+  /// Tra cứu tài khoản đăng nhập theo username, số điện thoại hoặc email
+  static Future<GolferModel?> fetchGolferByIdentifier(String identifier) async {
+    final cleanId = identifier.trim().toLowerCase();
+    // 1. Kiểm tra tài khoản Quản trị viên
+    if (cleanId == 'admin' || cleanId == '0901234567' || cleanId == 'admin@okamura-golf.vn') {
+      return GolferModel.defaultAdminProfile;
+    }
+    // 2. Tra cứu trực tiếp theo số điện thoại
+    final byPhone = await fetchGolfer(identifier);
+    if (byPhone != null) return byPhone;
+
+    // 3. Khách hàng thực tế: Nguyễn Xuân Hào
+    if (cleanId == '0354378606' ||
+        cleanId == 'haosimla365@gmail.com' ||
+        cleanId == 'hao.nguyen' ||
+        cleanId == 'hao') {
+      return GolferModel.customerHaoProfile;
+    }
+
+    // 4. Quét trên Firebase tìm theo Email nếu nhập Email
+    try {
+      final url = Uri.parse('$_baseUrl/golfers.json');
+      final response = await http.get(url).timeout(const Duration(seconds: 10));
+      if (response.statusCode == 200 && response.body != 'null' && response.body.trim().isNotEmpty) {
+        final decoded = json.decode(utf8.decode(response.bodyBytes));
+        if (decoded is Map<String, dynamic>) {
+          for (final entry in decoded.entries) {
+            if (entry.value is Map<String, dynamic>) {
+              final model = GolferModel.fromMap(Map<String, dynamic>.from(entry.value));
+              if (model.phone == identifier ||
+                  (model.email != null && model.email!.toLowerCase() == cleanId)) {
+                return model;
+              }
+            }
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint('Lỗi fetchGolferByIdentifier: $e');
     }
     return null;
   }

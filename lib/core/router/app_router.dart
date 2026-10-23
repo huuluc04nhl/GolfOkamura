@@ -7,17 +7,25 @@ import '../../presentation/admin/screens/admin_dashboard_screen.dart';
 import '../../presentation/admin/screens/admin_revenue_screen.dart';
 import '../../presentation/admin/screens/admin_rooms_screen.dart';
 import '../../presentation/admin/shells/admin_shell.dart';
+import '../../presentation/auth/screens/auth_screen.dart';
 import '../../presentation/user/screens/user_booking_screen.dart';
 import '../../presentation/user/screens/user_home_screen.dart';
 import '../../presentation/user/screens/user_my_bookings_screen.dart';
 import '../../presentation/user/screens/user_services_screen.dart';
 import '../../presentation/user/shells/user_shell.dart';
 
-/// Bộ điều hướng trung tâm quản lý 2 luồng User Mobile & Admin Web
+/// Bộ điều hướng trung tâm quản lý luồng Đăng nhập, User Mobile & Admin Web
 class AppRouter {
   static final router = GoRouter(
-    initialLocation: '/admin/dashboard',
+    initialLocation: '/login',
     routes: [
+      // ==========================================
+      // NHÁNH 0: ĐĂNG NHẬP / ĐĂNG KÝ HỆ THỐNG OKAMURA
+      // ==========================================
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const AuthScreen(),
+      ),
       // ==========================================
       // NHÁNH 1: USER MOBILE (THEME OKAMURA GOLFZON)
       // ==========================================

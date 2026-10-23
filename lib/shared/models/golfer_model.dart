@@ -80,6 +80,8 @@ class GolferModel {
   final int loyaltyPoints;
   final double totalSpend;
   final DateTime memberSince;
+  final String role; // 'admin' | 'customer'
+  final String password;
 
   const GolferModel({
     required this.id,
@@ -91,7 +93,12 @@ class GolferModel {
     this.loyaltyPoints = 0,
     this.totalSpend = 0.0,
     required this.memberSince,
+    this.role = 'customer',
+    this.password = '123456',
   });
+
+  bool get isAdmin => role == 'admin';
+  bool get isCustomer => role != 'admin';
 
   GolferModel copyWith({
     String? id,
@@ -103,6 +110,8 @@ class GolferModel {
     int? loyaltyPoints,
     double? totalSpend,
     DateTime? memberSince,
+    String? role,
+    String? password,
   }) {
     return GolferModel(
       id: id ?? this.id,
@@ -114,6 +123,8 @@ class GolferModel {
       loyaltyPoints: loyaltyPoints ?? this.loyaltyPoints,
       totalSpend: totalSpend ?? this.totalSpend,
       memberSince: memberSince ?? this.memberSince,
+      role: role ?? this.role,
+      password: password ?? this.password,
     );
   }
 
@@ -128,6 +139,8 @@ class GolferModel {
       'loyaltyPoints': loyaltyPoints,
       'totalSpend': totalSpend,
       'memberSince': memberSince.toIso8601String(),
+      'role': role,
+      'password': password,
     };
   }
 
@@ -161,11 +174,13 @@ class GolferModel {
           ? (map['totalSpend'] as num).toDouble()
           : double.tryParse(map['totalSpend']?.toString() ?? '0') ?? 0.0,
       memberSince: DateTime.tryParse(map['memberSince']?.toString() ?? '') ?? DateTime.now(),
+      role: (map['role'] ?? 'customer').toString(),
+      password: (map['password'] ?? '123456').toString(),
     );
   }
 
-  /// Tài khoản mẫu chuẩn Okamura
-  static GolferModel get defaultProfile => GolferModel(
+  /// Tài khoản mẫu chuẩn Okamura Admin
+  static GolferModel get defaultAdminProfile => GolferModel(
     id: 'admin_okamura',
     name: 'OKAMURA ADMIN',
     phone: '0901234567',
@@ -175,5 +190,25 @@ class GolferModel {
     loyaltyPoints: 5000,
     totalSpend: 35000000,
     memberSince: DateTime(2025, 1, 1),
+    role: 'admin',
+    password: 'admin',
   );
+
+  /// Tài khoản khách hàng thực tế duy nhất theo yêu cầu: NGUYỄN XUÂN HÀO
+  static GolferModel get customerHaoProfile => GolferModel(
+    id: 'golfer_nguyenxuanhao',
+    name: 'Nguyễn Xuân Hào',
+    phone: '0354378606',
+    email: 'haosimla365@gmail.com',
+    handicap: 15.6,
+    tier: GolferTier.gold,
+    loyaltyPoints: 1250,
+    totalSpend: 16500000,
+    memberSince: DateTime(2025, 6, 15),
+    role: 'customer',
+    password: '123456',
+  );
+
+  /// Mặc định hệ thống
+  static GolferModel get defaultProfile => defaultAdminProfile;
 }

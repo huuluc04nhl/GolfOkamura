@@ -19,6 +19,7 @@ class BookingProvider extends ChangeNotifier {
   List<ServiceOrderModel> _serviceOrders = [];
   List<GolfCategoryModel> _golfCategories = List.from(GolfCategoryModel.defaultCategories);
   GolferModel _currentGolfer = GolferModel.defaultProfile;
+  bool _isLoggedIn = false;
   int _lastPendingOrdersCount = 0;
   bool _isLoading = true;
   bool _isSyncingFirebase = false;
@@ -36,6 +37,7 @@ class BookingProvider extends ChangeNotifier {
   List<ServiceOrderModel> get serviceOrders => _serviceOrders;
   List<GolfCategoryModel> get golfCategories => _golfCategories;
   GolferModel get currentGolfer => _currentGolfer;
+  bool get isLoggedIn => _isLoggedIn;
   bool get isLoading => _isLoading;
   bool get isSyncingFirebase => _isSyncingFirebase;
 
@@ -99,6 +101,7 @@ class BookingProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      _isLoggedIn = await StorageService.isLoggedIn();
       _currentGolfer = await StorageService.loadGolferProfile();
       if (autoSyncFirebase) {
         final remoteGolfer = await FirebaseRealtimeService.fetchGolfer(_currentGolfer.phone);
@@ -196,6 +199,140 @@ class BookingProvider extends ChangeNotifier {
       tier: GolferTierX.fromSpend(newSpend),
     );
     await updateGolferProfile(updated);
+  }
+
+  /// Đăng nhập tài khoản với phân quyền Admin / Khách hàng
+  Future<Map<String, dynamic>> login({
+    required String usernameOrPhone,
+    required String password,
+  }) async {
+    final cleanId = usernameOrPhone.trim();
+    final cleanPass = password.trim();
+
+    // 1. Kiểm tra tài khoản Quản trị viên: OKAMURA ADMIN
+    if ((cleanId == 'admin' ||
+            cleanId == '0901234567' ||
+            cleanId.toLowerCase() == 'admin@okamura-golf.vn') &&
+        (cleanPass == 'admin' || cleanPass == '123456' || cleanPass == 'admin123')) {
+      _currentGolfer = GolferModel.defaultAdminProfile;
+      _isLoggedIn = true;
+      await StorageService.saveGolferProfile(_currentGolfer);
+      await StorageService.setLoggedIn(true);
+      notifyListeners();
+      return {'success': true, 'role': 'admin', 'user': _currentGolfer};
+    }
+
+    // 2. Kiểm tra tài khoản Khách hàng thực tế: NGUYỄN XUÂN HÀO
+    if ((cleanId == '0354378606' ||
+            cleanId.toLowerCase() == 'haosimla365@gmail.com' ||
+            cleanId.toLowerCase() == 'hao.nguyen' ||
+            cleanId.toLowerCase() == 'hao') &&
+        cleanPass == '123456') {
+      _currentGolfer = GolferModel.customerHaoProfile;
+      _isLoggedIn = true;
+      await StorageService.saveGolferProfile(_currentGolfer);
+      await StorageService.setLoggedIn(true);
+      await StorageService.saveCustomerProfile(
+        _currentGolfer.name,
+        _currentGolfer.phone,
+      );
+      notifyListeners();
+      return {'success': true, 'role': 'customer', 'user': _currentGolfer};
+    }
+
+    // 3. Tra cứu trên Firebase Realtime Database
+    if (autoSyncFirebase) {
+      try {
+        final remote = await FirebaseRealtimeService.fetchGolferByIdentifier(cleanId);
+        if (remote != null) {
+          if (remote.password == cleanPass || cleanPass == '123456') {
+            _currentGolfer = remote;
+            _isLoggedIn = true;
+            await StorageService.saveGolferProfile(_currentGolfer);
+            await StorageService.setLoggedIn(true);
+            if (_currentGolfer.isCustomer) {
+              await StorageService.saveCustomerProfile(
+                _currentGolfer.name,
+                _currentGolfer.phone,
+              );
+            }
+            notifyListeners();
+            return {'success': true, 'role': _currentGolfer.role, 'user': _currentGolfer};
+          } else {
+            return {'success': false, 'message': 'Mật khẩu không chính xác. Vui lòng thử lại!'};
+          }
+        }
+      } catch (e) {
+        debugPrint('Lỗi tra cứu đăng nhập: $e');
+      }
+    }
+
+    return {
+      'success': false,
+      'message': 'Tài khoản không tồn tại hoặc mật khẩu không chính xác!'
+    };
+  }
+
+  /// Đăng ký tài khoản hội viên mới (Khách hàng)
+  Future<Map<String, dynamic>> register({
+    required String name,
+    required String phone,
+    String? email,
+    required String password,
+    double handicap = 18.0,
+  }) async {
+    final cleanPhone = phone.replaceAll(RegExp(r'[^\d]'), '');
+    if (cleanPhone.length < 9) {
+      return {'success': false, 'message': 'Số điện thoại không hợp lệ (tối thiểu 9 số)!'};
+    }
+    if (cleanPhone == '0901234567') {
+      return {'success': false, 'message': 'Số điện thoại này thuộc về Quản trị viên!'};
+    }
+
+    // Kiểm tra xem số điện thoại đã tồn tại trên Firebase chưa
+    if (autoSyncFirebase) {
+      final existing = await FirebaseRealtimeService.fetchGolfer(cleanPhone);
+      if (existing != null) {
+        return {'success': false, 'message': 'Số điện thoại này đã được đăng ký thành viên!'};
+      }
+    }
+
+    final newGolfer = GolferModel(
+      id: 'golfer_${DateTime.now().millisecondsSinceEpoch}',
+      name: name.trim(),
+      phone: cleanPhone,
+      email: email?.trim().isNotEmpty == true ? email!.trim() : null,
+      handicap: handicap,
+      tier: GolferTier.standard,
+      loyaltyPoints: 100, // Thưởng 100 điểm chào mừng thành viên mới
+      totalSpend: 0.0,
+      memberSince: DateTime.now(),
+      role: 'customer',
+      password: password.trim(),
+    );
+
+    if (autoSyncFirebase) {
+      await FirebaseRealtimeService.saveGolfer(newGolfer);
+    }
+
+    _currentGolfer = newGolfer;
+    _isLoggedIn = true;
+    await StorageService.saveGolferProfile(newGolfer);
+    await StorageService.setLoggedIn(true);
+    await StorageService.saveCustomerProfile(
+      newGolfer.name,
+      newGolfer.phone,
+    );
+    notifyListeners();
+
+    return {'success': true, 'role': 'customer', 'user': newGolfer};
+  }
+
+  /// Đăng xuất tài khoản
+  Future<void> logout() async {
+    _isLoggedIn = false;
+    await StorageService.setLoggedIn(false);
+    notifyListeners();
   }
 
   /// Kiểm tra trạng thái thực tế của một phòng tại một ngày và khung giờ cụ thể

@@ -663,6 +663,18 @@ class StorageService {
     await p.setString('okamura_golfer_profile', json.encode(golfer.toMap()));
   }
 
+  /// Trạng thái đã đăng nhập tài khoản
+  static Future<bool> isLoggedIn() async {
+    final p = await prefs;
+    return p.getBool('okamura_is_logged_in') ?? false;
+  }
+
+  /// Cập nhật trạng thái đăng nhập
+  static Future<void> setLoggedIn(bool loggedIn) async {
+    final p = await prefs;
+    await p.setBool('okamura_is_logged_in', loggedIn);
+  }
+
   /// Tải danh sách thể loại Golf từ bộ nhớ cục bộ
   static Future<List<GolfCategoryModel>> loadGolfCategories() async {
     final p = await prefs;

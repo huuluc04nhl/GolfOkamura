@@ -299,16 +299,18 @@ class AdminShell extends StatelessWidget {
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: const [
+                                  children: [
                                     Text(
-                                      'OKAMURA ADMIN',
-                                      style: TextStyle(
+                                      provider.currentGolfer.name,
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 12,
                                         fontWeight: FontWeight.bold,
                                       ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
                                     ),
-                                    Text(
+                                    const Text(
                                       'Hotline: ${AppConstants.hotline}',
                                       style: TextStyle(
                                         color: Colors.white54,
@@ -318,7 +320,33 @@ class AdminShell extends StatelessWidget {
                                   ],
                                 ),
                               ),
+                              IconButton(
+                                icon: const Icon(Icons.logout_rounded, color: Colors.white60, size: 18),
+                                tooltip: 'Đăng xuất tài khoản',
+                                padding: EdgeInsets.zero,
+                                constraints: const BoxConstraints(),
+                                onPressed: () async {
+                                  await provider.logout();
+                                  if (context.mounted) {
+                                    context.go('/login');
+                                  }
+                                },
+                              ),
                             ],
+                          ),
+                        ),
+                      if (!isDesktop)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: IconButton(
+                            icon: const Icon(Icons.logout_rounded, color: Colors.white60, size: 20),
+                            tooltip: 'Đăng xuất tài khoản',
+                            onPressed: () async {
+                              await provider.logout();
+                              if (context.mounted) {
+                                context.go('/login');
+                              }
+                            },
                           ),
                         ),
                     ],
