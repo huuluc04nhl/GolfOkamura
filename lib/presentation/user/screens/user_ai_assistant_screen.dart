@@ -7,11 +7,8 @@ import '../../../shared/models/golfer_model.dart';
 import '../../../shared/providers/booking_provider.dart';
 import '../../../shared/services/gemini_ai_service.dart';
 
-/// Màn hình Trung tâm Trợ lý AI Caddie Chuyên Sâu (Dedicated AI Concierge Screen)
-/// Cung cấp giao diện hỗ trợ toàn diện thay thế chatbox popup ngắn:
-/// - Phân tích & tư vấn chọn phòng chuẩn công nghệ TwoVision NX theo trình độ Golfer
-/// - Tra cứu thực đơn F&B tận phòng, bảng giá khung giờ vàng
-/// - Hội thoại tương tác sâu với Gemini AI và gắn nút hành động trực tiếp
+/// Màn hình Trợ lý Ảo Hỗ Trợ Khách Hàng (Dedicated AI Concierge Screen)
+/// Giao diện thân thiện, ấm áp, hoàn toàn không dùng thuật ngữ chuyên ngành khó hiểu
 class UserAiAssistantScreen extends StatefulWidget {
   const UserAiAssistantScreen({super.key});
 
@@ -30,18 +27,18 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
 
   final List<Map<String, String>> _categories = [
     {'id': 'all', 'label': 'Tất cả'},
-    {'id': 'rooms', 'label': 'Tư vấn phòng Bay'},
-    {'id': 'pricing', 'label': 'Bảng giá & Giờ vàng'},
-    {'id': 'fnb', 'label': 'Thực đơn F&B'},
-    {'id': 'membership', 'label': 'Hạng hội viên'},
+    {'id': 'rooms', 'label': 'Chọn phòng phù hợp'},
+    {'id': 'pricing', 'label': 'Bảng giá & Giờ đẹp'},
+    {'id': 'fnb', 'label': 'Đồ ăn & Nước uống'},
+    {'id': 'membership', 'label': 'Ưu đãi thành viên'},
   ];
 
   final List<String> _quickPrompts = [
-    'Tư vấn chọn phòng VIP TwoVision NX phù hợp nhóm 4 người',
-    'Bảng giá thuê phòng hôm nay và các khung giờ ưu đãi',
-    'Combo bia Sapporo tháp và món ăn nhẹ phục vụ tận phòng',
-    'Đặc quyền hạng hội viên Diamond và cách tích điểm',
-    'Hướng dẫn đặt phòng vãng lai và quy trình check-in tại quầy',
+    'Phòng nào chơi thoải mái cho nhóm 4 người?',
+    'Bảng giá thuê phòng hôm nay thế nào?',
+    'Thực đơn đồ uống và đồ nhắm mang tận phòng',
+    'Quyền lợi thành viên và cách tích điểm',
+    'Lần đầu đến chơi thì đặt phòng thế nào?',
   ];
 
   @override
@@ -54,19 +51,19 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
     _messages.add(
       ChatMessageModel(
         id: 'welcome',
-        text: 'Xin chào Quý khách! Tôi là AI Caddie - Trợ lý ảo Golfzon 24/7 của tổ hợp Okamura.\n\n'
-            'Tôi có thể giúp Quý khách:\n'
-            '• Phân tích & gợi ý phòng tập theo trình độ Handicap\n'
-            '• Tra cứu bảng giá, khung giờ vàng & chương trình ưu đãi\n'
-            '• Đặt dịch vụ ăn uống F&B phục vụ tận phòng\n'
-            '• Hướng dẫn đặt phòng nhanh chóng\n\n'
-            'Quý khách cần tôi hỗ trợ điều gì hôm nay?',
+        text: 'Dạ xin chào Quý khách! Em là Trợ lý ảo của Okamura Golfzon.\n\n'
+            'Em luôn sẵn sàng hỗ trợ Quý khách:\n'
+            '• Gợi ý phòng chơi 3D phù hợp nhất (người mới tập hay đã chơi lâu)\n'
+            '• Báo giá thuê phòng & các khung giờ đẹp trong ngày\n'
+            '• Gọi đồ ăn, tháp bia & nước uống mang tận phòng\n'
+            '• Hướng dẫn giữ chỗ và giải đáp mọi thắc mắc\n\n'
+            'Quý khách đang cần em hỗ trợ điều gì hôm nay ạ?',
         isUser: false,
         timestamp: DateTime.now(),
         quickPrompts: [
-          'Gợi ý phòng VIP hôm nay',
-          'Bảng giá thuê Bay',
-          'Menu đồ uống F&B',
+          'Gợi ý phòng đẹp hôm nay',
+          'Bảng giá thuê phòng',
+          'Menu đồ ăn & nước uống',
         ],
       ),
     );
@@ -133,7 +130,7 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
           _messages.add(
             ChatMessageModel(
               id: 'err_${DateTime.now().microsecondsSinceEpoch}',
-              text: 'Rất tiếc, kết nối trợ lý AI tạm thời bị gián đoạn. Quý khách vui lòng thử lại hoặc liên hệ hotline để được phục vụ ngay.',
+              text: 'Dạ đường truyền tạm thời bị gián đoạn một chút. Quý khách vui lòng thử lại hoặc gọi hotline quán để được phục vụ ngay nhé ạ!',
               isUser: false,
               timestamp: DateTime.now(),
             ),
@@ -152,21 +149,23 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.userBgDark,
+      resizeToAvoidBottomInset: true,
       appBar: _buildAppBar(context),
       body: SafeArea(
         child: Column(
           children: [
-            // Thẻ trạng thái hội viên & AI Concierge Status
+            // Thẻ người dùng và lời chào thân thiện
             _buildGolferAiHeader(golfer.name, golfer.tier.label),
 
-            // Thanh phân loại chủ đề hỗ trợ nhanh (Pill categories)
+            // Thanh chủ đề hỗ trợ nhanh
             _buildCategoryFilter(),
 
             // Danh sách tin nhắn hội thoại toàn màn hình
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 itemCount: _messages.length + (_isLoading ? 1 : 0),
                 itemBuilder: (context, index) {
                   if (index == _messages.length && _isLoading) {
@@ -180,7 +179,7 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
             // Gợi ý câu hỏi nhanh (nếu tin nhắn cuối có quickPrompts)
             _buildQuickPromptsBar(),
 
-            // Thanh nhập câu hỏi AI Caddie
+            // Thanh nhập câu hỏi
             _buildInputArea(),
           ],
         ),
@@ -222,7 +221,7 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'AI CADDIE CHUYÊN SÂU',
+                'TRỢ LÝ OKAMURA',
                 style: TextStyle(
                   color: AppColors.primaryGold,
                   fontSize: 14,
@@ -231,7 +230,7 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
                 ),
               ),
               Text(
-                'Golfzon Super Concierge 24/7',
+                'Luôn sẵn sàng hỗ trợ bạn 24/7',
                 style: TextStyle(
                   color: AppColors.textMuted,
                   fontSize: 10,
@@ -245,7 +244,7 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
       actions: [
         IconButton(
           icon: const Icon(Icons.refresh_rounded, color: AppColors.textMuted, size: 22),
-          tooltip: 'Làm mới cuộc trò chuyện',
+          tooltip: 'Trò chuyện lại từ đầu',
           onPressed: () {
             setState(() {
               _messages.clear();
@@ -264,13 +263,13 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
     );
   }
 
-  /// Thẻ trạng thái thông tin người dùng và lời chào AI
+  /// Thẻ trạng thái thông tin người dùng và lời chào
   Widget _buildGolferAiHeader(String name, String tier) {
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+      margin: const EdgeInsets.fromLTRB(14, 10, 14, 8),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: AppColors.glassBg.withValues(alpha: 0.8),
+        color: AppColors.glassBg.withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: AppColors.primaryGold.withValues(alpha: 0.28),
@@ -349,7 +348,7 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
                 ),
                 const SizedBox(height: 2),
                 const Text(
-                  'Hỗ trợ đặt Bay TwoVision NX, menu đồ ăn & ưu đãi cá nhân',
+                  'Tư vấn chọn phòng, đặt món ăn & nhận ưu đãi',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 11),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -370,7 +369,7 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
                 CircleAvatar(backgroundColor: Color(0xFF10B981), radius: 3),
                 SizedBox(width: 5),
                 Text(
-                  'Online',
+                  'Sẵn sàng',
                   style: TextStyle(
                     color: Color(0xFF10B981),
                     fontSize: 10,
@@ -433,33 +432,72 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
   void _handleCategoryPrompt(String categoryId) {
     switch (categoryId) {
       case 'rooms':
-        _sendMessage('Tư vấn cho tôi các loại phòng Bay TwoVision NX và phòng VIP');
+        _sendMessage('Tư vấn cho tôi các loại phòng chơi golf 3D và phòng VIP');
         break;
       case 'pricing':
-        _sendMessage('Bảng giá thuê phòng hôm nay và các khung giờ ưu đãi là gì?');
+        _sendMessage('Bảng giá thuê phòng hôm nay và các khung giờ giảm giá là gì?');
         break;
       case 'fnb':
-        _sendMessage('Thực đơn F&B đồ ăn và đồ uống phục vụ tận phòng gồm những gì?');
+        _sendMessage('Thực đơn đồ ăn và nước uống mang tận phòng gồm những gì?');
         break;
       case 'membership':
-        _sendMessage('Quyền lợi và điều kiện nâng hạng hội viên Golfzon Okamura');
+        _sendMessage('Xem quyền lợi hội viên và cách tích điểm');
         break;
     }
   }
 
+  /// Định dạng text thông minh, loại bỏ dấu ** thô và làm nổi bật từ khóa
+  Widget _buildFormattedText(String text, bool isUser) {
+    if (isUser) {
+      return Text(
+        text,
+        style: const TextStyle(
+          color: Color(0xFF1A1A1A),
+          fontSize: 13.5,
+          height: 1.45,
+          fontWeight: FontWeight.w600,
+        ),
+      );
+    }
+
+    final spans = <TextSpan>[];
+    final parts = text.split('**');
+    for (int i = 0; i < parts.length; i++) {
+      final isBold = i % 2 == 1;
+      if (parts[i].isNotEmpty) {
+        spans.add(
+          TextSpan(
+            text: parts[i],
+            style: TextStyle(
+              color: isBold ? AppColors.primaryGold : AppColors.textLight,
+              fontWeight: isBold ? FontWeight.bold : FontWeight.w400,
+              fontSize: 13.5,
+              height: 1.45,
+            ),
+          ),
+        );
+      }
+    }
+
+    return RichText(
+      text: TextSpan(children: spans),
+    );
+  }
+
   Widget _buildMessageBubble(ChatMessageModel message) {
     final isUser = message.isUser;
+    final screenWidth = MediaQuery.sizeOf(context).width;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
           if (!isUser) ...[
             Container(
-              width: 32,
-              height: 32,
+              width: 30,
+              height: 30,
               margin: const EdgeInsets.only(right: 8, top: 2),
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
@@ -473,7 +511,7 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
                   'C',
                   style: TextStyle(
                     color: AppColors.primaryGold,
-                    fontSize: 15,
+                    fontSize: 14,
                     fontWeight: FontWeight.w900,
                     fontFamily: 'serif',
                   ),
@@ -481,13 +519,16 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
               ),
             ),
           ],
-          Flexible(
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: (screenWidth * 0.80).clamp(240.0, 520.0),
+            ),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
               decoration: BoxDecoration(
                 color: isUser
                     ? AppColors.primaryGold
-                    : AppColors.glassBg.withValues(alpha: 0.92),
+                    : AppColors.glassBg.withValues(alpha: 0.94),
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(16),
                   topRight: const Radius.circular(16),
@@ -502,7 +543,7 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.3),
+                    color: Colors.black.withValues(alpha: 0.25),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
@@ -511,22 +552,14 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    message.text,
-                    style: TextStyle(
-                      color: isUser ? const Color(0xFF1A1A1A) : AppColors.textLight,
-                      fontSize: 13.5,
-                      height: 1.45,
-                      fontWeight: isUser ? FontWeight.w600 : FontWeight.w400,
-                    ),
-                  ),
+                  _buildFormattedText(message.text, isUser),
                   if (message.actionRoute != null && message.actionLabel != null) ...[
                     const SizedBox(height: 10),
                     InkWell(
                       onTap: () => context.go(message.actionRoute!),
                       borderRadius: BorderRadius.circular(8),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+                        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
                         decoration: BoxDecoration(
                           color: AppColors.primaryGold.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(8),
@@ -537,12 +570,15 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
                           children: [
                             const Icon(Icons.arrow_circle_right_rounded, color: AppColors.primaryGold, size: 16),
                             const SizedBox(width: 6),
-                            Text(
-                              message.actionLabel!,
-                              style: const TextStyle(
-                                color: AppColors.primaryGold,
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
+                            Flexible(
+                              child: Text(
+                                message.actionLabel!,
+                                style: const TextStyle(
+                                  color: AppColors.primaryGold,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ),
                           ],
@@ -556,14 +592,14 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
           ),
           if (isUser) ...[
             Container(
-              width: 32,
-              height: 32,
+              width: 30,
+              height: 30,
               margin: const EdgeInsets.only(left: 8, top: 2),
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Color(0xFF1E293B),
               ),
-              child: const Icon(Icons.person, color: AppColors.primaryGold, size: 18),
+              child: const Icon(Icons.person, color: AppColors.primaryGold, size: 17),
             ),
           ],
         ],
@@ -578,8 +614,8 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 32,
-            height: 32,
+            width: 30,
+            height: 30,
             margin: const EdgeInsets.only(right: 8),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
@@ -589,7 +625,7 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
             child: const Center(
               child: Text(
                 'C',
-                style: TextStyle(color: AppColors.primaryGold, fontSize: 15, fontWeight: FontWeight.w900),
+                style: TextStyle(color: AppColors.primaryGold, fontSize: 14, fontWeight: FontWeight.w900),
               ),
             ),
           ),
@@ -613,7 +649,7 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
                 ),
                 SizedBox(width: 10),
                 Text(
-                  'AI Caddie đang suy nghĩ...',
+                  'Đang tìm câu trả lời cho bạn...',
                   style: TextStyle(color: AppColors.textMuted, fontSize: 12),
                 ),
               ],
@@ -635,7 +671,7 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
       margin: const EdgeInsets.only(bottom: 8),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
         itemCount: prompts.length,
         itemBuilder: (context, index) {
           final prompt = prompts[index];
@@ -672,7 +708,7 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
 
   Widget _buildInputArea() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+      padding: const EdgeInsets.fromLTRB(14, 8, 14, 12),
       decoration: BoxDecoration(
         color: AppColors.userBgDark,
         border: Border(
@@ -683,6 +719,7 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
         ),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Expanded(
             child: Container(
@@ -690,11 +727,12 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
                 color: AppColors.glassBg,
                 borderRadius: BorderRadius.circular(24),
                 border: Border.all(
-                  color: AppColors.primaryGold.withValues(alpha: 0.4),
+                  color: AppColors.primaryGold.withValues(alpha: 0.45),
                   width: 1,
                 ),
               ),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(width: 14),
                   const Icon(Icons.chat_bubble_outline_rounded, color: AppColors.primaryGold, size: 18),
@@ -702,17 +740,20 @@ class _UserAiAssistantScreenState extends State<UserAiAssistantScreen> {
                   Expanded(
                     child: TextField(
                       controller: _inputController,
+                      maxLines: 4,
+                      minLines: 1,
                       style: const TextStyle(color: AppColors.textLight, fontSize: 13.5),
                       decoration: const InputDecoration(
-                        hintText: 'Hỏi AI Caddie về phòng Bay, F&B, ưu đãi...',
-                        hintStyle: TextStyle(color: AppColors.textMuted, fontSize: 12.5),
+                        hintText: 'Nhắn cho trợ lý (ví dụ: giá phòng, đồ uống)...',
+                        hintStyle: TextStyle(color: AppColors.textMuted, fontSize: 12),
                         border: InputBorder.none,
                         isDense: true,
-                        contentPadding: EdgeInsets.symmetric(vertical: 11),
+                        contentPadding: EdgeInsets.symmetric(vertical: 10),
                       ),
                       onSubmitted: (_) => _sendMessage(),
                     ),
                   ),
+                  const SizedBox(width: 8),
                 ],
               ),
             ),

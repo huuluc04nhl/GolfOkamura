@@ -87,8 +87,8 @@ void main() {
       expect(find.byIcon(Icons.send_rounded), findsOneWidget);
 
       // Xác nhận các gợi ý câu hỏi nhanh thân thiện (Friendly Quick Prompts)
-      expect(find.text('Tư vấn phòng VIP TwoVision'), findsOneWidget);
-      expect(find.text('Bảng giá các loại Bay hôm nay'), findsOneWidget);
+      expect(find.text('Tư vấn chọn phòng chơi phù hợp'), findsOneWidget);
+      expect(find.text('Bảng giá thuê phòng hôm nay'), findsOneWidget);
     });
 
     testWidgets('Giao diện AiChatBottomSheet tối ưu khung hình Mobile và không lộ cấu hình API Key', (tester) async {
@@ -238,11 +238,11 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      expect(find.text('AI CADDIE CHUYÊN SÂU'), findsOneWidget);
-      expect(find.text('Tư vấn phòng Bay'), findsOneWidget);
-      expect(find.text('Bảng giá & Giờ vàng'), findsOneWidget);
-      expect(find.text('Thực đơn F&B'), findsOneWidget);
-      expect(find.text('Hạng hội viên'), findsOneWidget);
+      expect(find.text('TRỢ LÝ OKAMURA'), findsOneWidget);
+      expect(find.text('Chọn phòng phù hợp'), findsOneWidget);
+      expect(find.text('Bảng giá & Giờ đẹp'), findsOneWidget);
+      expect(find.text('Đồ ăn & Nước uống'), findsOneWidget);
+      expect(find.text('Ưu đãi thành viên'), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget);
     });
   });

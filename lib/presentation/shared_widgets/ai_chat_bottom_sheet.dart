@@ -81,12 +81,12 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
   String? _activeAutoActionLabel;
 
   final List<String> _initialSuggestions = [
-    'Tư vấn phòng VIP TwoVision',
-    'Bảng giá các loại Bay hôm nay',
+    'Tư vấn chọn phòng chơi phù hợp',
+    'Bảng giá thuê phòng hôm nay',
     'Chơi 18 hố mất mấy tiếng?',
-    'Thuê bộ gậy TaylorMade Qi10',
-    'Thực đơn bia tháp & ẩm thực tận Bay',
-    'Kiểm tra vé & lịch đặt của tôi',
+    'Có gậy tập cho mượn không?',
+    'Thực đơn bia tháp & đồ ăn nhẹ',
+    'Kiểm tra lịch đặt của tôi',
   ];
 
   @override
@@ -96,11 +96,11 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
       ChatMessageModel(
         id: 'welcome',
         isUser: false,
-        text: 'Dạ kính chào Quý khách đến với **Okamura Golfzon Lounge**! Em là **AI Caddie** đồng hành riêng của mình hôm nay.\n\nEm luôn sẵn sàng hỗ trợ Quý khách:\n• Tư vấn & tự động mở trang đặt Bay TwoVision NX 3D phù hợp\n• Báo giá ca chơi & thời gian hoàn thành 18 hố\n• Tự động gửi yêu cầu gọi phục vụ, xin thêm đá, khăn lạnh tận Bay\n• Đặt món, gọi bia tháp & ẩm thực phục vụ tận phòng\n\nQuý khách chỉ cần trò chuyện, em sẽ tự động xử lý mọi thao tác cho mình ạ!',
+        text: 'Dạ xin chào Quý khách! Em là Trợ lý ảo của Okamura Golfzon.\n\nEm luôn sẵn sàng hỗ trợ Quý khách:\n• Gợi ý phòng chơi 3D phù hợp nhất với bạn\n• Báo giá thuê phòng & thời gian chơi 18 hố\n• Gọi nhân viên mang thêm đá, khăn lạnh tận phòng\n• Đặt món, gọi bia tươi & đồ ăn nhẹ mang đến tận nơi\n\nQuý khách đang cần em hỗ trợ điều gì hôm nay ạ?',
         timestamp: DateTime.now(),
         quickPrompts: _initialSuggestions,
         actionRoute: '/booking',
-        actionLabel: 'Chuyển Đến Đặt Phòng Ngay →',
+        actionLabel: 'Đặt Phòng Chơi Ngay →',
       ),
     );
   }
@@ -487,8 +487,8 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
           Expanded(
             child: Text(
               _activeAutoActionLabel != null && _activeAutoActionLabel!.isNotEmpty
-                  ? 'AI Caddie đang tự động mở: $_activeAutoActionLabel (${_autoActionCountdown}s)...'
-                  : 'AI Caddie đang tự động mở trang (${_autoActionCountdown}s)...',
+                  ? 'Đang chuyển đến: $_activeAutoActionLabel (${_autoActionCountdown}s)...'
+                  : 'Đang chuyển trang (${_autoActionCountdown}s)...',
               style: const TextStyle(
                 color: AppColors.primaryGold,
                 fontSize: 12,
@@ -681,7 +681,7 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
                     const SizedBox(width: 6),
                     Flexible(
                       child: Text(
-                        '⚡ AI đã tự động gửi: ${message.serviceRequestTitle}',
+                        '✓ Đã gửi yêu cầu: ${message.serviceRequestTitle}',
                         style: const TextStyle(
                           color: Color(0xFF6EE7B7),
                           fontSize: 11,

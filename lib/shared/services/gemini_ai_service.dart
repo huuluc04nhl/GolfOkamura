@@ -217,7 +217,7 @@ Ví dụ:
       switch (actionType) {
         case 'BOOKING':
           actionRoute = '/booking';
-          actionLabel = 'Chuyển Đến Đặt Phòng Ngay →';
+          actionLabel = 'Đặt phòng chơi ngay →';
           break;
         case 'SERVICES':
           actionRoute = '/services';
@@ -225,14 +225,14 @@ Ví dụ:
           break;
         case 'MY_BOOKINGS':
           actionRoute = '/my-bookings';
-          actionLabel = 'Xem Vé & Lịch Đặt Của Tôi →';
+          actionLabel = 'Xem Vé & Lịch Đặt Của Bạn →';
           break;
         case 'CALL_WAITER':
-          serviceRequestTitle = 'Yêu cầu phục vụ & hỗ trợ nhân viên tại Bay';
+          serviceRequestTitle = 'Nhân viên hỗ trợ tận phòng';
           break;
         case 'HOME':
           actionRoute = '/';
-          actionLabel = 'Về Trang Chủ Okamura →';
+          actionLabel = 'Về trang chủ →';
           break;
       }
     }
@@ -275,7 +275,7 @@ Ví dụ:
           lowerCombined.contains('vip suite') ||
           lowerCombined.contains('bay ')) {
         actionRoute = '/booking';
-        actionLabel = 'Chuyển Đến Đặt Phòng Ngay →';
+        actionLabel = 'Đặt phòng chơi ngay →';
       } else if (lowerCombined.contains('đồ uống') ||
           lowerCombined.contains('tháp bia') ||
           lowerCombined.contains('bia') ||
@@ -292,7 +292,7 @@ Ví dụ:
           lowerCombined.contains('đổi giờ') ||
           lowerCombined.contains('hủy phòng')) {
         actionRoute = '/my-bookings';
-        actionLabel = 'Xem Vé & Lịch Đặt Của Tôi →';
+        actionLabel = 'Xem Vé & Lịch Đặt Của Bạn →';
       }
     }
 
@@ -370,73 +370,73 @@ Ví dụ:
         'Tư vấn chế độ chơi TwoVision',
       ];
     } else if (p.contains('giá') || p.contains('bảng giá') || p.contains('bao nhiêu')) {
-      reply = '''Dạ, em xin gửi Quý khách bảng giá giờ chơi ưu đãi tại Okamura Golfzon Lounge:
+      reply = '''Dạ, em xin gửi Quý khách bảng giá thuê phòng chơi golf 3D hôm nay:
 
-• Standard 3D: 350.000đ/giờ (chuẩn thi đấu quốc tế)
-• Dual Tee 2 chiều: 400.000đ/giờ (hỗ trợ golfer thuận tay trái)
-• VIP TwoVision NX: 550.000đ/giờ (màn cong Panorama, quầy bar riêng)
-• Connecting Suite: 750.000đ/giờ (phòng đôi giao lưu 6-10 người)
-• GDR Driving Range AI: 250.000đ/giờ (chuyên sâu luyện swing)
+• Phòng tiêu chuẩn 3D: 350.000đ/giờ (chơi 18 hố như ngoài sân thật)
+• Phòng chơi 2 chiều: 400.000đ/giờ (thoải mái cho cả người thuận tay trái)
+• Phòng VIP màn hình lớn: 550.000đ/giờ (màn cong sắc nét, ghế sofa êm ái)
+• Phòng tiệc đôi: 750.000đ/giờ (thông 2 phòng cho nhóm bạn 6-10 người)
+• Làn tập riêng: 250.000đ/giờ (chuyên tập đánh xa và chỉnh tư thế)
 
-Em đang tự động mở trang Đặt phòng để Quý khách xem chi tiết và giữ chỗ ngay ạ!''';
+Em đang mở trang Đặt phòng để Quý khách xem khung giờ và giữ chỗ ngay nhé ạ!''';
       actionRoute = '/booking';
-      actionLabel = 'Chuyển Đến Đặt Phòng Ngay →';
+      actionLabel = 'Đặt phòng chơi ngay →';
       dynamicSuggestions = [
-        'Đặt Bay VIP TwoVision',
+        'Đặt phòng VIP màn hình lớn',
         'Chơi 18 hố mất mấy tiếng?',
-        'Xem menu đồ uống phục vụ tận Bay',
+        'Xem menu đồ uống mang tận phòng',
       ];
     } else if (p.contains('đặt phòng') || p.contains('bay') || p.contains('trống') || p.contains('chọn phòng')) {
-      reply = '''Dạ hiện tổ hợp Okamura có 12 Bay công nghệ cao TwoVision NX 3D đang sẵn sàng phục vụ. Em đang tự động chuyển Quý khách đến giao diện Đặt Bay để chọn khung giờ ưng ý nhất!''';
+      reply = '''Dạ hiện quán có sẵn các phòng chơi golf 3D màn hình lớn với đầy đủ trang thiết bị gậy, bóng và giày tập miễn phí. Em đang mở trang Đặt phòng để Quý khách chọn giờ chơi ưng ý nhé ạ!''';
       actionRoute = '/booking';
-      actionLabel = 'Chuyển Đến Đặt Phòng Ngay →';
+      actionLabel = 'Đặt phòng chơi ngay →';
       dynamicSuggestions = [
-        'Bảng giá các loại Bay',
-        'Thuê bộ gậy TaylorMade Qi10',
-        'Menu đồ ăn và bia tháp',
+        'Bảng giá các loại phòng',
+        'Có sẵn gậy tập không?',
+        'Menu đồ ăn và bia tươi',
       ];
     } else if (p.contains('menu') || p.contains('ăn') || p.contains('uống') || p.contains('bia') || p.contains('bar')) {
-      reply = '''Dạ quầy Bar & Bếp Okamura Lounge hân hạnh phục vụ tận Bay chơi của Quý khách:
+      reply = '''Dạ quán có phục vụ đồ ăn và nước uống mang tận phòng chơi cho Quý khách:
 
-• Tháp bia Sapporo Gold 2.5L: 400.000đ
-• Bia Tiger Bạc lon ướp lạnh: 30.000đ
-• Cà phê pha máy Arabica thơm nồng: 45.000đ
-• Bò Bít tết Úc nướng đá & Gà rán sốt cay Hàn Quốc.
+• Tháp bia Sapporo tươi 2.5L mát lạnh: 400.000đ
+• Bia lon Tiger Bạc ướp lạnh: 30.000đ
+• Cà phê pha máy thơm ngon: 45.000đ
+• Bò Bít tết nướng đá & Gà rán giòn sốt cay.
 
-Em đang tự động mở Thực đơn để Quý khách chọn món gọi ngay tận phòng!''';
+Em đang mở Thực đơn để Quý khách chọn món nhé ạ!''';
       actionRoute = '/services';
       actionLabel = 'Mở Thực Đơn Quầy Bar & Bếp →';
       dynamicSuggestions = [
-        'Tháp bia Sapporo có sẵn không?',
+        'Tháp bia có sẵn không?',
         'Đặt phòng chơi 2 tiếng',
-        'Hỏi về set gậy thuê',
+        'Có gậy tập cho mượn không?',
       ];
     } else if (p.contains('vé') || p.contains('lịch') || p.contains('mã pin') || p.contains('hủy') || p.contains('đổi')) {
-      reply = '''Dạ em đang tự động mở mục "Vé của tôi" để Quý khách tra cứu toàn bộ vé đã đặt, kiểm tra mã PIN mở phòng hoặc đổi giờ chơi trực tiếp ạ.''';
+      reply = '''Dạ em đang mở mục xem lịch đặt phòng để Quý khách kiểm tra mã mở phòng hoặc đổi sang giờ chơi khác trực tiếp ạ.''';
       actionRoute = '/my-bookings';
-      actionLabel = 'Xem Vé & Lịch Đặt Của Tôi →';
+      actionLabel = 'Xem Vé & Lịch Đặt Của Bạn →';
       dynamicSuggestions = [
         'Hướng dẫn đổi giờ chơi',
-        'Cách nhập mã PIN mở Bay',
+        'Cách nhận phòng khi đến quán',
         'Đặt thêm phòng mới',
       ];
     } else {
-      reply = '''Dạ em là AI Caddie — luôn sẵn sàng đồng hành cùng Quý khách 24/7!
+      reply = '''Dạ em là Trợ lý ảo của Okamura — luôn sẵn sàng hỗ trợ Quý khách 24/7!
 
-Em có thể hỗ trợ Quý khách:
-• Tư vấn & tự động mở trang đặt Bay chơi Golfzon TwoVision
-• Báo giá chi tiết & ước tính thời gian chơi 18 hố
-• Giới thiệu set gậy TaylorMade Qi10 & hỗ trợ Caddie
-• Tự động gửi yêu cầu phục vụ tận phòng (khăn lạnh, xô đá, gọi nhân viên)
-• Mở thực đơn đồ uống & ẩm thực quầy Bar.
+Em có thể giúp Quý khách:
+• Gợi ý phòng chơi 3D phù hợp với bạn
+• Báo giá thuê phòng & thời gian chơi
+• Cho mượn gậy tập, giày tập miễn phí
+• Gọi nhân viên mang thêm đá, khăn lạnh tận phòng
+• Mở thực đơn đồ ăn & nước uống mang tận nơi.
 
 Quý khách muốn em hỗ trợ điều gì trước ạ?''';
       actionRoute = '/booking';
-      actionLabel = 'Chuyển Đến Đặt Phòng Ngay →';
+      actionLabel = 'Đặt phòng chơi ngay →';
       dynamicSuggestions = [
-        'Bảng giá các loại Bay hôm nay',
-        'Tư vấn phòng VIP TwoVision',
-        'Xem menu đồ uống quầy Bar',
+        'Bảng giá thuê phòng hôm nay',
+        'Tư vấn chọn phòng VIP',
+        'Xem menu đồ uống mang tận phòng',
       ];
     }
 

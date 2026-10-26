@@ -116,13 +116,15 @@ class UserShell extends StatelessWidget {
         ),
       ),
 
-      // THANH ĐIỀU HƯỚNG ĐÁY (4 TAB ĐỒNG ĐỀU KÍCH THƯỚC 100%)
-      bottomNavigationBar: Container(
-        width: double.infinity,
-        color: AppColors.userBgDark,
-        alignment: Alignment.bottomCenter,
-        height: 70 + MediaQuery.paddingOf(context).bottom,
-        child: ConstrainedBox(
+      // THANH ĐIỀU HƯỚNG ĐÁY (4 TAB ĐỒNG ĐỀU KÍCH THƯỚC 100%) - Ẩn khi vào màn hình AI hỗ trợ chuyên sâu
+      bottomNavigationBar: isAiScreen
+          ? null
+          : Container(
+              width: double.infinity,
+              color: AppColors.userBgDark,
+              alignment: Alignment.bottomCenter,
+              height: 70 + MediaQuery.paddingOf(context).bottom,
+              child: ConstrainedBox(
           constraints: BoxConstraints(
             maxWidth: isWideScreen ? 600 : double.infinity,
           ),
