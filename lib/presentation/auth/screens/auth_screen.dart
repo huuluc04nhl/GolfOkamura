@@ -338,7 +338,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF070B14),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFF1E293B)),
       ),
       child: TabBar(
@@ -346,22 +346,31 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
         onTap: (index) => setState(() {}),
         indicator: BoxDecoration(
           color: AppColors.primaryGold,
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(14),
         ),
         indicatorSize: TabBarIndicatorSize.tab,
         labelColor: Colors.black,
         unselectedLabelColor: Colors.white60,
-        labelStyle: TextStyle(
-          fontWeight: FontWeight.w900,
-          fontSize: isNarrow ? 11.5 : 13,
-        ),
-        unselectedLabelStyle: TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: isNarrow ? 11.5 : 13,
-        ),
-        tabs: [
-          const Tab(text: 'ĐĂNG NHẬP'),
-          Tab(text: isNarrow ? 'ĐĂNG KÝ' : 'ĐĂNG KÝ HỘI VIÊN'),
+        labelPadding: const EdgeInsets.symmetric(horizontal: 6),
+        tabs: const [
+          Tab(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                'ĐĂNG NHẬP',
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+              ),
+            ),
+          ),
+          Tab(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                'ĐĂNG KÝ HỘI VIÊN',
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -377,7 +386,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
           _buildTextField(
             controller: _loginUsernameController,
             label: 'Tên đăng nhập / Số điện thoại / Email',
-            hintText: 'admin hoặc 0354378606',
+            hintText: 'admin hoặc 0912345678',
             icon: Icons.person_outline_rounded,
             validator: (val) {
               if (val == null || val.trim().isEmpty) {
@@ -459,7 +468,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
           _buildTextField(
             controller: _regPhoneController,
             label: 'Số điện thoại liên hệ *',
-            hintText: 'Ví dụ: 0354378606',
+            hintText: 'Ví dụ: 0912345678',
             icon: Icons.phone_android_rounded,
             keyboardType: TextInputType.phone,
             validator: (val) {
@@ -638,21 +647,21 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
             suffixIcon: suffixIcon,
             filled: true,
             fillColor: const Color(0xFF131C31),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(24),
               borderSide: const BorderSide(color: Color(0xFF1E293B)),
             ),
             focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(24),
               borderSide: const BorderSide(color: AppColors.primaryGold, width: 1.5),
             ),
             errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(24),
               borderSide: const BorderSide(color: Colors.redAccent),
             ),
             focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(24),
               borderSide: const BorderSide(color: Colors.redAccent, width: 1.5),
             ),
           ),

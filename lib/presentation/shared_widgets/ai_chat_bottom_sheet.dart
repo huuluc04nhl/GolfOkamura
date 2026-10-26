@@ -363,8 +363,8 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Container(
-                                width: 5,
-                                height: 5,
+                                width: 6,
+                                height: 6,
                                 decoration: const BoxDecoration(
                                   color: Colors.greenAccent,
                                   shape: BoxShape.circle,
@@ -373,11 +373,11 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
                               const SizedBox(width: 4),
                               const Flexible(
                                 child: Text(
-                                  'GEMINI 24/7',
+                                  'Trực tuyến 24/7',
                                   style: TextStyle(
                                     color: Colors.greenAccent,
-                                    fontSize: 8.5,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 9.0,
+                                    fontWeight: FontWeight.w700,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,

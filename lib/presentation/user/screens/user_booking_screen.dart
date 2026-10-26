@@ -1378,8 +1378,9 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                         ),
                         filled: true,
                         fillColor: AppColors.userSurfaceDark,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(24),
                           borderSide: BorderSide.none,
                         ),
                       ),
@@ -1407,8 +1408,9 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                         ),
                         filled: true,
                         fillColor: AppColors.userSurfaceDark,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(24),
                           borderSide: BorderSide.none,
                         ),
                       ),
@@ -1435,8 +1437,9 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                         ),
                         filled: true,
                         fillColor: AppColors.userSurfaceDark,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(24),
                           borderSide: BorderSide.none,
                         ),
                       ),
@@ -1693,26 +1696,51 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                         height: 1.35,
                       ),
                     ),
-                    const SizedBox(height: 6),
-                    GestureDetector(
-                      onTap: () => context.push('/auth'),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Text(
-                            'Đã có tài khoản VIP? ',
-                            style: TextStyle(color: AppColors.textMuted, fontSize: 11),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 6,
+                      children: [
+                        InkWell(
+                          onTap: () => context.push('/auth'),
+                          borderRadius: BorderRadius.circular(6),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              Icon(Icons.card_membership_rounded, color: AppColors.primaryGold, size: 14),
+                              SizedBox(width: 4),
+                              Text(
+                                'Đăng ký Hội viên VIP →',
+                                style: TextStyle(
+                                  color: AppColors.primaryGold,
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
                           ),
-                          Text(
-                            'Đăng nhập ngay →',
-                            style: TextStyle(
-                              color: AppColors.primaryGold,
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w700,
-                            ),
+                        ),
+                        InkWell(
+                          onTap: () => context.push('/auth'),
+                          borderRadius: BorderRadius.circular(6),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: const [
+                              Icon(Icons.login_rounded, color: Colors.white70, size: 14),
+                              SizedBox(width: 4),
+                              Text(
+                                'Đăng nhập',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w600,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -1931,20 +1959,21 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                   prefixIcon: const Icon(Icons.person_rounded, color: AppColors.primaryGold, size: 20),
                   filled: true,
                   fillColor: AppColors.userCardDark,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(24),
                     borderSide: const BorderSide(color: AppColors.userBorder),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(24),
                     borderSide: const BorderSide(color: AppColors.userBorder),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.primaryGold),
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: const BorderSide(color: AppColors.primaryGold, width: 1.5),
                   ),
                   errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(24),
                     borderSide: const BorderSide(color: Colors.redAccent),
                   ),
                 ),
@@ -1952,10 +1981,6 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                   final trimmed = val?.trim() ?? '';
                   if (trimmed.isEmpty) return 'Vui lòng nhập họ và tên';
                   if (trimmed.length < 2) return 'Họ và tên phải có ít nhất 2 ký tự';
-                  final nameRegex = RegExp(r"^[a-zA-ZÀ-ỹ\s]+$");
-                  if (!nameRegex.hasMatch(trimmed)) {
-                    return 'Họ và tên chỉ được chứa chữ cái, không chứa số hay ký tự đặc biệt';
-                  }
                   return null;
                 },
               ),
@@ -1974,68 +1999,67 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                   prefixIcon: const Icon(Icons.phone_iphone_rounded, color: AppColors.primaryGold, size: 20),
                   filled: true,
                   fillColor: AppColors.userCardDark,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(24),
                     borderSide: const BorderSide(color: AppColors.userBorder),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(24),
                     borderSide: const BorderSide(color: AppColors.userBorder),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.primaryGold),
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: const BorderSide(color: AppColors.primaryGold, width: 1.5),
                   ),
                   errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(24),
                     borderSide: const BorderSide(color: Colors.redAccent),
                   ),
                 ),
                 validator: (val) {
-                  final trimmed = val?.trim() ?? '';
+                  final trimmed = val?.replaceAll(RegExp(r'[\s\.\-]'), '') ?? '';
                   if (trimmed.isEmpty) return 'Vui lòng nhập số điện thoại';
-                  final phoneRegex = RegExp(r'^(03|05|07|08|09)\d{8}$');
-                  if (!phoneRegex.hasMatch(trimmed)) {
-                    return 'Số điện thoại phải gồm 10 chữ số nhà mạng VN (03, 05, 07, 08, 09)';
-                  }
+                  if (trimmed.length < 9) return 'Số điện thoại tối thiểu 9-10 chữ số';
                   return null;
                 },
               ),
               const SizedBox(height: 12),
 
-              // Email nhận hóa đơn/vé
+              // Email nhận hóa đơn/vé (Không bắt buộc)
               TextFormField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
                 style: const TextStyle(color: Colors.white, fontSize: 13.5),
                 decoration: InputDecoration(
-                  labelText: 'Email nhận vé điện tử & hóa đơn (*)',
+                  labelText: 'Email nhận vé điện tử (Không bắt buộc)',
                   hintText: 'Ví dụ: customer@gmail.com',
                   labelStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13),
                   hintStyle: TextStyle(color: AppColors.textMuted.withValues(alpha: 0.4), fontSize: 12.5),
                   prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primaryGold, size: 20),
                   filled: true,
                   fillColor: AppColors.userCardDark,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(24),
                     borderSide: const BorderSide(color: AppColors.userBorder),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(24),
                     borderSide: const BorderSide(color: AppColors.userBorder),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.primaryGold),
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: const BorderSide(color: AppColors.primaryGold, width: 1.5),
                   ),
                   errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(24),
                     borderSide: const BorderSide(color: Colors.redAccent),
                   ),
                 ),
                 validator: (val) {
                   final trimmed = val?.trim() ?? '';
-                  if (trimmed.isEmpty) return 'Vui lòng nhập email nhận vé điện tử';
+                  if (trimmed.isEmpty) return null; // Không bắt buộc
                   final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
                   if (!emailRegex.hasMatch(trimmed)) {
                     return 'Email không đúng định dạng (ví dụ: golfer@gmail.com)';
@@ -2055,17 +2079,18 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                   prefixIcon: const Icon(Icons.edit_note_rounded, color: AppColors.primaryGold, size: 20),
                   filled: true,
                   fillColor: AppColors.userCardDark,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(24),
                     borderSide: const BorderSide(color: AppColors.userBorder),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(24),
                     borderSide: const BorderSide(color: AppColors.userBorder),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: const BorderSide(color: AppColors.primaryGold),
+                    borderRadius: BorderRadius.circular(24),
+                    borderSide: const BorderSide(color: AppColors.primaryGold, width: 1.5),
                   ),
                 ),
               ),

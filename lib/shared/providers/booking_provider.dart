@@ -292,9 +292,33 @@ class BookingProvider extends ChangeNotifier {
 
     // Kiểm tra xem số điện thoại đã tồn tại trên Firebase chưa
     if (autoSyncFirebase) {
-      final existing = await FirebaseRealtimeService.fetchGolfer(cleanPhone);
-      if (existing != null) {
-        return {'success': false, 'message': 'Số điện thoại này đã được đăng ký thành viên!'};
+      try {
+        final existing = await FirebaseRealtimeService.fetchGolfer(cleanPhone);
+        if (existing != null) {
+          // Nếu mật khẩu khớp hoặc tài khoản cũ là guest/khách vãng lai: tự động nâng cấp & đăng nhập luôn
+          if (existing.password == password.trim() || existing.isGuest || existing.password.isEmpty) {
+            final upgraded = existing.copyWith(
+              name: name.trim().isNotEmpty ? name.trim() : existing.name,
+              email: email?.trim().isNotEmpty == true ? email!.trim() : existing.email,
+              role: 'customer',
+              password: password.trim(),
+            );
+            await FirebaseRealtimeService.saveGolfer(upgraded);
+            _currentGolfer = upgraded;
+            _isLoggedIn = true;
+            await StorageService.saveGolferProfile(upgraded);
+            await StorageService.setLoggedIn(true);
+            await StorageService.saveCustomerProfile(upgraded.name, upgraded.phone);
+            notifyListeners();
+            return {'success': true, 'role': 'customer', 'user': upgraded};
+          }
+          return {
+            'success': false,
+            'message': 'Số điện thoại này đã có tài khoản. Vui lòng chuyển sang tab Đăng Nhập!',
+          };
+        }
+      } catch (e) {
+        debugPrint('Lỗi kiểm tra Firebase golfer: $e');
       }
     }
 
