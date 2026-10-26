@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +12,7 @@ import '../../shared/services/gemini_ai_service.dart';
 import 'language_selector_pill.dart';
 
 /// Hộp thoại Chatbot Trợ lý AI Caddie phong cách Quiet Luxury cho Okamura Golfzon
+/// Hỗ trợ Auto-Execution: Tự động điều hướng và tự động gửi yêu cầu phục vụ thay cho khách hàng
 class AiChatBottomSheet extends StatefulWidget {
   const AiChatBottomSheet({super.key});
 
@@ -72,6 +74,12 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
   final List<ChatMessageModel> _messages = [];
   bool _isAiTyping = false;
 
+  // Quản lý cơ chế tự động thực thi thao tác (Auto-Execution)
+  Timer? _autoActionTimer;
+  int _autoActionCountdown = 0;
+  String? _activeAutoRoute;
+  String? _activeAutoActionLabel;
+
   final List<String> _initialSuggestions = [
     'Tư vấn phòng VIP TwoVision',
     'Bảng giá các loại Bay hôm nay',
@@ -88,7 +96,7 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
       ChatMessageModel(
         id: 'welcome',
         isUser: false,
-        text: 'Dạ kính chào Quý khách đến với **Okamura Golfzon Lounge**! Em là **Okamura AI Caddie** đồng hành riêng của mình hôm nay.\n\nEm luôn sẵn sàng hỗ trợ Quý khách:\n• Tư vấn & chọn Bay chơi Golfzon TwoVision NX 3D phù hợp\n• Báo giá ca chơi & thời gian hoàn thành 18 hố\n• Cho thuê gậy TaylorMade cao cấp & hỗ trợ Caddie\n• Đặt món, gọi bia tháp & ẩm thực phục vụ tận phòng\n\nQuý khách muốn em hỗ trợ điều gì trước ạ?',
+        text: 'Dạ kính chào Quý khách đến với **Okamura Golfzon Lounge**! Em là **Okamura AI Caddie** đồng hành riêng của mình hôm nay.\n\nEm luôn sẵn sàng hỗ trợ Quý khách:\n• Tư vấn & tự động mở trang đặt Bay TwoVision NX 3D phù hợp\n• Báo giá ca chơi & thời gian hoàn thành 18 hố\n• Tự động gửi yêu cầu gọi phục vụ, xin thêm đá, khăn lạnh tận Bay\n• Đặt món, gọi bia tháp & ẩm thực phục vụ tận phòng\n\nQuý khách chỉ cần trò chuyện, em sẽ tự động xử lý mọi thao tác cho mình ạ!',
         timestamp: DateTime.now(),
         quickPrompts: _initialSuggestions,
         actionRoute: '/booking',
@@ -99,6 +107,7 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
 
   @override
   void dispose() {
+    _autoActionTimer?.cancel();
     _textController.dispose();
     _scrollController.dispose();
     super.dispose();
@@ -116,6 +125,56 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
     });
   }
 
+  /// Kích hoạt bộ đếm ngược tự động chuyển trang thay vì bắt khách tự bấm
+  void _startAutoExecution(String route, String label) {
+    _autoActionTimer?.cancel();
+    setState(() {
+      _autoActionCountdown = 2;
+      _activeAutoRoute = route;
+      _activeAutoActionLabel = label;
+    });
+
+    _autoActionTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (!mounted) {
+        timer.cancel();
+        return;
+      }
+      if (_autoActionCountdown > 1) {
+        setState(() {
+          _autoActionCountdown--;
+        });
+      } else {
+        timer.cancel();
+        setState(() {
+          _autoActionCountdown = 0;
+        });
+        Navigator.pop(context);
+        context.go(route);
+      }
+    });
+  }
+
+  void _cancelAutoExecution() {
+    _autoActionTimer?.cancel();
+    setState(() {
+      _autoActionCountdown = 0;
+      _activeAutoRoute = null;
+      _activeAutoActionLabel = null;
+    });
+  }
+
+  void _executeNow() {
+    if (_activeAutoRoute == null) return;
+    final target = _activeAutoRoute!;
+    _autoActionTimer?.cancel();
+    setState(() {
+      _autoActionCountdown = 0;
+      _activeAutoRoute = null;
+    });
+    Navigator.pop(context);
+    context.go(target);
+  }
+
   Future<void> _handleSendMessage([String? quickText]) async {
     final query = quickText ?? _textController.text.trim();
     if (query.isEmpty || _isAiTyping) return;
@@ -123,6 +182,8 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
     if (quickText == null) {
       _textController.clear();
     }
+
+    _cancelAutoExecution();
 
     final provider = context.read<BookingProvider>();
     final userName = provider.currentGolfer.name;
@@ -154,11 +215,35 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
       );
 
       if (!mounted) return;
+
+      // 1. Tự động thao tác gửi yêu cầu hỗ trợ tận phòng nếu khách có nhu cầu
+      if (aiReply.serviceRequestTitle != null) {
+        String targetRoom = provider.selectedServiceRoomName ?? '';
+        if (targetRoom.isEmpty && provider.bookings.isNotEmpty) {
+          targetRoom = provider.bookings.first.roomName;
+        }
+        if (targetRoom.isEmpty) {
+          targetRoom = 'PHÒNG VIP 1';
+        }
+        await provider.submitQuickRoomRequest(
+          roomName: targetRoom,
+          requestTitle: aiReply.serviceRequestTitle!,
+        );
+      }
+
       setState(() {
         _messages.add(aiReply);
         _isAiTyping = false;
       });
       _scrollToBottom();
+
+      // 2. Tự động kích hoạt chuyển trang nếu câu hỏi có ý định điều hướng
+      if (aiReply.actionRoute != null) {
+        _startAutoExecution(
+          aiReply.actionRoute!,
+          aiReply.actionLabel ?? 'Chuyển trang ngay',
+        );
+      }
     } catch (_) {
       if (!mounted) return;
       setState(() {
@@ -168,6 +253,7 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
   }
 
   void _resetChatHistory() {
+    _cancelAutoExecution();
     _aiService.clearHistory();
     setState(() {
       _messages.clear();
@@ -244,7 +330,15 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
                         ],
                       ),
                       child: const Center(
-                        child: Icon(Icons.auto_awesome, color: Colors.black, size: 17),
+                        child: Text(
+                          'C',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            fontFamily: 'serif',
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 7),
@@ -305,20 +399,26 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
                         ],
                       ),
                     ),
-                    const LanguageSelectorPill(compact: true),
+
+                    // Bộ chọn ngôn ngữ
+                    const LanguageSelectorPill(),
                     const SizedBox(width: 4),
+
+                    // Nút làm mới lịch sử hội thoại
                     IconButton(
-                      tooltip: 'Làm mới cuộc trò chuyện',
-                      icon: const Icon(Icons.restart_alt_rounded, color: AppColors.textMuted, size: 20),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                      icon: const Icon(Icons.restart_alt_rounded, color: AppColors.textMuted, size: 18),
+                      tooltip: 'Làm mới hội thoại',
+                      padding: const EdgeInsets.all(4),
+                      constraints: const BoxConstraints(),
                       onPressed: _resetChatHistory,
                     ),
+                    const SizedBox(width: 4),
+
+                    // Nút đóng
                     IconButton(
-                      tooltip: 'Đóng',
-                      icon: const Icon(Icons.close_rounded, color: AppColors.textMuted, size: 22),
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                      icon: const Icon(Icons.close_rounded, color: Colors.white70, size: 20),
+                      padding: const EdgeInsets.all(4),
+                      constraints: const BoxConstraints(),
                       onPressed: () => Navigator.pop(context),
                     ),
                   ],
@@ -344,11 +444,99 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
             ),
           ),
 
+          // Banner tự động thao tác (Auto-Execution Countdown Banner)
+          if (_autoActionCountdown > 0 && _activeAutoRoute != null)
+            _buildAutoExecutionBanner(),
+
           // Dàn câu hỏi gợi ý nhanh (Quick Prompts)
           if (!_isAiTyping) _buildQuickPromptsBar(),
 
           // Thanh nhập câu hỏi
           _buildInputBar(),
+        ],
+      ),
+    );
+  }
+
+  /// Banner thông báo AI đang tự động thực thi thao tác cho khách
+  Widget _buildAutoExecutionBanner() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primaryGold.withValues(alpha: 0.25),
+            const Color(0xFF1E293B),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.primaryGold.withValues(alpha: 0.6)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(4),
+            decoration: const BoxDecoration(
+              color: AppColors.primaryGold,
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.bolt, color: Colors.black, size: 14),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              _activeAutoActionLabel != null && _activeAutoActionLabel!.isNotEmpty
+                  ? 'AI Caddie đang tự động mở: $_activeAutoActionLabel (${_autoActionCountdown}s)...'
+                  : 'AI Caddie đang tự động mở trang (${_autoActionCountdown}s)...',
+              style: const TextStyle(
+                color: AppColors.primaryGold,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          InkWell(
+            onTap: _executeNow,
+            borderRadius: BorderRadius.circular(6),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppColors.primaryGold,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Text(
+                'Mở ngay',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+          InkWell(
+            onTap: _cancelAutoExecution,
+            borderRadius: BorderRadius.circular(6),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white10,
+                borderRadius: BorderRadius.circular(6),
+                border: Border.all(color: Colors.white24),
+              ),
+              child: const Text(
+                'Ở lại chat',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 11,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -416,7 +604,15 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
                     shape: BoxShape.circle,
                   ),
                   child: const Center(
-                    child: Icon(Icons.sports_golf, color: Colors.black, size: 15),
+                    child: Text(
+                      'C',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 14,
+                        fontFamily: 'serif',
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -467,12 +663,47 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
             ],
           ),
 
-          // Action Button CTA nếu có (ví dụ: Đặt phòng ngay / Xem Menu)
+          // Thẻ xác nhận thao tác tự động gửi yêu cầu phục vụ tận phòng
+          if (!isUser && message.serviceRequestTitle != null) ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 36, top: 6),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF064E3B).withValues(alpha: 0.8),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFF10B981)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 14),
+                    const SizedBox(width: 6),
+                    Flexible(
+                      child: Text(
+                        '⚡ AI đã tự động gửi: ${message.serviceRequestTitle}',
+                        style: const TextStyle(
+                          color: Color(0xFF6EE7B7),
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+
+          // Action Button CTA nếu có
           if (!isUser && message.actionRoute != null && message.actionLabel != null) ...[
             Padding(
               padding: const EdgeInsets.only(left: 36, top: 6),
               child: InkWell(
                 onTap: () {
+                  _cancelAutoExecution();
                   Navigator.pop(context);
                   context.go(message.actionRoute!);
                 },
@@ -531,14 +762,22 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
               shape: BoxShape.circle,
             ),
             child: const Center(
-              child: Icon(Icons.sports_golf, color: AppColors.primaryGold, size: 15),
+              child: Text(
+                'C',
+                style: TextStyle(
+                  color: AppColors.primaryGold,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
+                  fontFamily: 'serif',
+                ),
+              ),
             ),
           ),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
             decoration: BoxDecoration(
               color: const Color(0xFF1E293B),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(color: AppColors.primaryGold.withValues(alpha: 0.2)),
             ),
             child: Row(
@@ -549,11 +788,6 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
                 _buildDot(1),
                 const SizedBox(width: 4),
                 _buildDot(2),
-                const SizedBox(width: 8),
-                const Text(
-                  'Okamura AI đang soạn câu trả lời...',
-                  style: TextStyle(color: AppColors.primaryGold, fontSize: 11),
-                ),
               ],
             ),
           ),

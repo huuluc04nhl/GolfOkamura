@@ -1257,7 +1257,7 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                               ),
                             ],
                           ),
-                          const Divider(color: AppColors.userBorder, height: 18),
+                          const Divider(color: AppColors.userBorder, height: 18, thickness: 1),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -1776,7 +1776,7 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                   ),
                 ],
               ),
-              const Divider(color: AppColors.userBorder, height: 20),
+              const Divider(color: AppColors.userBorder, height: 20, thickness: 1),
 
               // Ngày & Giờ
               Row(

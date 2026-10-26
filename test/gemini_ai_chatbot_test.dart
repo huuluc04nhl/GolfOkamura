@@ -177,7 +177,7 @@ void main() {
       expect(find.byType(TextField), findsOneWidget);
     });
 
-    testWidgets('AiFloatingButton hiển thị chuẩn phong cách Quiet Luxury', (tester) async {
+    testWidgets('AiFloatingButton hiển thị chuẩn phong cách Quiet Luxury hình tròn chữ C', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -191,7 +191,7 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      expect(find.text('AI CADDIE'), findsOneWidget);
+      expect(find.text('C'), findsOneWidget);
       expect(find.byIcon(Icons.auto_awesome), findsOneWidget);
     });
   });

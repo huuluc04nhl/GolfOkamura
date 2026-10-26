@@ -929,8 +929,8 @@ class _UserHomeScreenState extends State<UserHomeScreen>
     ];
 
     return Container(
-      height: 74,
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      constraints: const BoxConstraints(minHeight: 74),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
       decoration: BoxDecoration(
         color: AppColors.userCardDark,
         borderRadius: BorderRadius.circular(16),

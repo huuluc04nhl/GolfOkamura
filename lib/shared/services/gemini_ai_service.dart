@@ -72,11 +72,12 @@ KIẾN THỨC VẬN HÀNH & DỊCH VỤ CỦA OKAMURA GOLFZON:
    - Khách vãng lai có thể đặt mà không cần tạo tài khoản.
    - Khách có thể đổi ngày giờ chơi, xem mã PIN mở phòng tại mục "Vé của tôi".
 
-QUY TẮC TỰ ĐỘNG GẮN THAO TÁC HỆ THỐNG:
-Nếu nội dung câu hỏi/câu trả lời liên quan đến việc đặt phòng, mở menu gọi món, xem vé hoặc về trang chủ, bạn PHẢI chèn thẻ điều hướng hành động tương ứng ở cuối câu trả lời:
+QUY TẮC TỰ ĐỘNG THAO TÁC HỆ THỐNG (ACTION AUTO-DISPATCH):
+Nếu nội dung câu hỏi/câu trả lời liên quan đến việc đặt phòng, mở menu gọi món, xem vé, gọi phục vụ hoặc về trang chủ, bạn PHẢI chèn thẻ điều hướng hành động tương ứng ở cuối câu trả lời:
 - [ACTION:BOOKING] nếu khách muốn đặt phòng, kiểm tra phòng trống, chọn Bay, hỏi giá phòng.
 - [ACTION:SERVICES] nếu khách muốn xem menu, gọi đồ ăn, bia tháp, nước uống, thuê gậy, caddie.
 - [ACTION:MY_BOOKINGS] nếu khách muốn xem vé, đổi giờ chơi, hủy vé, tra cứu mã PIN mở phòng.
+- [ACTION:CALL_WAITER] nếu khách muốn gọi nhân viên, gọi phục vụ, xin thêm khăn lạnh, thêm đá, chỉnh nhiệt độ điều hòa, báo lỗi cảm biến, thêm bóng.
 - [ACTION:HOME] nếu khách muốn về trang chủ hoặc xem tổng quan tổ hợp.
 
 QUY TẮC TỰ ĐỘNG GỢI Ý CÂU HỎI TIẾP THEO (DYNAMIC FOLLOW-UP SUGGESTIONS):
@@ -182,12 +183,13 @@ Ví dụ:
     return _generateOfflineFallback(prompt);
   }
 
-  /// Phân tích nội dung phản hồi để gán CTA Action trực tiếp (Đặt phòng / Order món / Xem vé)
+  /// Phân tích nội dung phản hồi để gán CTA Action trực tiếp (Đặt phòng / Order món / Xem vé / Gọi phục vụ)
   /// và bóc tách các gợi ý câu hỏi tiếp theo dựa trên câu hỏi + câu trả lời
   ChatMessageModel _createMessageWithIntent(String text, String userPrompt) {
     String cleanText = text;
     String? actionRoute;
     String? actionLabel;
+    String? serviceRequestTitle;
     List<String> dynamicSuggestions = [];
 
     // 1. Phân tích thẻ gợi ý động [SUGGESTIONS: ...] do AI sinh ra
@@ -207,7 +209,7 @@ Ví dụ:
     }
 
     // 2. Phân tích thẻ hành động trực tiếp [ACTION:...] do AI sinh ra
-    final actionRegex = RegExp(r'\[ACTION:\s*(BOOKING|SERVICES|MY_BOOKINGS|HOME)\]', caseSensitive: false);
+    final actionRegex = RegExp(r'\[ACTION:\s*(BOOKING|SERVICES|MY_BOOKINGS|CALL_WAITER|HOME)\]', caseSensitive: false);
     final actionMatch = actionRegex.firstMatch(cleanText);
     if (actionMatch != null) {
       final actionType = actionMatch.group(1)?.toUpperCase();
@@ -225,6 +227,9 @@ Ví dụ:
           actionRoute = '/my-bookings';
           actionLabel = 'Xem Vé & Lịch Đặt Của Tôi →';
           break;
+        case 'CALL_WAITER':
+          serviceRequestTitle = 'Yêu cầu phục vụ & hỗ trợ nhân viên tại Bay';
+          break;
         case 'HOME':
           actionRoute = '/';
           actionLabel = 'Về Trang Chủ Okamura →';
@@ -232,9 +237,36 @@ Ví dụ:
       }
     }
 
-    // 3. Fallback phân tích ý định dựa trên từ khóa nếu AI chưa gắn thẻ ACTION
+    // 3. Phân tích ý định tự động nếu khách muốn gọi phục vụ / nhân viên / khăn lạnh / đá / cảm biến
     final lowerCombined = '$userPrompt $cleanText'.toLowerCase();
-    if (actionRoute == null) {
+    if (serviceRequestTitle == null) {
+      if (lowerCombined.contains('gọi phục vụ') ||
+          lowerCombined.contains('gọi nhân viên') ||
+          lowerCombined.contains('hỗ trợ tận bay') ||
+          lowerCombined.contains('khăn lạnh') ||
+          lowerCombined.contains('thêm đá') ||
+          lowerCombined.contains('nước đá') ||
+          lowerCombined.contains('chỉnh điều hòa') ||
+          lowerCombined.contains('chỉnh nhiệt độ') ||
+          lowerCombined.contains('thêm khay bóng') ||
+          lowerCombined.contains('lỗi cảm biến') ||
+          lowerCombined.contains('chỉnh cảm biến')) {
+        if (lowerCombined.contains('khăn lạnh')) {
+          serviceRequestTitle = 'Yêu cầu mang thêm Khăn Lạnh';
+        } else if (lowerCombined.contains('đá') || lowerCombined.contains('nước đá')) {
+          serviceRequestTitle = 'Yêu cầu thêm Xô Đá & Ly';
+        } else if (lowerCombined.contains('nhiệt độ') || lowerCombined.contains('điều hòa')) {
+          serviceRequestTitle = 'Yêu cầu chỉnh nhiệt độ điều hòa phòng';
+        } else if (lowerCombined.contains('cảm biến') || lowerCombined.contains('bóng')) {
+          serviceRequestTitle = 'Yêu cầu hỗ trợ kỹ thuật cảm biến & khay bóng';
+        } else {
+          serviceRequestTitle = 'Yêu cầu nhân viên đến hỗ trợ tận phòng';
+        }
+      }
+    }
+
+    // 4. Fallback phân tích ý định điều hướng dựa trên từ khóa nếu chưa có actionRoute
+    if (actionRoute == null && serviceRequestTitle == null) {
       if (lowerCombined.contains('đặt phòng') ||
           lowerCombined.contains('chọn phòng') ||
           lowerCombined.contains('giá phòng') ||
@@ -264,9 +296,15 @@ Ví dụ:
       }
     }
 
-    // 4. Nếu AI chưa sinh gợi ý động, tự sinh gợi ý theo ngữ cảnh câu hỏi + câu trả lời
+    // 5. Nếu AI chưa sinh gợi ý động, tự sinh gợi ý theo ngữ cảnh câu hỏi + câu trả lời
     if (dynamicSuggestions.isEmpty) {
-      if (lowerCombined.contains('đặt phòng') || lowerCombined.contains('giá') || lowerCombined.contains('bay')) {
+      if (serviceRequestTitle != null) {
+        dynamicSuggestions = [
+          'Thực đơn bia tháp & ẩm thực tận Bay',
+          'Tư vấn luật chơi 18 hố Golfzon',
+          'Kiểm tra vé & lịch đặt của tôi',
+        ];
+      } else if (lowerCombined.contains('đặt phòng') || lowerCombined.contains('giá') || lowerCombined.contains('bay')) {
         dynamicSuggestions = [
           'Tư vấn phòng VIP TwoVision',
           'Chơi 18 hố mất mấy tiếng?',
@@ -300,6 +338,8 @@ Ví dụ:
       timestamp: DateTime.now(),
       actionRoute: actionRoute,
       actionLabel: actionLabel,
+      serviceRequestTitle: serviceRequestTitle,
+      autoExecuteCountdown: (actionRoute != null || serviceRequestTitle != null) ? 2 : null,
       quickPrompts: dynamicSuggestions,
     );
   }
@@ -310,9 +350,26 @@ Ví dụ:
     String reply = '';
     String? actionRoute;
     String? actionLabel;
+    String? serviceRequestTitle;
     List<String> dynamicSuggestions = [];
 
-    if (p.contains('giá') || p.contains('bảng giá') || p.contains('bao nhiêu')) {
+    if (p.contains('phục vụ') || p.contains('nhân viên') || p.contains('khăn lạnh') || p.contains('đá') || p.contains('cảm biến')) {
+      if (p.contains('khăn lạnh')) {
+        serviceRequestTitle = 'Yêu cầu mang thêm Khăn Lạnh';
+      } else if (p.contains('đá')) {
+        serviceRequestTitle = 'Yêu cầu thêm Xô Đá & Ly';
+      } else if (p.contains('cảm biến')) {
+        serviceRequestTitle = 'Yêu cầu hỗ trợ kỹ thuật cảm biến Bay';
+      } else {
+        serviceRequestTitle = 'Yêu cầu nhân viên đến hỗ trợ tận phòng';
+      }
+      reply = 'Dạ em đã tự động kích hoạt chuyển yêu cầu **$serviceRequestTitle** đến Quầy Lễ Tân & Bếp ngay lập tức! Nhân viên sẽ có mặt hỗ trợ Quý khách trong tích tắc.';
+      dynamicSuggestions = [
+        'Gọi tháp bia Sapporo ướp lạnh',
+        'Kiểm tra vé & lịch đặt của tôi',
+        'Tư vấn chế độ chơi TwoVision',
+      ];
+    } else if (p.contains('giá') || p.contains('bảng giá') || p.contains('bao nhiêu')) {
       reply = '''Dạ, em xin gửi Quý khách bảng giá giờ chơi ưu đãi tại Okamura Golfzon Lounge:
 
 • Standard 3D: 350.000đ/giờ (chuẩn thi đấu quốc tế)
@@ -321,7 +378,7 @@ Ví dụ:
 • Connecting Suite: 750.000đ/giờ (phòng đôi giao lưu 6-10 người)
 • GDR Driving Range AI: 250.000đ/giờ (chuyên sâu luyện swing)
 
-Quý khách có thể bấm nút bên dưới để chọn Bay và giữ chỗ ngay ạ!''';
+Em đang tự động mở trang Đặt phòng để Quý khách xem chi tiết và giữ chỗ ngay ạ!''';
       actionRoute = '/booking';
       actionLabel = 'Chuyển Đến Đặt Phòng Ngay →';
       dynamicSuggestions = [
@@ -330,7 +387,7 @@ Quý khách có thể bấm nút bên dưới để chọn Bay và giữ chỗ n
         'Xem menu đồ uống phục vụ tận Bay',
       ];
     } else if (p.contains('đặt phòng') || p.contains('bay') || p.contains('trống') || p.contains('chọn phòng')) {
-      reply = '''Dạ hiện tổ hợp Okamura có 12 Bay công nghệ cao TwoVision NX 3D đang sẵn sàng phục vụ. Quý khách có thể tự chọn khung giờ chơi và số lượng Golfer trực tiếp trên ứng dụng ạ.''';
+      reply = '''Dạ hiện tổ hợp Okamura có 12 Bay công nghệ cao TwoVision NX 3D đang sẵn sàng phục vụ. Em đang tự động chuyển Quý khách đến giao diện Đặt Bay để chọn khung giờ ưng ý nhất!''';
       actionRoute = '/booking';
       actionLabel = 'Chuyển Đến Đặt Phòng Ngay →';
       dynamicSuggestions = [
@@ -344,10 +401,9 @@ Quý khách có thể bấm nút bên dưới để chọn Bay và giữ chỗ n
 • Tháp bia Sapporo Gold 2.5L: 400.000đ
 • Bia Tiger Bạc lon ướp lạnh: 30.000đ
 • Cà phê pha máy Arabica thơm nồng: 45.000đ
-• Nước ép hoa quả tươi theo mùa: 50.000đ
-• Bò Bít tết Úc nướng đá & Khoai tây chiên sốt Truffle thơm lừng.
+• Bò Bít tết Úc nướng đá & Gà rán sốt cay Hàn Quốc.
 
-Quý khách có thể mở thực đơn để chọn món ngay ạ!''';
+Em đang tự động mở Thực đơn để Quý khách chọn món gọi ngay tận phòng!''';
       actionRoute = '/services';
       actionLabel = 'Mở Thực Đơn Quầy Bar & Bếp →';
       dynamicSuggestions = [
@@ -356,7 +412,7 @@ Quý khách có thể mở thực đơn để chọn món ngay ạ!''';
         'Hỏi về set gậy thuê',
       ];
     } else if (p.contains('vé') || p.contains('lịch') || p.contains('mã pin') || p.contains('hủy') || p.contains('đổi')) {
-      reply = '''Dạ Quý khách có thể tra cứu toàn bộ vé đã đặt, kiểm tra mã PIN mở phòng hoặc đổi giờ chơi trực tiếp tại mục "Vé của tôi" ạ.''';
+      reply = '''Dạ em đang tự động mở mục "Vé của tôi" để Quý khách tra cứu toàn bộ vé đã đặt, kiểm tra mã PIN mở phòng hoặc đổi giờ chơi trực tiếp ạ.''';
       actionRoute = '/my-bookings';
       actionLabel = 'Xem Vé & Lịch Đặt Của Tôi →';
       dynamicSuggestions = [
@@ -368,10 +424,11 @@ Quý khách có thể mở thực đơn để chọn món ngay ạ!''';
       reply = '''Dạ em là Okamura AI Caddie — luôn sẵn sàng đồng hành cùng Quý khách 24/7!
 
 Em có thể hỗ trợ Quý khách:
-• Tư vấn & chọn Bay chơi Golfzon TwoVision phù hợp
+• Tư vấn & tự động mở trang đặt Bay chơi Golfzon TwoVision
 • Báo giá chi tiết & ước tính thời gian chơi 18 hố
 • Giới thiệu set gậy TaylorMade Qi10 & hỗ trợ Caddie
-• Xem thực đơn đồ uống & ẩm thực phục vụ tận phòng.
+• Tự động gửi yêu cầu phục vụ tận phòng (khăn lạnh, xô đá, gọi nhân viên)
+• Mở thực đơn đồ uống & ẩm thực quầy Bar.
 
 Quý khách muốn em hỗ trợ điều gì trước ạ?''';
       actionRoute = '/booking';
@@ -390,6 +447,8 @@ Quý khách muốn em hỗ trợ điều gì trước ạ?''';
       timestamp: DateTime.now(),
       actionRoute: actionRoute,
       actionLabel: actionLabel,
+      serviceRequestTitle: serviceRequestTitle,
+      autoExecuteCountdown: (actionRoute != null || serviceRequestTitle != null) ? 2 : null,
       quickPrompts: dynamicSuggestions,
     );
   }

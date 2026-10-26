@@ -810,57 +810,12 @@ class _UserMyBookingsScreenState extends State<UserMyBookingsScreen> {
     );
   }
 
-  /// Đường đục lỗ chia nửa thẻ vé
+  /// Đường phân cách vé thanh mảnh, liền mạch (loại bỏ hiện tượng kẽ sọc răng cưa)
   Widget _buildTicketDivider() {
-    return Row(
-      children: [
-        Container(
-          width: 10,
-          height: 20,
-          decoration: const BoxDecoration(
-            color: AppColors.userBgDark,
-            borderRadius: BorderRadius.only(
-              topRight: Radius.circular(10),
-              bottomRight: Radius.circular(10),
-            ),
-          ),
-        ),
-        Expanded(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              const dashWidth = 5.0;
-              const dashSpace = 4.0;
-              final dashCount =
-                  (constraints.constrainWidth() / (dashWidth + dashSpace))
-                      .floor();
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(
-                  dashCount,
-                  (_) => const SizedBox(
-                    width: dashWidth,
-                    height: 1,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(color: AppColors.userBorder),
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        Container(
-          width: 10,
-          height: 20,
-          decoration: const BoxDecoration(
-            color: AppColors.userBgDark,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(10),
-              bottomLeft: Radius.circular(10),
-            ),
-          ),
-        ),
-      ],
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      height: 1,
+      color: AppColors.userBorder.withValues(alpha: 0.7),
     );
   }
 

@@ -7,6 +7,9 @@ class ChatMessageModel {
   final List<String> quickPrompts;
   final String? actionRoute;
   final String? actionLabel;
+  final String? serviceRequestTitle;
+  final int? autoExecuteCountdown;
+  final bool isAutoExecuted;
   final bool isLoading;
 
   const ChatMessageModel({
@@ -17,6 +20,9 @@ class ChatMessageModel {
     this.quickPrompts = const [],
     this.actionRoute,
     this.actionLabel,
+    this.serviceRequestTitle,
+    this.autoExecuteCountdown,
+    this.isAutoExecuted = false,
     this.isLoading = false,
   });
 
@@ -28,6 +34,9 @@ class ChatMessageModel {
     List<String>? quickPrompts,
     String? actionRoute,
     String? actionLabel,
+    String? serviceRequestTitle,
+    int? autoExecuteCountdown,
+    bool? isAutoExecuted,
     bool? isLoading,
   }) {
     return ChatMessageModel(
@@ -38,6 +47,9 @@ class ChatMessageModel {
       quickPrompts: quickPrompts ?? this.quickPrompts,
       actionRoute: actionRoute ?? this.actionRoute,
       actionLabel: actionLabel ?? this.actionLabel,
+      serviceRequestTitle: serviceRequestTitle ?? this.serviceRequestTitle,
+      autoExecuteCountdown: autoExecuteCountdown ?? this.autoExecuteCountdown,
+      isAutoExecuted: isAutoExecuted ?? this.isAutoExecuted,
       isLoading: isLoading ?? this.isLoading,
     );
   }

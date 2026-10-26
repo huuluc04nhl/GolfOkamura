@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import 'ai_chat_bottom_sheet.dart';
 
-/// Nút nổi (Floating Action Button) kích hoạt Trợ lý ảo AI Caddie
+/// Nút nổi (Floating Action Button) hình tròn biểu tượng chữ "C" kích hoạt Trợ lý ảo AI Caddie
+/// Thiết kế siêu gọn (50x50dp), chuẩn Quiet Luxury, hạn chế tối đa việc lấn khung hình mobile
 class AiFloatingButton extends StatelessWidget {
   final double bottomOffset;
   final double rightOffset;
@@ -18,68 +19,101 @@ class AiFloatingButton extends StatelessWidget {
     return Positioned(
       bottom: bottomOffset,
       right: rightOffset,
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => AiChatBottomSheet.show(context),
-          borderRadius: BorderRadius.circular(28),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [
-                  Color(0xFFD4AF37),
-                  AppColors.primaryGold,
-                  Color(0xFF996515),
+      child: Tooltip(
+        message: 'Okamura AI Caddie - Trợ lý thông minh',
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () => AiChatBottomSheet.show(context),
+            borderRadius: BorderRadius.circular(28),
+            splashColor: AppColors.primaryGold.withValues(alpha: 0.3),
+            child: Container(
+              width: 50,
+              height: 50,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFF242A38),
+                    Color(0xFF111723),
+                    Color(0xFF090D15),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                border: Border.all(
+                  color: AppColors.primaryGold,
+                  width: 1.8,
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.primaryGold.withValues(alpha: 0.38),
+                    blurRadius: 14,
+                    offset: const Offset(0, 4),
+                    spreadRadius: 1,
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.6),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
                 ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
               ),
-              borderRadius: BorderRadius.circular(28),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.primaryGold.withValues(alpha: 0.45),
-                  blurRadius: 14,
-                  offset: const Offset(0, 4),
-                  spreadRadius: 1,
-                ),
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.5),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-              border: Border.all(
-                color: Colors.white.withValues(alpha: 0.6),
-                width: 1,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Vòng hào quang vàng nhẹ bên trong
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          AppColors.primaryGold.withValues(alpha: 0.22),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  // Biểu tượng chữ "C" đại diện cho Caddie / Concierge
+                  const Text(
+                    'C',
+                    style: TextStyle(
+                      color: AppColors.primaryGold,
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      fontFamily: 'serif',
+                      letterSpacing: -0.5,
+                      shadows: [
+                        Shadow(
+                          color: Color(0xFFD4AF37),
+                          blurRadius: 6,
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // Ngôi sao lấp lánh AI ở góc trên bên phải chữ "C"
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFF090D15),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.auto_awesome,
+                        color: Color(0xFFFFDF7A),
+                        size: 11,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.auto_awesome,
-                    color: AppColors.primaryGold,
-                    size: 14,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  'AI CADDIE',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ],
             ),
           ),
         ),
