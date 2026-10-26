@@ -90,6 +90,70 @@ void main() {
       expect(find.text('💰 Bảng giá các loại Bay 3D'), findsOneWidget);
     });
 
+    testWidgets('Giao diện AiChatBottomSheet tối ưu hoàn hảo trên khung hình Mobile không bị tràn viền', (tester) async {
+      // Giả lập màn hình mobile tiêu chuẩn (iPhone SE / Android nhỏ 375 x 667)
+      tester.view.physicalSize = const Size(375, 667);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final provider = BookingProvider(autoSyncFirebase: false);
+      await provider.initFuture;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ChangeNotifierProvider<BookingProvider>.value(
+              value: provider,
+              child: const AiChatBottomSheet(),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      // Kiểm tra tiêu đề và huy hiệu hiển thị gọn gàng, không bị tràn (overflow)
+      expect(find.text('OKAMURA AI CADDIE'), findsOneWidget);
+      expect(find.text('GEMINI 24/7'), findsOneWidget);
+      expect(find.byType(TextField), findsOneWidget);
+      expect(find.byIcon(Icons.send_rounded), findsOneWidget);
+
+      // Nút menu tùy chọn thu gọn (PopupMenuButton) xuất hiện trên mobile
+      expect(find.byIcon(Icons.more_vert_rounded), findsOneWidget);
+
+      // Thử mở popup menu xem các tùy chọn
+      await tester.tap(find.byIcon(Icons.more_vert_rounded));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Làm mới cuộc trò chuyện'), findsOneWidget);
+      expect(find.text('Cấu hình Gemini API'), findsOneWidget);
+    });
+
+    testWidgets('Giao diện AiChatBottomSheet an toàn trên màn hình siêu hẹp (320 x 568)', (tester) async {
+      tester.view.physicalSize = const Size(320, 568);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final provider = BookingProvider(autoSyncFirebase: false);
+      await provider.initFuture;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: ChangeNotifierProvider<BookingProvider>.value(
+              value: provider,
+              child: const AiChatBottomSheet(),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.text('OKAMURA AI CADDIE'), findsOneWidget);
+      expect(find.text('GEMINI 24/7'), findsOneWidget);
+      expect(find.byType(TextField), findsOneWidget);
+    });
+
     testWidgets('AiFloatingButton hiển thị chuẩn phong cách Quiet Luxury', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(
