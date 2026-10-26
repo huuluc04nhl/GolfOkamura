@@ -11,6 +11,7 @@ import '../../../shared/models/booking_model.dart';
 import '../../../shared/providers/booking_provider.dart';
 import '../../../shared/services/storage_service.dart';
 import '../../shared_widgets/golfer_vip_card.dart';
+import '../../shared_widgets/language_selector_pill.dart';
 import '../../shared_widgets/status_badge.dart';
 import '../../shared_widgets/vietqr_payment_dialog.dart';
 
@@ -87,6 +88,10 @@ class _UserMyBookingsScreenState extends State<UserMyBookingsScreen> {
         title: Text(context.tr('my_bookings_title')),
         centerTitle: true,
         backgroundColor: AppColors.userBgDark,
+        actions: const [
+          LanguageSelectorPill(compact: true),
+          SizedBox(width: 10),
+        ],
       ),
       body: SafeArea(
         bottom: false,
@@ -109,7 +114,7 @@ class _UserMyBookingsScreenState extends State<UserMyBookingsScreen> {
                     fontSize: 14,
                   ),
                   decoration: InputDecoration(
-                    hintText: 'Tra cứu theo SĐT hoặc tên khách hàng...',
+                    hintText: 'Tra cứu theo SĐT hoặc họ tên Quý khách...',
                     hintStyle: const TextStyle(
                       color: AppColors.textMuted,
                       fontSize: 13,
@@ -147,23 +152,27 @@ class _UserMyBookingsScreenState extends State<UserMyBookingsScreen> {
               ),
             ),
 
-            // Bộ lọc trạng thái vé trực tiếp
+            // Bộ lọc trạng thái vé trực tiếp dạng cuộn ngang êm ái
             Padding(
               padding: EdgeInsets.fromLTRB(hPadding, 0, hPadding, 8),
-              child: Row(
-                children: [
-                  _buildStatusFilterChip('all', 'Tất cả (${allBookings.length})'),
-                  const SizedBox(width: 8),
-                  _buildStatusFilterChip(
-                    'confirmed',
-                    'Đang giữ chỗ (${allBookings.where((b) => b.status == BookingStatus.confirmed).length})',
-                  ),
-                  const SizedBox(width: 8),
-                  _buildStatusFilterChip(
-                    'cancelled',
-                    'Đã hủy (${allBookings.where((b) => b.status == BookingStatus.cancelled).length})',
-                  ),
-                ],
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                physics: const BouncingScrollPhysics(),
+                child: Row(
+                  children: [
+                    _buildStatusFilterChip('all', 'Tất cả (${allBookings.length})'),
+                    const SizedBox(width: 8),
+                    _buildStatusFilterChip(
+                      'confirmed',
+                      'Đang giữ chỗ (${allBookings.where((b) => b.status == BookingStatus.confirmed).length})',
+                    ),
+                    const SizedBox(width: 8),
+                    _buildStatusFilterChip(
+                      'cancelled',
+                      'Đã hủy (${allBookings.where((b) => b.status == BookingStatus.cancelled).length})',
+                    ),
+                  ],
+                ),
               ),
             ),
 
@@ -335,29 +344,34 @@ class _UserMyBookingsScreenState extends State<UserMyBookingsScreen> {
 
   Widget _buildStatusFilterChip(String key, String label) {
     final active = _statusFilter == key;
-    return Expanded(
-      child: InkWell(
-        onTap: () => setState(() => _statusFilter = key),
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 6),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: active ? AppColors.primaryGold : AppColors.userCardDark,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: active ? AppColors.primaryGold : AppColors.userBorder,
-            ),
+    return InkWell(
+      onTap: () => setState(() => _statusFilter = key),
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 7, horizontal: 12),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: active ? AppColors.primaryGold : AppColors.userCardDark,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: active ? AppColors.primaryGold : AppColors.userBorder,
           ),
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: active ? Colors.black : AppColors.textMuted,
-              fontSize: 11,
-              fontWeight: active ? FontWeight.w800 : FontWeight.w600,
-            ),
+          boxShadow: active
+              ? [
+                  BoxShadow(
+                    color: AppColors.primaryGold.withValues(alpha: 0.25),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: active ? Colors.black : AppColors.textMuted,
+            fontSize: 11.5,
+            fontWeight: active ? FontWeight.w800 : FontWeight.w600,
           ),
         ),
       ),

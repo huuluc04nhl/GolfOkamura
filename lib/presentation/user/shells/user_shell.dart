@@ -4,7 +4,6 @@ import '../../../core/localization/app_translations.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/responsive.dart';
 import '../../shared_widgets/ai_floating_button.dart';
-import '../../shared_widgets/mode_switch_banner.dart';
 
 /// Khung điều hướng chuẩn 100% Mobile App cho Khách hàng (User)
 /// Luôn luôn sử dụng Bottom Navigation Bar trên mọi thiết bị (kể cả xem trước trên Web/Desktop),
@@ -100,9 +99,6 @@ class UserShell extends StatelessWidget {
                 ),
               ),
             ),
-
-            // Nút chuyển chế độ Admin dạng floating góc trên bên phải
-            const ModeSwitchFloatingButton(isAdminMode: false),
 
             // Nút trợ lý AI Caddie nổi góc dưới bên phải
             const AiFloatingButton(),

@@ -93,37 +93,37 @@ class _UserServicesScreenState extends State<UserServicesScreen>
     return Scaffold(
       backgroundColor: AppColors.userBgDark,
       appBar: AppBar(
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Flexible(
-              child: Text(
+        title: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
                 context.tr('services_screen_title'),
                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
               ),
-            ),
-            const SizedBox(width: 6),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: const Color(0xFF10B981).withValues(alpha: 0.16),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(
-                  color: const Color(0xFF10B981).withValues(alpha: 0.45),
+              const SizedBox(width: 6),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF10B981).withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: const Color(0xFF10B981).withValues(alpha: 0.45),
+                  ),
+                ),
+                child: const Text(
+                  'CLOUD',
+                  style: TextStyle(
+                    color: Color(0xFF10B981),
+                    fontSize: 9,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
-              child: const Text(
-                'CLOUD',
-                style: TextStyle(
-                  color: Color(0xFF10B981),
-                  fontSize: 9,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 0.5,
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
         centerTitle: true,
         backgroundColor: AppColors.userBgDark,

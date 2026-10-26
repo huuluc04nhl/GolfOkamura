@@ -11,6 +11,8 @@ import '../../../core/utils/responsive.dart';
 import '../../../shared/models/room_model.dart';
 import '../../../shared/providers/booking_provider.dart';
 import '../../shared_widgets/ai_chat_bottom_sheet.dart';
+import '../../shared_widgets/language_selector_pill.dart';
+import '../../shared_widgets/mode_switch_banner.dart';
 
 /// Màn hình Trang chủ User cao cấp:
 /// - Giàu hiệu ứng thị giác (Ambient Glow, Pulsing Radar, Auto-sliding Hero Carousel, Live Telemetry Ticker)
@@ -162,11 +164,12 @@ class _UserHomeScreenState extends State<UserHomeScreen>
     );
   }
 
-  /// Header sang trọng: Logo phát sáng + Trạng thái Firebase Live + Nút Hotline
+  /// Header sang trọng: Logo phát sáng + Trạng thái Firebase Live + Đa ngôn ngữ + Tài khoản
   Widget _buildTopHeader(BuildContext context) {
     final provider = context.watch<BookingProvider>();
     final availableCount =
         provider.rooms.where((r) => !r.isUnderMaintenance).length;
+    final isSmall = Responsive.isSmallMobile(context);
 
     return Row(
       children: [
@@ -175,8 +178,8 @@ class _UserHomeScreenState extends State<UserHomeScreen>
           animation: _pulseController,
           builder: (context, child) {
             return Container(
-              width: 44,
-              height: 44,
+              width: 38,
+              height: 38,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: const LinearGradient(
@@ -193,7 +196,7 @@ class _UserHomeScreenState extends State<UserHomeScreen>
                     color: AppColors.primaryGold.withValues(
                       alpha: 0.25 + (_pulseController.value * 0.25),
                     ),
-                    blurRadius: 10 + (_pulseController.value * 6),
+                    blurRadius: 8 + (_pulseController.value * 6),
                     spreadRadius: 1,
                   ),
                 ],
@@ -202,35 +205,38 @@ class _UserHomeScreenState extends State<UserHomeScreen>
             );
           },
           child: const Center(
-            child: Icon(Icons.sports_golf_rounded, color: Colors.black, size: 24),
+            child: Icon(Icons.sports_golf_rounded, color: Colors.black, size: 20),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 8),
+
+        // Tên thương hiệu & Trạng thái hoạt động
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Row(
                 children: [
-                  const Flexible(
+                  Expanded(
                     child: Text(
                       'OKAMURA GOLFZON',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: AppColors.primaryGold,
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: FontWeight.w900,
-                        letterSpacing: 0.6,
+                        letterSpacing: 0.4,
                       ),
                     ),
                   ),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                    padding: const EdgeInsets.symmetric(horizontal: 4.5, vertical: 1.5),
                     decoration: BoxDecoration(
                       color: const Color(0xFF10B981).withValues(alpha: 0.16),
-                      borderRadius: BorderRadius.circular(6),
+                      borderRadius: BorderRadius.circular(5),
                       border: Border.all(
                         color: const Color(0xFF10B981).withValues(alpha: 0.45),
                       ),
@@ -239,14 +245,14 @@ class _UserHomeScreenState extends State<UserHomeScreen>
                       provider.isSyncingFirebase ? 'SYNC' : 'LIVE',
                       style: const TextStyle(
                         color: Color(0xFF10B981),
-                        fontSize: 8.5,
+                        fontSize: 8,
                         fontWeight: FontWeight.w800,
                       ),
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 3),
+              const SizedBox(height: 2),
               Row(
                 children: [
                   // Chấm xanh nhịp thở báo hoạt động trực tiếp
@@ -254,8 +260,8 @@ class _UserHomeScreenState extends State<UserHomeScreen>
                     animation: _pulseController,
                     builder: (context, _) {
                       return Container(
-                        width: 7,
-                        height: 7,
+                        width: 6,
+                        height: 6,
                         decoration: BoxDecoration(
                           color: const Color(0xFF10B981),
                           shape: BoxShape.circle,
@@ -264,21 +270,20 @@ class _UserHomeScreenState extends State<UserHomeScreen>
                               color: const Color(0xFF10B981).withValues(
                                 alpha: 0.4 + (_pulseController.value * 0.5),
                               ),
-                              blurRadius: 6,
-                              spreadRadius: 1,
+                              blurRadius: 4,
                             ),
                           ],
                         ),
                       );
                     },
                   ),
-                  const SizedBox(width: 6),
+                  const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      '$availableCount/${provider.rooms.length} phòng sẵn sàng • 08:00 - 23:00',
+                      '$availableCount/${provider.rooms.length} phòng sẵn sàng',
                       style: const TextStyle(
                         color: AppColors.textMuted,
-                        fontSize: 11.5,
+                        fontSize: 10.5,
                         fontWeight: FontWeight.w500,
                       ),
                       maxLines: 1,
@@ -290,43 +295,18 @@ class _UserHomeScreenState extends State<UserHomeScreen>
             ],
           ),
         ),
-        // Nút Hotline nhanh
-        Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () => _showHotlineDialog(context),
-            borderRadius: BorderRadius.circular(20),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.primaryGold.withValues(alpha: 0.2),
-                    AppColors.userCardDark,
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: AppColors.primaryGold.withValues(alpha: 0.45),
-                ),
-              ),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.phone_in_talk_rounded, size: 14, color: AppColors.primaryGold),
-                  SizedBox(width: 4),
-                  Text(
-                    'Hotline',
-                    style: TextStyle(
-                      color: AppColors.textLight,
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+        const SizedBox(width: 6),
+
+        // Cụm điều khiển góc phải: Bộ đổi ngôn ngữ (màn >= 360) + Tài khoản
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (!isSmall) ...[
+              const LanguageSelectorPill(compact: true),
+              const SizedBox(width: 6),
+            ],
+            ModeSwitchFloatingButton.buildUserAccountCluster(context, provider),
+          ],
         ),
       ],
     );
@@ -642,29 +622,34 @@ class _UserHomeScreenState extends State<UserHomeScreen>
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: color, size: 16),
-              const SizedBox(width: 6),
+              Icon(icon, color: color, size: 15),
+              const SizedBox(width: 5),
               Flexible(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      value,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.w800,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        value,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                        ),
                       ),
                     ),
-                    Text(
-                      label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: 9.5,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        label,
+                        style: const TextStyle(
+                          color: AppColors.textMuted,
+                          fontSize: 9.5,
+                        ),
                       ),
                     ),
                   ],
@@ -1546,16 +1531,9 @@ class _UserHomeScreenState extends State<UserHomeScreen>
                       children: [
                         const Icon(Icons.person_outline_rounded, size: 13, color: AppColors.textMuted),
                         const SizedBox(width: 3),
-                        Text(
-                          '${room.capacity}k',
-                          style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
-                        ),
-                        const SizedBox(width: 4),
-                        const Text('•', style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
-                        const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            room.sensorModel,
+                            '${room.capacity} chỗ • ${room.sensorModel}',
                             style: const TextStyle(color: AppColors.textMuted, fontSize: 11),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -1961,8 +1939,34 @@ class _UserHomeScreenState extends State<UserHomeScreen>
                 ],
               ),
             ),
-            const SizedBox(width: 8),
-            const Icon(Icons.copy_rounded, color: AppColors.primaryGold, size: 16),
+            const SizedBox(width: 6),
+            InkWell(
+              onTap: () => _showHotlineDialog(context),
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryGold.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: AppColors.primaryGold.withValues(alpha: 0.4)),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.phone_in_talk_rounded, color: AppColors.primaryGold, size: 14),
+                    SizedBox(width: 4),
+                    Text(
+                      'Hotline',
+                      style: TextStyle(
+                        color: AppColors.primaryGold,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
         ),
       ),

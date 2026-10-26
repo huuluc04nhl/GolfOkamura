@@ -9,6 +9,7 @@ import '../../../core/utils/responsive.dart';
 import '../../../shared/models/room_model.dart';
 import '../../../shared/providers/booking_provider.dart';
 import '../../../shared/services/storage_service.dart';
+import '../../shared_widgets/language_selector_pill.dart';
 import '../../shared_widgets/status_badge.dart';
 import '../../shared_widgets/vietqr_payment_dialog.dart';
 
@@ -109,6 +110,10 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                 onPressed: () => setState(() => _currentStep--),
               )
             : null,
+        actions: const [
+          LanguageSelectorPill(compact: true),
+          SizedBox(width: 10),
+        ],
       ),
       body: SafeArea(
         bottom: false,
@@ -285,22 +290,22 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
     final isGuest = context.watch<BookingProvider>().isGuest;
     return Container(
       color: AppColors.userCardDark,
-      padding: EdgeInsets.symmetric(horizontal: hPadding, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: hPadding > 12 ? 12 : 8, vertical: 8),
       child: Row(
         children: [
           Expanded(
             child: _buildStepPill(1, context.tr('step_1_date'), Icons.calendar_today_rounded),
           ),
-          const Icon(Icons.chevron_right, size: 14, color: AppColors.userBorder),
+          const Icon(Icons.chevron_right, size: 13, color: AppColors.userBorder),
           Expanded(
             child: _buildStepPill(2, context.tr('step_2_time'), Icons.access_time_rounded),
           ),
-          const Icon(Icons.chevron_right, size: 14, color: AppColors.userBorder),
+          const Icon(Icons.chevron_right, size: 13, color: AppColors.userBorder),
           Expanded(
             child: _buildStepPill(3, context.tr('step_3_room'), Icons.meeting_room_rounded),
           ),
           if (isGuest) ...[
-            const Icon(Icons.chevron_right, size: 14, color: AppColors.userBorder),
+            const Icon(Icons.chevron_right, size: 13, color: AppColors.userBorder),
             Expanded(
               child: _buildStepPill(4, context.tr('step_4_info'), Icons.person_pin_rounded),
             ),
@@ -1590,45 +1595,54 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryGold.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(
-                    Icons.assignment_ind_rounded,
-                    color: AppColors.primaryGold,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      'BƯỚC 4: THÔNG TIN KHÁCH HÀNG',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.5,
-                      ),
+            Expanded(
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryGold.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Dành cho khách vãng lai đặt phòng trực tuyến',
-                      style: TextStyle(
-                        color: AppColors.textMuted,
-                        fontSize: 11,
-                      ),
+                    child: const Icon(
+                      Icons.assignment_ind_rounded,
+                      color: AppColors.primaryGold,
+                      size: 18,
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text(
+                          'BƯỚC 4: THÔNG TIN KHÁCH HÀNG',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 13,
+                            fontWeight: FontWeight.w800,
+                            letterSpacing: 0.4,
+                          ),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'Dành cho khách vãng lai đặt phòng trực tuyến',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: AppColors.textMuted,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
+            const SizedBox(width: 8),
             TextButton.icon(
               onPressed: () => setState(() => _currentStep = 3),
               icon: const Icon(Icons.edit, size: 14, color: AppColors.primaryGold),
