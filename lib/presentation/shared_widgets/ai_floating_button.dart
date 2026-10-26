@@ -223,39 +223,21 @@ class _AiFloatingButtonState extends State<AiFloatingButton> {
                       ),
                     ),
 
-                  // Mũi tên nhỏ khi ở dạng Tab thu gọn: chỉ hướng tương tác
-                  if (_isDocked && !_isDragging)
-                    Positioned(
-                      left: _dockOnRight ? 2 : null,
-                      right: _dockOnRight ? null : 2,
-                      child: Icon(
-                        _dockOnRight ? Icons.chevron_left_rounded : Icons.chevron_right_rounded,
-                        color: AppColors.primaryGold.withValues(alpha: 0.7),
-                        size: 13,
-                      ),
-                    ),
-
                   // Biểu tượng chữ "C" đại diện cho Caddie / Concierge
-                  Padding(
-                    padding: EdgeInsets.only(
-                      left: (_isDocked && !_isDragging) ? (_dockOnRight ? 6.0 : 0.0) : 0.0,
-                      right: (_isDocked && !_isDragging) ? (!_dockOnRight ? 6.0 : 0.0) : 0.0,
-                    ),
-                    child: Text(
-                      'C',
-                      style: TextStyle(
-                        color: AppColors.primaryGold,
-                        fontSize: (_isDocked && !_isDragging) ? 17 : 24,
-                        fontWeight: FontWeight.w900,
-                        fontFamily: 'serif',
-                        letterSpacing: -0.5,
-                        shadows: const [
-                          Shadow(
-                            color: Color(0xFFD4AF37),
-                            blurRadius: 6,
-                          ),
-                        ],
-                      ),
+                  Text(
+                    'C',
+                    style: TextStyle(
+                      color: AppColors.primaryGold,
+                      fontSize: (_isDocked && !_isDragging) ? 18 : 24,
+                      fontWeight: FontWeight.w900,
+                      fontFamily: 'serif',
+                      letterSpacing: -0.5,
+                      shadows: const [
+                        Shadow(
+                          color: Color(0xFFD4AF37),
+                          blurRadius: 6,
+                        ),
+                      ],
                     ),
                   ),
 

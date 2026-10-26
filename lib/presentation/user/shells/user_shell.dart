@@ -59,6 +59,16 @@ class UserShell extends StatelessWidget {
     final selectedIndex = _calculateSelectedIndex(context);
     final isWideScreen = Responsive.isDesktop(context);
 
+    // Không hiển thị nút nổi AI Caddie khi người dùng đang ở ngay trong màn hình AI hỗ trợ chuyên sâu
+    final String currentLocation = () {
+      try {
+        return GoRouterState.of(context).uri.path;
+      } catch (_) {
+        return '';
+      }
+    }();
+    final bool isAiScreen = currentLocation.startsWith('/ai-caddie');
+
     return Scaffold(
       backgroundColor: AppColors.userBgDark,
       body: GestureDetector(
@@ -100,8 +110,8 @@ class UserShell extends StatelessWidget {
               ),
             ),
 
-            // Nút trợ lý AI Caddie nổi góc dưới bên phải
-            const AiFloatingButton(),
+            // Nút trợ lý AI Caddie nổi (tự động ẩn khi đã vào màn hình AI chuyên sâu)
+            if (!isAiScreen) const AiFloatingButton(),
           ],
         ),
       ),

@@ -3,6 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:golf_booking/core/config/ai_key_vault.dart';
 import 'package:golf_booking/presentation/shared_widgets/ai_chat_bottom_sheet.dart';
 import 'package:golf_booking/presentation/shared_widgets/ai_floating_button.dart';
+import 'package:golf_booking/presentation/user/screens/user_ai_assistant_screen.dart';
 import 'package:golf_booking/shared/providers/booking_provider.dart';
 import 'package:golf_booking/shared/services/gemini_ai_service.dart';
 import 'package:provider/provider.dart';
@@ -193,7 +194,6 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('C'), findsOneWidget);
       expect(find.byIcon(Icons.auto_awesome), findsOneWidget);
-      expect(find.byIcon(Icons.chevron_left_rounded), findsOneWidget);
     });
 
     testWidgets('AiFloatingButton hỗ trợ kéo thả và tự động dock sang mép trái', (tester) async {
@@ -218,9 +218,32 @@ void main() {
       await gesture.up();
       await tester.pumpAndSettle();
 
-      // Sau khi buông tay ở nửa trái, nút tự hít mép trái và đổi mũi tên chỉ sang phải
-      expect(find.byIcon(Icons.chevron_right_rounded), findsOneWidget);
+      // Sau khi buông tay ở nửa trái, nút tự hít mép trái và vẫn giữ nguyên chữ C
       expect(find.text('C'), findsOneWidget);
+      expect(find.byIcon(Icons.auto_awesome), findsOneWidget);
+    });
+
+    testWidgets('Giao diện UserAiAssistantScreen hiển thị chi tiết trung tâm hỗ trợ AI và các chủ đề chuyên sâu', (tester) async {
+      final provider = BookingProvider(autoSyncFirebase: false);
+      await provider.initFuture;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: ChangeNotifierProvider<BookingProvider>.value(
+            value: provider,
+            child: const UserAiAssistantScreen(),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('AI CADDIE CHUYÊN SÂU'), findsOneWidget);
+      expect(find.text('Tư vấn phòng Bay'), findsOneWidget);
+      expect(find.text('Bảng giá & Giờ vàng'), findsOneWidget);
+      expect(find.text('Thực đơn F&B'), findsOneWidget);
+      expect(find.text('Hạng hội viên'), findsOneWidget);
+      expect(find.byType(TextField), findsOneWidget);
     });
   });
 }

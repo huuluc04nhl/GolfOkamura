@@ -10,7 +10,6 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../shared/models/room_model.dart';
 import '../../../shared/providers/booking_provider.dart';
-import '../../shared_widgets/ai_chat_bottom_sheet.dart';
 import '../../shared_widgets/language_selector_pill.dart';
 import '../../shared_widgets/mode_switch_banner.dart';
 
@@ -440,10 +439,10 @@ class _UserHomeScreenState extends State<UserHomeScreen>
     );
   }
 
-  /// Thẻ gọi nhanh Trợ lý AI Caddie trên Trang chủ
+  /// Thẻ gọi Trợ lý AI Caddie Chuyên Sâu trên Trang chủ
   Widget _buildAiCaddieCard(BuildContext context) {
     return InkWell(
-      onTap: () => AiChatBottomSheet.show(context),
+      onTap: () => context.push('/ai-caddie'),
       borderRadius: BorderRadius.circular(14),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),

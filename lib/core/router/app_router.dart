@@ -8,6 +8,7 @@ import '../../presentation/admin/screens/admin_revenue_screen.dart';
 import '../../presentation/admin/screens/admin_rooms_screen.dart';
 import '../../presentation/admin/shells/admin_shell.dart';
 import '../../presentation/auth/screens/auth_screen.dart';
+import '../../presentation/user/screens/user_ai_assistant_screen.dart';
 import '../../presentation/user/screens/user_booking_screen.dart';
 import '../../presentation/user/screens/user_home_screen.dart';
 import '../../presentation/user/screens/user_my_bookings_screen.dart';
@@ -61,6 +62,10 @@ class AppRouter {
           GoRoute(
             path: '/my-bookings',
             builder: (context, state) => const UserMyBookingsScreen(),
+          ),
+          GoRoute(
+            path: '/ai-caddie',
+            builder: (context, state) => const UserAiAssistantScreen(),
           ),
         ],
       ),
