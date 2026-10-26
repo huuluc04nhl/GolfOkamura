@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../../core/config/ai_key_vault.dart';
 import '../../core/localization/app_language_provider.dart';
 import '../../core/localization/app_translations.dart';
 import '../../core/theme/app_colors.dart';
@@ -74,12 +73,12 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
   bool _isAiTyping = false;
 
   final List<String> _initialSuggestions = [
-    '👑 Phòng VIP có gì đặc biệt?',
-    '💰 Bảng giá các loại Bay 3D',
-    '⏱️ Chơi 18 hố mất bao lâu?',
-    '🏌️ Cho thuê gậy TaylorMade',
-    '🍺 Menu bia tháp & ẩm thực',
-    '🎯 Cảm biến TwoVision NX 3D',
+    'Tư vấn phòng VIP TwoVision',
+    'Bảng giá các loại Bay hôm nay',
+    'Chơi 18 hố mất mấy tiếng?',
+    'Thuê bộ gậy TaylorMade Qi10',
+    'Thực đơn bia tháp & ẩm thực tận Bay',
+    'Kiểm tra vé & lịch đặt của tôi',
   ];
 
   @override
@@ -89,11 +88,11 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
       ChatMessageModel(
         id: 'welcome',
         isUser: false,
-        text: 'Kính chào Quý khách! Em là **Okamura AI Caddie** — Trợ lý ảo thông minh của tổ hợp **Okamura Golfzon Lounge**.\n\nEm có thể hỗ trợ Quý khách:\n• Tư vấn & chọn Bay chơi Golfzon TwoVision phù hợp\n• Báo giá ca chơi & thời lượng cho 18 hố\n• Tư vấn thuê set gậy TaylorMade cao cấp\n• Đặt phòng giữ chỗ & gọi món từ Quầy Bar\n\nQuý khách cần em hỗ trợ điều gì hôm nay ạ?',
+        text: 'Dạ kính chào Quý khách đến với **Okamura Golfzon Lounge**! Em là **Okamura AI Caddie** đồng hành riêng của mình hôm nay.\n\nEm luôn sẵn sàng hỗ trợ Quý khách:\n• Tư vấn & chọn Bay chơi Golfzon TwoVision NX 3D phù hợp\n• Báo giá ca chơi & thời gian hoàn thành 18 hố\n• Cho thuê gậy TaylorMade cao cấp & hỗ trợ Caddie\n• Đặt món, gọi bia tháp & ẩm thực phục vụ tận phòng\n\nQuý khách muốn em hỗ trợ điều gì trước ạ?',
         timestamp: DateTime.now(),
         quickPrompts: _initialSuggestions,
         actionRoute: '/booking',
-        actionLabel: 'Đặt phòng chơi ngay →',
+        actionLabel: 'Chuyển Đến Đặt Phòng Ngay →',
       ),
     );
   }
@@ -168,143 +167,6 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
     }
   }
 
-  void _showApiKeySettingsDialog() {
-    final keyInputController = TextEditingController();
-    bool obscure = true;
-
-    showDialog(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialogState) {
-          return AlertDialog(
-            backgroundColor: const Color(0xFF1E293B),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-            title: Row(
-              children: const [
-                Icon(Icons.key_rounded, color: AppColors.primaryGold, size: 22),
-                SizedBox(width: 8),
-                Text(
-                  'Cấu Hình Khóa Gemini API',
-                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            content: SingleChildScrollView(
-              child: FutureBuilder<bool>(
-                future: AiKeyVault.isUsingCustomKey(),
-                builder: (ctx, snapshot) {
-                  final isCustom = snapshot.data ?? false;
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: isCustom ? Colors.greenAccent : AppColors.primaryGold.withValues(alpha: 0.5),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              isCustom ? Icons.check_circle : Icons.shield_outlined,
-                              size: 16,
-                              color: isCustom ? Colors.greenAccent : AppColors.primaryGold,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                isCustom
-                                    ? 'Đang sử dụng Khóa Tùy Chỉnh do bạn nạp'
-                                    : 'Đang dùng Khóa Tích Hợp Bảo Mật Hệ Thống',
-                                style: const TextStyle(color: AppColors.textLight, fontSize: 11.5),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 14),
-                      const Text(
-                        'Khóa Google Gemini API Key:',
-                        style: TextStyle(color: Colors.white70, fontSize: 12),
-                      ),
-                      const SizedBox(height: 6),
-                      TextField(
-                        controller: keyInputController,
-                        obscureText: obscure,
-                        style: const TextStyle(color: Colors.white, fontSize: 13),
-                        decoration: InputDecoration(
-                          hintText: 'Dán mã khóa AQ... hoặc AIza...',
-                          hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 12),
-                          filled: true,
-                          fillColor: Colors.black.withValues(alpha: 0.4),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              obscure ? Icons.visibility_off : Icons.visibility,
-                              color: AppColors.textMuted,
-                              size: 18,
-                            ),
-                            onPressed: () => setDialogState(() => obscure = !obscure),
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(color: AppColors.userBorder),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        'Lưu ý bảo mật: Khóa được lưu cục bộ trên thiết bị của bạn và không bao giờ bị rò rỉ lên Git.',
-                        style: TextStyle(color: AppColors.textMuted, fontSize: 10.5, fontStyle: FontStyle.italic),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () async {
-                  await AiKeyVault.setCustomApiKey(null);
-                  if (ctx.mounted) Navigator.pop(ctx);
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Đã khôi phục khóa mặc định của hệ thống')),
-                    );
-                  }
-                },
-                child: const Text('Mặc định', style: TextStyle(color: AppColors.textMuted)),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  final text = keyInputController.text.trim();
-                  if (text.isNotEmpty) {
-                    await AiKeyVault.setCustomApiKey(text);
-                  }
-                  if (ctx.mounted) Navigator.pop(ctx);
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Đã cập nhật khóa Gemini API thành công')),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryGold,
-                  foregroundColor: Colors.black,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                ),
-                child: const Text('Lưu Khóa', style: TextStyle(fontWeight: FontWeight.bold)),
-              ),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
   void _resetChatHistory() {
     _aiService.clearHistory();
     setState(() {
@@ -313,9 +175,11 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
         ChatMessageModel(
           id: 'reset',
           isUser: false,
-          text: 'Lịch sử hội thoại đã được làm mới. Quý khách cần em hỗ trợ gì ạ?',
+          text: 'Dạ cuộc trò chuyện đã được làm mới. Em là Okamura AI Caddie, Quý khách cần em hỗ trợ gì thêm không ạ?',
           timestamp: DateTime.now(),
           quickPrompts: _initialSuggestions,
+          actionRoute: '/booking',
+          actionLabel: 'Chuyển Đến Đặt Phòng Ngay →',
         ),
       );
     });
@@ -442,65 +306,14 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
                       ),
                     ),
                     const LanguageSelectorPill(compact: true),
-                    if (isCompact) ...[
-                      PopupMenuButton<String>(
-                        tooltip: 'Tùy chọn',
-                        icon: const Icon(Icons.more_vert_rounded, color: AppColors.textMuted, size: 19),
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
-                        color: const Color(0xFF1E293B),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(color: AppColors.primaryGold.withValues(alpha: 0.3)),
-                        ),
-                        onSelected: (val) {
-                          if (val == 'reset') {
-                            _resetChatHistory();
-                          } else if (val == 'settings') {
-                            _showApiKeySettingsDialog();
-                          }
-                        },
-                        itemBuilder: (ctx) => [
-                          const PopupMenuItem(
-                            value: 'reset',
-                            height: 38,
-                            child: Row(
-                              children: [
-                                Icon(Icons.restart_alt_rounded, color: AppColors.primaryGold, size: 17),
-                                SizedBox(width: 8),
-                                Text('Làm mới cuộc trò chuyện', style: TextStyle(color: Colors.white, fontSize: 12)),
-                              ],
-                            ),
-                          ),
-                          const PopupMenuItem(
-                            value: 'settings',
-                            height: 38,
-                            child: Row(
-                              children: [
-                                Icon(Icons.tune_rounded, color: AppColors.primaryGold, size: 17),
-                                SizedBox(width: 8),
-                                Text('Cấu hình Gemini API', style: TextStyle(color: Colors.white, fontSize: 12)),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ] else ...[
-                      IconButton(
-                        tooltip: 'Cài đặt khóa API',
-                        icon: const Icon(Icons.tune_rounded, color: AppColors.textMuted, size: 19),
-                        padding: const EdgeInsets.all(6),
-                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                        onPressed: _showApiKeySettingsDialog,
-                      ),
-                      IconButton(
-                        tooltip: 'Xóa lịch sử chat',
-                        icon: const Icon(Icons.restart_alt_rounded, color: AppColors.textMuted, size: 20),
-                        padding: const EdgeInsets.all(6),
-                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                        onPressed: _resetChatHistory,
-                      ),
-                    ],
+                    const SizedBox(width: 4),
+                    IconButton(
+                      tooltip: 'Làm mới cuộc trò chuyện',
+                      icon: const Icon(Icons.restart_alt_rounded, color: AppColors.textMuted, size: 20),
+                      padding: EdgeInsets.zero,
+                      constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                      onPressed: _resetChatHistory,
+                    ),
                     IconButton(
                       tooltip: 'Đóng',
                       icon: const Icon(Icons.close_rounded, color: AppColors.textMuted, size: 22),

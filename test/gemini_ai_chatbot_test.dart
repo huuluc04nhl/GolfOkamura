@@ -85,12 +85,12 @@ void main() {
       expect(find.byType(TextField), findsOneWidget);
       expect(find.byIcon(Icons.send_rounded), findsOneWidget);
 
-      // Xác nhận các gợi ý câu hỏi nhanh (Quick Prompts)
-      expect(find.text('👑 Phòng VIP có gì đặc biệt?'), findsOneWidget);
-      expect(find.text('💰 Bảng giá các loại Bay 3D'), findsOneWidget);
+      // Xác nhận các gợi ý câu hỏi nhanh thân thiện (Friendly Quick Prompts)
+      expect(find.text('Tư vấn phòng VIP TwoVision'), findsOneWidget);
+      expect(find.text('Bảng giá các loại Bay hôm nay'), findsOneWidget);
     });
 
-    testWidgets('Giao diện AiChatBottomSheet tối ưu hoàn hảo trên khung hình Mobile không bị tràn viền', (tester) async {
+    testWidgets('Giao diện AiChatBottomSheet tối ưu khung hình Mobile và không lộ cấu hình API Key', (tester) async {
       // Giả lập màn hình mobile tiêu chuẩn (iPhone SE / Android nhỏ 375 x 667)
       tester.view.physicalSize = const Size(375, 667);
       tester.view.devicePixelRatio = 1.0;
@@ -118,15 +118,38 @@ void main() {
       expect(find.byType(TextField), findsOneWidget);
       expect(find.byIcon(Icons.send_rounded), findsOneWidget);
 
-      // Nút menu tùy chọn thu gọn (PopupMenuButton) xuất hiện trên mobile
-      expect(find.byIcon(Icons.more_vert_rounded), findsOneWidget);
+      // Đảm bảo nút Làm mới hội thoại và nút Đóng hiện diện trang nhã
+      expect(find.byIcon(Icons.restart_alt_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.close_rounded), findsOneWidget);
 
-      // Thử mở popup menu xem các tùy chọn
-      await tester.tap(find.byIcon(Icons.more_vert_rounded));
-      await tester.pumpAndSettle();
+      // Tuyệt đối không để lộ nút hay giao diện cấu hình API Key cho người dùng
+      expect(find.byIcon(Icons.tune_rounded), findsNothing);
+      expect(find.text('Cấu hình Gemini API'), findsNothing);
+      expect(find.text('Khóa Google Gemini API Key:'), findsNothing);
+    });
 
-      expect(find.text('Làm mới cuộc trò chuyện'), findsOneWidget);
-      expect(find.text('Cấu hình Gemini API'), findsOneWidget);
+    test('GeminiAiService tự động sinh gợi ý tiếp theo và gắn thẻ thao tác trực tiếp', () async {
+      final service = GeminiAiService();
+
+      // 1. Khách hỏi về tra cứu vé & lịch đặt phòng -> AI tự gắn action /my-bookings
+      final ticketReply = await service.sendMessage(
+        prompt: 'Tôi muốn xem vé đã đặt và mã PIN mở phòng',
+        currentUserName: 'Nguyễn Xuân Hào',
+        userRole: 'customer',
+      );
+      expect(ticketReply.actionRoute, '/my-bookings');
+      expect(ticketReply.actionLabel, contains('Xem Vé & Lịch Đặt'));
+      expect(ticketReply.quickPrompts.isNotEmpty, true);
+
+      // 2. Khách hỏi về menu đồ ăn thức uống -> AI tự gắn action /services
+      final fnbReply = await service.sendMessage(
+        prompt: 'Tôi muốn gọi bia tháp Sapporo và đồ ăn vào phòng',
+        currentUserName: 'Nguyễn Xuân Hào',
+        userRole: 'customer',
+      );
+      expect(fnbReply.actionRoute, '/services');
+      expect(fnbReply.actionLabel, contains('Mở Thực Đơn'));
+      expect(fnbReply.quickPrompts.isNotEmpty, true);
     });
 
     testWidgets('Giao diện AiChatBottomSheet an toàn trên màn hình siêu hẹp (320 x 568)', (tester) async {

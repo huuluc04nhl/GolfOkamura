@@ -30,50 +30,60 @@ class GeminiAiService {
     final roleLabel = userRole == 'admin' ? 'Quản trị viên' : (userRole == 'customer' ? 'Hội viên' : 'Khách vãng lai');
     final bayInfo = availableRoomsCount != null ? 'Hiện có $availableRoomsCount phòng đang sẵn sàng đón khách.' : '';
 
-    String langGuideline = 'NGÔN NGỮ PHẢN HỒI: Tiếng Việt chuẩn mực, lịch thiệp.';
+    String langGuideline = 'NGÔN NGỮ PHẢN HỒI: Tiếng Việt chuẩn mực, thân thiện, lịch thiệp.';
     if (languageCode == 'en') {
-      langGuideline = 'RESPONSE LANGUAGE: Always respond in natural, professional English.';
+      langGuideline = 'RESPONSE LANGUAGE: Always respond in natural, friendly, professional English.';
     } else if (languageCode == 'ko') {
-      langGuideline = '응답 언어: 골프존 전문 용어를 포함하여 정중하고 세련된 한국어로 답변해주세요.';
+      langGuideline = '응답 언어: 골프존 전문 용어를 포함하여 친절하고 세련된 한국어로 답변해주세요.';
     } else if (languageCode == 'ja') {
-      langGuideline = '回答言語: オカムラゴルフの精神に則り、丁寧で上質な日本語でお答えください。';
+      langGuideline = '回答言語: オカムラゴルフの精神に則り、親切で上質な日本語でお答えください。';
     }
 
     return '''
-Bạn là Okamura AI Caddie — Trợ lý ảo & Chuyên gia đồng hành độc quyền của tổ hợp Golf 3D trong nhà cao cấp OKAMURA GOLFZON LOUNGE.
+Bạn là Okamura AI Caddie — Trợ lý ảo & Chuyên gia đồng hành độc quyền của tổ hợp Golf 3D trong nhà cao cấp OKAMURA GOLFZON LOUNGE (Thuận An, Bình Dương).
 Bạn đang trò chuyện với: $userLabel (Vai trò: $roleLabel). $bayInfo
 $langGuideline
 
-PHONG CÁCH GIAO TIẾP:
-- Lịch thiệp, tinh tế, niềm nở, chuẩn mực hiếu khách Omotenashi (Nhật Bản) kết hợp phong thái sang trọng của môn thể thao Golf.
-- Sử dụng ngôn ngữ chuẩn mực, xưng hô tôn trọng, gọi khách là "Quý khách" hoặc "Anh/Chị $userLabel".
-- Trả lời súc tích, ngắn gọn, dùng gạch đầu dòng rõ ràng, tránh nói dông dài.
+PHONG CÁCH GIAO TIẾP (THÂN THIỆN, NIỀM NỞ & TINH TẾ CHUẨN OMOTENASHI):
+- Luôn giữ thái độ thân thiện, ấm áp, tận tình, xưng hô "Em" hoặc "Okamura AI", gọi khách là "Quý khách" hoặc "Anh/Chị $userLabel".
+- Lắng nghe chu đáo, giải đáp rõ ràng, dễ hiểu, dùng các gạch đầu dòng trực quan, tránh câu chữ dài dòng hoặc máy móc.
+- Chủ động đề xuất giải pháp tốt nhất để phục vụ khách hàng chu đáo nhất.
 
 KIẾN THỨC VẬN HÀNH & DỊCH VỤ CỦA OKAMURA GOLFZON:
 1. Hệ thống Bay chơi Golfzon TwoVision NX 3D (12 phòng):
-   - VIP Suite: 550.000đ/giờ (Màn cong Panorama, sofa da Ý, quầy bar riêng, cảm biến TwoVision kép).
+   - VIP TwoVision Suite: 550.000đ/giờ (Màn cong Panorama, sofa da Ý, quầy bar riêng, cảm biến phân tích cú đánh 3D kép).
    - Standard 3D: 350.000đ/giờ (Cảm biến chuẩn quốc tế, phù hợp luyện tập & thi đấu 18 hố).
    - Dual Tee 2 chiều: 400.000đ/giờ (Tee phát bóng 2 chiều, phù hợp cả golfer tay trái và tay phải).
-   - Connecting Suite: 750.000đ/giờ (Thông 2 phòng, phục vụ nhóm đông 6-10 người giao lưu).
-   - GDR Driving Range AI: 250.000đ/giờ (Làn tập phân tích swing, góc cất bóng, tốc độ đầu gậy bằng AI).
+   - Connecting Suite: 750.000đ/giờ (Thông 2 phòng, phục vụ nhóm 6-10 golfer giao lưu tiệc rượu).
+   - GDR Driving Range AI: 250.000đ/giờ (Làn tập phân tích swing, góc cất bóng, tốc độ đầu gậy AI).
    - PGA Coaching Studio: 600.000đ/giờ (Phòng phân tích swing chuyên sâu cùng HLV PGA).
 2. Thời lượng chơi khuyến nghị:
-   - 1 người chơi 18 hố: khoảng 1 giờ.
-   - 2 người chơi 18 hố: khoảng 1.5 - 2 giờ.
-   - Nhóm 3-4 người: khoảng 2.5 - 3 giờ.
+   - 1 golfer chơi 18 hố: khoảng 1 giờ.
+   - 2 golfer chơi 18 hố: khoảng 1.5 - 2 giờ.
+   - Nhóm 3-4 golfer: khoảng 2.5 - 3 giờ.
 3. Trang bị & Đồ dùng:
    - Miễn phí găng tay, giày golf cao cấp.
    - Cho thuê bộ gậy TaylorMade Qi10, Stealth 2 (cả tay phải và tay trái).
-4. Menu Ẩm thực & Quầy Bar (phục vụ tận Bay):
-   - Đồ uống: Bia Sapporo Tháp Vàng 2.5L (400.000đ), Bia Tiger Bạc (30.000đ/lon), Cà phê pha máy Arabica (45.000đ), Nước ép cam tươi (50.000đ).
+4. Thực đơn Lounge & Quầy Bar (phục vụ tận Bay):
+   - Đồ uống: Bia Sapporo Tháp Vàng 2.5L (400.000đ), Bia Tiger Bạc (30.000đ/lon), Cà phê pha máy Arabica (45.000đ), Nước ép hoa quả tươi (50.000đ).
    - Đồ ăn: Bò Sirloin Steak Úc nướng đá (295.000đ), Gà rán sốt cay Hàn Quốc (165.000đ), Khoai tây chiên sốt nấm Truffle (85.000đ).
-5. Chính sách đặt phòng:
+5. Chính sách đặt phòng & Vé:
    - Khách có thể đặt online giữ chỗ, thanh toán qua chuyển khoản VietQR tự động hoặc thanh toán tại quầy.
-   - Khách vãng lai có thể đặt mà không cần tạo tài khoản (nhập tên, SĐT và email nhận vé).
-   - Hội viên tích lũy điểm thưởng VIP để nâng hạng Thẻ Vàng/Kim Cương.
+   - Khách vãng lai có thể đặt mà không cần tạo tài khoản.
+   - Khách có thể đổi ngày giờ chơi, xem mã PIN mở phòng tại mục "Vé của tôi".
 
-Nếu câu trả lời liên quan đến việc đặt phòng, hãy khuyên khách bấm nút Đặt phòng.
-Nếu câu hỏi về đồ uống/món ăn, khuyên khách xem Menu Dịch vụ.
+QUY TẮC TỰ ĐỘNG GẮN THAO TÁC HỆ THỐNG:
+Nếu nội dung câu hỏi/câu trả lời liên quan đến việc đặt phòng, mở menu gọi món, xem vé hoặc về trang chủ, bạn PHẢI chèn thẻ điều hướng hành động tương ứng ở cuối câu trả lời:
+- [ACTION:BOOKING] nếu khách muốn đặt phòng, kiểm tra phòng trống, chọn Bay, hỏi giá phòng.
+- [ACTION:SERVICES] nếu khách muốn xem menu, gọi đồ ăn, bia tháp, nước uống, thuê gậy, caddie.
+- [ACTION:MY_BOOKINGS] nếu khách muốn xem vé, đổi giờ chơi, hủy vé, tra cứu mã PIN mở phòng.
+- [ACTION:HOME] nếu khách muốn về trang chủ hoặc xem tổng quan tổ hợp.
+
+QUY TẮC TỰ ĐỘNG GỢI Ý CÂU HỎI TIẾP THEO (DYNAMIC FOLLOW-UP SUGGESTIONS):
+Ở dòng cuối cùng của câu trả lời, bạn BẮT BUỘC chèn thẻ gợi ý 3 câu hỏi tiếp theo bám sát theo ngữ cảnh câu hỏi của khách và câu trả lời của bạn theo cú pháp:
+[SUGGESTIONS: Gợi ý 1 | Gợi ý 2 | Gợi ý 3]
+Ví dụ:
+[SUGGESTIONS: Đặt phòng VIP ngay | Bảng giá các loại Bay | Menu đồ uống quầy Bar]
 ''';
   }
 
@@ -165,7 +175,7 @@ Nếu câu hỏi về đồ uống/món ăn, khuyên khách xem Menu Dịch vụ
     }
 
     if (responseText != null && responseText.trim().isNotEmpty) {
-      return _createMessageWithIntent(responseText.trim());
+      return _createMessageWithIntent(responseText.trim(), prompt);
     }
 
     // Nếu các model đều bận hoặc mạng lỗi, sử dụng fallback thông minh
@@ -173,32 +183,124 @@ Nếu câu hỏi về đồ uống/món ăn, khuyên khách xem Menu Dịch vụ
   }
 
   /// Phân tích nội dung phản hồi để gán CTA Action trực tiếp (Đặt phòng / Order món / Xem vé)
-  ChatMessageModel _createMessageWithIntent(String text) {
-    final lower = text.toLowerCase();
+  /// và bóc tách các gợi ý câu hỏi tiếp theo dựa trên câu hỏi + câu trả lời
+  ChatMessageModel _createMessageWithIntent(String text, String userPrompt) {
+    String cleanText = text;
     String? actionRoute;
     String? actionLabel;
-    final List<String> prompts = [];
+    List<String> dynamicSuggestions = [];
 
-    if (lower.contains('đặt phòng') || lower.contains('chọn phòng') || lower.contains('giá phòng') || lower.contains('vip suite')) {
-      actionRoute = '/booking';
-      actionLabel = 'Đặt Bay Chơi Ngay →';
-      prompts.addAll(['Phòng VIP còn trống không?', 'Tư vấn gậy TaylorMade', 'Menu quầy Bar']);
-    } else if (lower.contains('đồ uống') || lower.contains('bia') || lower.contains('món ăn') || lower.contains('menu') || lower.contains('f&b')) {
-      actionRoute = '/services';
-      actionLabel = 'Mở Menu Quầy Bar & Bếp →';
-      prompts.addAll(['Tháp bia Sapporo giá bao nhiêu?', 'Đặt phòng chơi 2 tiếng', 'Cần Caddie hỗ trợ']);
-    } else {
-      prompts.addAll(['Bảng giá các loại Bay', 'Hôm nay còn phòng không?', 'Tư vấn set gậy TaylorMade']);
+    // 1. Phân tích thẻ gợi ý động [SUGGESTIONS: ...] do AI sinh ra
+    final suggestionsRegex = RegExp(r'\[SUGGESTIONS:\s*(.*?)\]', caseSensitive: false);
+    final suggestionsMatch = suggestionsRegex.firstMatch(cleanText);
+    if (suggestionsMatch != null) {
+      final rawSuggestions = suggestionsMatch.group(1) ?? '';
+      final parts = rawSuggestions
+          .split('|')
+          .map((s) => s.trim().replaceAll(RegExp(r'^[^\w\s\u00C0-\u1EF9]+'), '').trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
+      if (parts.isNotEmpty) {
+        dynamicSuggestions = parts;
+      }
+      cleanText = cleanText.replaceAll(suggestionsRegex, '').trim();
+    }
+
+    // 2. Phân tích thẻ hành động trực tiếp [ACTION:...] do AI sinh ra
+    final actionRegex = RegExp(r'\[ACTION:\s*(BOOKING|SERVICES|MY_BOOKINGS|HOME)\]', caseSensitive: false);
+    final actionMatch = actionRegex.firstMatch(cleanText);
+    if (actionMatch != null) {
+      final actionType = actionMatch.group(1)?.toUpperCase();
+      cleanText = cleanText.replaceAll(actionRegex, '').trim();
+      switch (actionType) {
+        case 'BOOKING':
+          actionRoute = '/booking';
+          actionLabel = 'Chuyển Đến Đặt Phòng Ngay →';
+          break;
+        case 'SERVICES':
+          actionRoute = '/services';
+          actionLabel = 'Mở Thực Đơn Quầy Bar & Bếp →';
+          break;
+        case 'MY_BOOKINGS':
+          actionRoute = '/my-bookings';
+          actionLabel = 'Xem Vé & Lịch Đặt Của Tôi →';
+          break;
+        case 'HOME':
+          actionRoute = '/';
+          actionLabel = 'Về Trang Chủ Okamura →';
+          break;
+      }
+    }
+
+    // 3. Fallback phân tích ý định dựa trên từ khóa nếu AI chưa gắn thẻ ACTION
+    final lowerCombined = '$userPrompt $cleanText'.toLowerCase();
+    if (actionRoute == null) {
+      if (lowerCombined.contains('đặt phòng') ||
+          lowerCombined.contains('chọn phòng') ||
+          lowerCombined.contains('giá phòng') ||
+          lowerCombined.contains('phòng trống') ||
+          lowerCombined.contains('bảng giá') ||
+          lowerCombined.contains('vip suite') ||
+          lowerCombined.contains('bay ')) {
+        actionRoute = '/booking';
+        actionLabel = 'Chuyển Đến Đặt Phòng Ngay →';
+      } else if (lowerCombined.contains('đồ uống') ||
+          lowerCombined.contains('tháp bia') ||
+          lowerCombined.contains('bia') ||
+          lowerCombined.contains('món ăn') ||
+          lowerCombined.contains('menu') ||
+          lowerCombined.contains('f&b') ||
+          lowerCombined.contains('thuê gậy') ||
+          lowerCombined.contains('caddie')) {
+        actionRoute = '/services';
+        actionLabel = 'Mở Thực Đơn Quầy Bar & Bếp →';
+      } else if (lowerCombined.contains('vé của tôi') ||
+          lowerCombined.contains('lịch đặt') ||
+          lowerCombined.contains('mã pin') ||
+          lowerCombined.contains('đổi giờ') ||
+          lowerCombined.contains('hủy phòng')) {
+        actionRoute = '/my-bookings';
+        actionLabel = 'Xem Vé & Lịch Đặt Của Tôi →';
+      }
+    }
+
+    // 4. Nếu AI chưa sinh gợi ý động, tự sinh gợi ý theo ngữ cảnh câu hỏi + câu trả lời
+    if (dynamicSuggestions.isEmpty) {
+      if (lowerCombined.contains('đặt phòng') || lowerCombined.contains('giá') || lowerCombined.contains('bay')) {
+        dynamicSuggestions = [
+          'Tư vấn phòng VIP TwoVision',
+          'Chơi 18 hố mất mấy tiếng?',
+          'Xem thực đơn bia & đồ ăn nhẹ',
+        ];
+      } else if (lowerCombined.contains('menu') || lowerCombined.contains('bia') || lowerCombined.contains('ăn')) {
+        dynamicSuggestions = [
+          'Tháp bia Sapporo giá bao nhiêu?',
+          'Đặt phòng chơi 2 tiếng',
+          'Có cho thuê set gậy không?',
+        ];
+      } else if (lowerCombined.contains('vé') || lowerCombined.contains('lịch') || lowerCombined.contains('mã pin')) {
+        dynamicSuggestions = [
+          'Cách nhận mã PIN mở Bay',
+          'Hướng dẫn đổi giờ chơi',
+          'Đặt thêm 1 Bay mới',
+        ];
+      } else {
+        dynamicSuggestions = [
+          'Bảng giá các loại Bay hôm nay',
+          'Tư vấn chọn Bay cho 2 người',
+          'Thực đơn đồ uống quầy Bar',
+        ];
+      }
     }
 
     return ChatMessageModel(
       id: 'ai_${DateTime.now().microsecondsSinceEpoch}',
       isUser: false,
-      text: text,
+      text: cleanText,
       timestamp: DateTime.now(),
       actionRoute: actionRoute,
       actionLabel: actionLabel,
-      quickPrompts: prompts,
+      quickPrompts: dynamicSuggestions,
     );
   }
 
@@ -208,38 +310,77 @@ Nếu câu hỏi về đồ uống/món ăn, khuyên khách xem Menu Dịch vụ
     String reply = '';
     String? actionRoute;
     String? actionLabel;
+    List<String> dynamicSuggestions = [];
 
     if (p.contains('giá') || p.contains('bảng giá') || p.contains('bao nhiêu')) {
-      reply = '''Kính chào Quý khách! Bảng giá giờ chơi tại Okamura Golfzon Lounge:
-• Standard 3D: 350.000đ/giờ
-• Dual Tee 2 chiều: 400.000đ/giờ
-• VIP TwoVision Suite: 550.000đ/giờ
-• Connecting Suite (phòng đôi): 750.000đ/giờ
-• GDR Driving Range AI: 250.000đ/giờ
-Quý khách có thể đặt online nhận phòng ngay hôm nay!''';
+      reply = '''Dạ, em xin gửi Quý khách bảng giá giờ chơi ưu đãi tại Okamura Golfzon Lounge:
+
+• Standard 3D: 350.000đ/giờ (chuẩn thi đấu quốc tế)
+• Dual Tee 2 chiều: 400.000đ/giờ (hỗ trợ golfer thuận tay trái)
+• VIP TwoVision NX: 550.000đ/giờ (màn cong Panorama, quầy bar riêng)
+• Connecting Suite: 750.000đ/giờ (phòng đôi giao lưu 6-10 người)
+• GDR Driving Range AI: 250.000đ/giờ (chuyên sâu luyện swing)
+
+Quý khách có thể bấm nút bên dưới để chọn Bay và giữ chỗ ngay ạ!''';
       actionRoute = '/booking';
-      actionLabel = 'Đặt phòng ngay →';
-    } else if (p.contains('đặt phòng') || p.contains('bay') || p.contains('trống')) {
-      reply = '''Hệ thống Okamura Golfzon có 12 Bay công nghệ cao TwoVision NX 3D sẵn sàng phục vụ. Quý khách có thể chọn ngày, giờ và thời lượng ca chơi trực tiếp trên ứng dụng.''';
+      actionLabel = 'Chuyển Đến Đặt Phòng Ngay →';
+      dynamicSuggestions = [
+        'Đặt Bay VIP TwoVision',
+        'Chơi 18 hố mất mấy tiếng?',
+        'Xem menu đồ uống phục vụ tận Bay',
+      ];
+    } else if (p.contains('đặt phòng') || p.contains('bay') || p.contains('trống') || p.contains('chọn phòng')) {
+      reply = '''Dạ hiện tổ hợp Okamura có 12 Bay công nghệ cao TwoVision NX 3D đang sẵn sàng phục vụ. Quý khách có thể tự chọn khung giờ chơi và số lượng Golfer trực tiếp trên ứng dụng ạ.''';
       actionRoute = '/booking';
-      actionLabel = 'Xem phòng & Đặt ngay →';
-    } else if (p.contains('menu') || p.contains('ăn') || p.contains('uống') || p.contains('bia')) {
-      reply = '''Okamura Lounge hân hạnh phục vụ tận Bay:
-• Tháp bia Sapporo Vàng 2.5L: 400.000đ
-• Bia Tiger Bạc 330ml: 30.000đ
-• Cà phê Arabica / Nước ép hoa quả: 45.000đ - 50.000đ
-• Bò Bít tết Úc nướng đá & Khoai tây chiên sốt Truffle cao cấp.''';
+      actionLabel = 'Chuyển Đến Đặt Phòng Ngay →';
+      dynamicSuggestions = [
+        'Bảng giá các loại Bay',
+        'Thuê bộ gậy TaylorMade Qi10',
+        'Menu đồ ăn và bia tháp',
+      ];
+    } else if (p.contains('menu') || p.contains('ăn') || p.contains('uống') || p.contains('bia') || p.contains('bar')) {
+      reply = '''Dạ quầy Bar & Bếp Okamura Lounge hân hạnh phục vụ tận Bay chơi của Quý khách:
+
+• Tháp bia Sapporo Gold 2.5L: 400.000đ
+• Bia Tiger Bạc lon ướp lạnh: 30.000đ
+• Cà phê pha máy Arabica thơm nồng: 45.000đ
+• Nước ép hoa quả tươi theo mùa: 50.000đ
+• Bò Bít tết Úc nướng đá & Khoai tây chiên sốt Truffle thơm lừng.
+
+Quý khách có thể mở thực đơn để chọn món ngay ạ!''';
       actionRoute = '/services';
-      actionLabel = 'Xem menu chi tiết →';
+      actionLabel = 'Mở Thực Đơn Quầy Bar & Bếp →';
+      dynamicSuggestions = [
+        'Tháp bia Sapporo có sẵn không?',
+        'Đặt phòng chơi 2 tiếng',
+        'Hỏi về set gậy thuê',
+      ];
+    } else if (p.contains('vé') || p.contains('lịch') || p.contains('mã pin') || p.contains('hủy') || p.contains('đổi')) {
+      reply = '''Dạ Quý khách có thể tra cứu toàn bộ vé đã đặt, kiểm tra mã PIN mở phòng hoặc đổi giờ chơi trực tiếp tại mục "Vé của tôi" ạ.''';
+      actionRoute = '/my-bookings';
+      actionLabel = 'Xem Vé & Lịch Đặt Của Tôi →';
+      dynamicSuggestions = [
+        'Hướng dẫn đổi giờ chơi',
+        'Cách nhập mã PIN mở Bay',
+        'Đặt thêm phòng mới',
+      ];
     } else {
-      reply = '''Dạ, Okamura AI Caddie luôn sẵn sàng hỗ trợ Quý khách về:
-• Tư vấn & chọn Bay chơi Golfzon 3D phù hợp
-• Bảng giá ca chơi & thời lượng 18 hố
-• Cho thuê set gậy TaylorMade Qi10 cao cấp
-• Menu ẩm thực & quầy Bar tận phòng.
-Quý khách cần hỗ trợ thêm thông tin gì ạ?''';
+      reply = '''Dạ em là Okamura AI Caddie — luôn sẵn sàng đồng hành cùng Quý khách 24/7!
+
+Em có thể hỗ trợ Quý khách:
+• Tư vấn & chọn Bay chơi Golfzon TwoVision phù hợp
+• Báo giá chi tiết & ước tính thời gian chơi 18 hố
+• Giới thiệu set gậy TaylorMade Qi10 & hỗ trợ Caddie
+• Xem thực đơn đồ uống & ẩm thực phục vụ tận phòng.
+
+Quý khách muốn em hỗ trợ điều gì trước ạ?''';
       actionRoute = '/booking';
-      actionLabel = 'Đặt phòng ngay →';
+      actionLabel = 'Chuyển Đến Đặt Phòng Ngay →';
+      dynamicSuggestions = [
+        'Bảng giá các loại Bay hôm nay',
+        'Tư vấn phòng VIP TwoVision',
+        'Xem menu đồ uống quầy Bar',
+      ];
     }
 
     return ChatMessageModel(
@@ -249,7 +390,7 @@ Quý khách cần hỗ trợ thêm thông tin gì ạ?''';
       timestamp: DateTime.now(),
       actionRoute: actionRoute,
       actionLabel: actionLabel,
-      quickPrompts: ['Bảng giá các phòng', 'Xem menu đồ uống', 'Đặt phòng VIP'],
+      quickPrompts: dynamicSuggestions,
     );
   }
 }
