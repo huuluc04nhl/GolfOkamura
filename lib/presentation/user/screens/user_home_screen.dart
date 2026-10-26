@@ -1299,37 +1299,43 @@ class _UserHomeScreenState extends State<UserHomeScreen>
             padding: const EdgeInsets.only(right: 8),
             child: InkWell(
               onTap: () => setState(() => _selectedCategory = cat['id']!),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(24),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 decoration: BoxDecoration(
-                  color: isSelected
-                      ? AppColors.primaryGold
-                      : AppColors.userCardDark,
-                  borderRadius: BorderRadius.circular(20),
+                  color: isSelected ? null : AppColors.glassBg,
+                  gradient: isSelected ? AppColors.goldGradient : null,
+                  borderRadius: BorderRadius.circular(24),
                   border: Border.all(
                     color: isSelected
                         ? AppColors.primaryGold
-                        : AppColors.userBorder,
-                    width: 1,
+                        : AppColors.glassBorder,
+                    width: 1.2,
                   ),
                   boxShadow: isSelected
                       ? [
                           BoxShadow(
-                            color: AppColors.primaryGold.withValues(alpha: 0.35),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+                            color: AppColors.primaryGold.withValues(alpha: 0.4),
+                            blurRadius: 10,
+                            offset: const Offset(0, 3),
                           ),
                         ]
-                      : null,
+                      : [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.3),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                 ),
                 child: Text(
                   cat['label']!,
                   style: TextStyle(
-                    color: isSelected ? Colors.black : AppColors.textMuted,
+                    color: isSelected ? Colors.black : Colors.white70,
                     fontSize: 12,
-                    fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                    fontWeight: isSelected ? FontWeight.w900 : FontWeight.w700,
+                    letterSpacing: isSelected ? 0.3 : 0,
                   ),
                 ),
               ),

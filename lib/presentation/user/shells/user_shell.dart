@@ -119,16 +119,21 @@ class UserShell extends StatelessWidget {
           child: Container(
             height: 70 + MediaQuery.paddingOf(context).bottom,
             decoration: BoxDecoration(
-              color: AppColors.userCardDark,
+              color: AppColors.glassBg.withValues(alpha: 0.96),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.5),
-                  blurRadius: 16,
+                  color: Colors.black.withValues(alpha: 0.7),
+                  blurRadius: 20,
                   offset: const Offset(0, -4),
+                ),
+                BoxShadow(
+                  color: AppColors.primaryGold.withValues(alpha: 0.05),
+                  blurRadius: 24,
+                  offset: const Offset(0, -2),
                 ),
               ],
               border: Border(
-                top: const BorderSide(color: AppColors.userBorder, width: 1),
+                top: BorderSide(color: AppColors.primaryGold.withValues(alpha: 0.3), width: 1.2),
                 left: isWideScreen
                     ? BorderSide(color: AppColors.primaryGold.withValues(alpha: 0.2), width: 1)
                     : BorderSide.none,
@@ -216,23 +221,25 @@ class UserShell extends StatelessWidget {
         height: 54,
         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
         decoration: BoxDecoration(
-          gradient: isSelected
-              ? LinearGradient(
-                  colors: [
-                    AppColors.primaryGold.withValues(alpha: 0.22),
-                    AppColors.darkGold.withValues(alpha: 0.10),
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                )
-              : null,
-          borderRadius: BorderRadius.circular(14),
+          color: isSelected
+              ? AppColors.primaryGold.withValues(alpha: 0.16)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected
-                ? AppColors.primaryGold.withValues(alpha: 0.55)
+                ? AppColors.primaryGold.withValues(alpha: 0.6)
                 : Colors.transparent,
-            width: 1,
+            width: 1.2,
           ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.primaryGold.withValues(alpha: 0.25),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
         ),
         child: FittedBox(
           fit: BoxFit.scaleDown,

@@ -285,23 +285,38 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
   Widget _buildStepIndicator(double hPadding) {
     final isGuest = context.watch<BookingProvider>().isGuest;
     return Container(
-      color: AppColors.userCardDark,
-      padding: EdgeInsets.symmetric(horizontal: hPadding > 12 ? 12 : 8, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.glassBg,
+        border: Border(
+          bottom: BorderSide(
+            color: AppColors.glassBorder,
+            width: 1.2,
+          ),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      padding: EdgeInsets.symmetric(horizontal: hPadding > 12 ? 12 : 8, vertical: 10),
       child: Row(
         children: [
           Expanded(
             child: _buildStepPill(1, context.tr('step_1_date'), Icons.calendar_today_rounded),
           ),
-          const Icon(Icons.chevron_right, size: 13, color: AppColors.userBorder),
+          Icon(Icons.chevron_right, size: 13, color: AppColors.primaryGold.withValues(alpha: 0.3)),
           Expanded(
             child: _buildStepPill(2, context.tr('step_2_time'), Icons.access_time_rounded),
           ),
-          const Icon(Icons.chevron_right, size: 13, color: AppColors.userBorder),
+          Icon(Icons.chevron_right, size: 13, color: AppColors.primaryGold.withValues(alpha: 0.3)),
           Expanded(
             child: _buildStepPill(3, context.tr('step_3_room'), Icons.meeting_room_rounded),
           ),
           if (isGuest) ...[
-            const Icon(Icons.chevron_right, size: 13, color: AppColors.userBorder),
+            Icon(Icons.chevron_right, size: 13, color: AppColors.primaryGold.withValues(alpha: 0.3)),
             Expanded(
               child: _buildStepPill(4, context.tr('step_4_info'), Icons.person_pin_rounded),
             ),
@@ -1841,22 +1856,34 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                         padding: const EdgeInsets.only(left: 6),
                         child: InkWell(
                           onTap: () => setState(() => _durationHours = hrs),
-                          borderRadius: BorderRadius.circular(8),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          borderRadius: BorderRadius.circular(20),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 180),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
-                              color: selected ? AppColors.primaryGold : AppColors.userSurfaceDark,
-                              borderRadius: BorderRadius.circular(8),
+                              color: selected ? null : AppColors.glassBg,
+                              gradient: selected ? AppColors.goldGradient : null,
+                              borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: selected ? AppColors.primaryGold : AppColors.userBorder,
+                                color: selected ? AppColors.primaryGold : AppColors.glassBorder,
+                                width: 1.2,
                               ),
+                              boxShadow: selected
+                                  ? [
+                                      BoxShadow(
+                                        color: AppColors.primaryGold.withValues(alpha: 0.35),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ]
+                                  : null,
                             ),
                             child: Text(
                               '${hrs}h',
                               style: TextStyle(
-                                color: selected ? Colors.black : AppColors.textMuted,
-                                fontSize: 11.5,
-                                fontWeight: FontWeight.w800,
+                                color: selected ? Colors.black : Colors.white70,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w900,
                               ),
                             ),
                           ),

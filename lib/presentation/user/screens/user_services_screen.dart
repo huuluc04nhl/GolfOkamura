@@ -443,14 +443,25 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                     ),
                   ),
 
-                // 3. Thanh Tab danh mục (Hỗ trợ cả bấm và vuốt ngang màn hình)
+                // 3. Thanh Tab danh mục Glassmorphism (đồng nhất chuẩn 2 Tab AuthScreen)
                 Container(
-                  height: 42,
+                  height: 44,
                   margin: EdgeInsets.symmetric(horizontal: hPadding),
+                  padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: AppColors.userCardDark,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.userBorder),
+                    color: AppColors.glassBg,
+                    borderRadius: BorderRadius.circular(28),
+                    border: Border.all(
+                      color: AppColors.glassBorder,
+                      width: 1.2,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.4),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: TabBar(
                     controller: _tabController,
@@ -459,22 +470,28 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                     indicatorSize: TabBarIndicatorSize.tab,
                     dividerColor: Colors.transparent,
                     indicator: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [AppColors.lightGold, AppColors.primaryGold],
-                      ),
-                      borderRadius: BorderRadius.circular(10),
+                      gradient: AppColors.goldGradient,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primaryGold.withValues(alpha: 0.35),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     labelColor: Colors.black,
-                    unselectedLabelColor: AppColors.textMuted,
+                    unselectedLabelColor: Colors.white70,
                     labelStyle: const TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.w800,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 0.2,
                     ),
                     unselectedLabelStyle: const TextStyle(
                       fontSize: 12,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
                     ),
-                    padding: const EdgeInsets.all(3),
+                    padding: EdgeInsets.zero,
                     tabs: const [
                       Tab(text: 'Đồ uống & Bar'),
                       Tab(text: 'Ẩm thực'),

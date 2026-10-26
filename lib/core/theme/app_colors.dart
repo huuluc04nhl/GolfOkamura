@@ -8,11 +8,28 @@ class AppColors {
   static const Color lightGold = Color(0xFFDFC7A3);
   static const Color softGold = Color(0xFFF7F2EA);
 
-  // User Theme Colors (Luxury Dark & Warm Charcoal)
-  static const Color userBgDark = Color(0xFF111215);
-  static const Color userCardDark = Color(0xFF1B1C22);
-  static const Color userSurfaceDark = Color(0xFF23252E);
-  static const Color userBorder = Color(0xFF2C2F3A);
+  // User Theme Colors (Glassmorphism & Obsidian Carbon chuẩn AuthScreen)
+  static const Color userBgDark = Color(0xFF070B14);
+  static const Color userCardDark = Color(0xFF0F172A);
+  static const Color userSurfaceDark = Color(0xFF141E33);
+  static const Color userBorder = Color(0x3DB69568); // Viền kính ánh vàng kim mờ 24%
+
+  // Glassmorphism System Colors (Đồng bộ tuyệt đối chuẩn 2 Tab Đăng nhập / Đăng ký)
+  static const Color glassBg = Color(0xFF090D18);
+  static const Color glassSurface = Color(0xFF0F172A);
+  static const Color glassBorder = Color(0x4DB69568); // 30% primary gold
+  static const Color glassBorderActive = Color(0xFFB69568);
+
+  // Gradient Vàng Kim Hoàng Gia (Dành cho Active Tab, Nút bấm & Điểm nhấn ánh kim)
+  static const LinearGradient goldGradient = LinearGradient(
+    colors: [
+      Color(0xFFE5C887),
+      Color(0xFFB69568),
+      Color(0xFFB58728),
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
 
   // Light Mode Colors (khi cần nền sáng)
   static const Color userBgLight = Color(0xFFFAF8F5);
