@@ -24,7 +24,16 @@ class AppRouter {
       // ==========================================
       GoRoute(
         path: '/login',
-        builder: (context, state) => const AuthScreen(),
+        builder: (context, state) => AuthScreen(
+          initialTab: state.uri.queryParameters['tab'],
+        ),
+      ),
+      GoRoute(
+        path: '/auth',
+        redirect: (context, state) {
+          final tab = state.uri.queryParameters['tab'];
+          return tab != null ? '/login?tab=$tab' : '/login';
+        },
       ),
       // ==========================================
       // NHÁNH 1: USER MOBILE (THEME OKAMURA GOLFZON)

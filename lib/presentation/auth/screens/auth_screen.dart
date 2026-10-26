@@ -11,7 +11,8 @@ import '../../shared_widgets/language_selector_pill.dart';
 /// - Admin -> Chuyển vào Giao diện Quản trị Web/Desktop (/admin/dashboard)
 /// - Khách hàng -> Chuyển vào Giao diện Mobile App (/home)
 class AuthScreen extends StatefulWidget {
-  const AuthScreen({super.key});
+  final String? initialTab;
+  const AuthScreen({super.key, this.initialTab});
 
   @override
   State<AuthScreen> createState() => _AuthScreenState();
@@ -42,7 +43,8 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    final initialIndex = widget.initialTab == 'register' ? 1 : 0;
+    _tabController = TabController(length: 2, vsync: this, initialIndex: initialIndex);
   }
 
   @override
@@ -336,38 +338,76 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
 
   Widget _buildTabBar(bool isNarrow) {
     return Container(
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: const Color(0xFF070B14),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF1E293B)),
+        color: const Color(0xFF090D18),
+        borderRadius: BorderRadius.circular(28),
+        border: Border.all(
+          color: AppColors.primaryGold.withValues(alpha: 0.3),
+          width: 1.2,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.4),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: TabBar(
         controller: _tabController,
         onTap: (index) => setState(() {}),
+        dividerColor: Colors.transparent,
+        dividerHeight: 0,
         indicator: BoxDecoration(
-          color: AppColors.primaryGold,
-          borderRadius: BorderRadius.circular(14),
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xFFE5C887),
+              AppColors.primaryGold,
+              Color(0xFFB58728),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primaryGold.withValues(alpha: 0.35),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         indicatorSize: TabBarIndicatorSize.tab,
         labelColor: Colors.black,
-        unselectedLabelColor: Colors.white60,
-        labelPadding: const EdgeInsets.symmetric(horizontal: 6),
+        unselectedLabelColor: Colors.white70,
+        labelPadding: const EdgeInsets.symmetric(horizontal: 4),
         tabs: const [
           Tab(
+            height: 40,
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
                 'ĐĂNG NHẬP',
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 13,
+                  letterSpacing: 0.5,
+                ),
               ),
             ),
           ),
           Tab(
+            height: 40,
             child: FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
                 'ĐĂNG KÝ HỘI VIÊN',
-                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
+                style: TextStyle(
+                  fontWeight: FontWeight.w900,
+                  fontSize: 13,
+                  letterSpacing: 0.5,
+                ),
               ),
             ),
           ),
@@ -428,7 +468,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
               backgroundColor: AppColors.primaryGold,
               foregroundColor: Colors.black,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
               elevation: 4,
             ),
             child: _isLoggingIn
@@ -590,7 +630,7 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
               backgroundColor: const Color(0xFF10B981),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
               elevation: 4,
             ),
             child: _isRegistering

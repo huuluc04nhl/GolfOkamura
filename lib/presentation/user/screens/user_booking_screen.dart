@@ -1702,7 +1702,7 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                       runSpacing: 6,
                       children: [
                         InkWell(
-                          onTap: () => context.push('/auth'),
+                          onTap: () => context.push('/login?tab=register'),
                           borderRadius: BorderRadius.circular(6),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -1721,7 +1721,7 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                           ),
                         ),
                         InkWell(
-                          onTap: () => context.push('/auth'),
+                          onTap: () => context.push('/login?tab=login'),
                           borderRadius: BorderRadius.circular(6),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
