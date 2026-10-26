@@ -249,6 +249,10 @@ class ServiceOrderModel {
   final String status; // 'preparing', 'served', 'cancelled'
   final String orderType; // 'fnb_order' hoặc 'quick_request'
   final String? note;
+  final String? customerName;
+  final String? customerPhone;
+  final String paymentMethod; // 'pay_at_bay' (Gộp hóa đơn Bay) hoặc 'vietqr' (Quét QR ngay)
+  final String paymentStatus; // 'pending' (chưa thanh toán / gộp phòng) hoặc 'paid' (đã trả)
   final DateTime createdAt;
 
   const ServiceOrderModel({
@@ -259,6 +263,10 @@ class ServiceOrderModel {
     this.status = 'preparing',
     this.orderType = 'fnb_order',
     this.note,
+    this.customerName,
+    this.customerPhone,
+    this.paymentMethod = 'pay_at_bay',
+    this.paymentStatus = 'pending',
     required this.createdAt,
   });
 
@@ -270,6 +278,10 @@ class ServiceOrderModel {
     String? status,
     String? orderType,
     String? note,
+    String? customerName,
+    String? customerPhone,
+    String? paymentMethod,
+    String? paymentStatus,
     DateTime? createdAt,
   }) {
     return ServiceOrderModel(
@@ -280,6 +292,10 @@ class ServiceOrderModel {
       status: status ?? this.status,
       orderType: orderType ?? this.orderType,
       note: note ?? this.note,
+      customerName: customerName ?? this.customerName,
+      customerPhone: customerPhone ?? this.customerPhone,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      paymentStatus: paymentStatus ?? this.paymentStatus,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -292,6 +308,15 @@ class ServiceOrderModel {
         return 'Đã hủy';
       default:
         return 'Đang chuẩn bị';
+    }
+  }
+
+  String get paymentMethodLabel {
+    switch (paymentMethod) {
+      case 'vietqr':
+        return 'VietQR chuyển khoản';
+      default:
+        return 'Gộp hóa đơn Bay';
     }
   }
 
@@ -311,6 +336,10 @@ class ServiceOrderModel {
         'status': status,
         'orderType': orderType,
         'note': note,
+        'customerName': customerName,
+        'customerPhone': customerPhone,
+        'paymentMethod': paymentMethod,
+        'paymentStatus': paymentStatus,
         'createdAt': createdAt.toIso8601String(),
       };
 
@@ -334,6 +363,10 @@ class ServiceOrderModel {
       status: (map['status'] ?? 'preparing').toString(),
       orderType: (map['orderType'] ?? 'fnb_order').toString(),
       note: map['note']?.toString(),
+      customerName: map['customerName']?.toString(),
+      customerPhone: map['customerPhone']?.toString(),
+      paymentMethod: (map['paymentMethod'] ?? 'pay_at_bay').toString(),
+      paymentStatus: (map['paymentStatus'] ?? 'pending').toString(),
       createdAt: DateTime.tryParse(map['createdAt']?.toString() ?? '') ??
           DateTime.now(),
     );

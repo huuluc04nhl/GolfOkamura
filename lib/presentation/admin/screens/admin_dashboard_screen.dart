@@ -937,18 +937,43 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                 Formatters.formatCurrency(order.totalPrice),
                                 style: const TextStyle(color: Color(0xFFDC2626), fontWeight: FontWeight.w900, fontSize: 13),
                               ),
+                              const Spacer(),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: order.paymentMethod == 'vietqr'
+                                      ? const Color(0xFF10B981).withValues(alpha: 0.15)
+                                      : const Color(0xFFB69568).withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  order.paymentMethodLabel,
+                                  style: TextStyle(
+                                    color: order.paymentMethod == 'vietqr'
+                                        ? const Color(0xFF059669)
+                                        : const Color(0xFFB69568),
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const SizedBox(height: 4),
+                              const SizedBox(height: 3),
+                              Text(
+                                'Golfer: ${order.customerName ?? "Khách vãng lai"} ${order.customerPhone != null && order.customerPhone!.isNotEmpty ? "• ${order.customerPhone}" : ""}',
+                                style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: Color(0xFF0F172A)),
+                              ),
+                              const SizedBox(height: 2),
                               Text(
                                 order.items.map((i) => "${i['name']} x${i['qty']}").join(", "),
                                 style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
                               ),
-                              if (order.note != null)
-                                Text('Ghi chú: ${order.note}', style: const TextStyle(fontSize: 11, color: Colors.blueGrey)),
+                              if (order.note != null && order.note!.isNotEmpty)
+                                Text('Ghi chú bếp: ${order.note}', style: const TextStyle(fontSize: 11, color: Colors.blueGrey)),
                             ],
                           ),
                           trailing: ElevatedButton(

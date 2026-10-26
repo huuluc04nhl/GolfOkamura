@@ -914,7 +914,22 @@ class BookingProvider extends ChangeNotifier {
 
   /// Lấy danh sách các đơn đặt phòng của một khách hàng (lọc theo số điện thoại)
   List<BookingModel> getBookingsByPhone(String phone) {
-    return _bookings.where((b) => b.customerPhone == phone).toList();
+    final clean = phone.replaceAll(RegExp(r'[^\d]'), '');
+    if (clean.isEmpty) return [];
+    return _bookings.where((b) {
+      final bClean = b.customerPhone.replaceAll(RegExp(r'[^\d]'), '');
+      return bClean == clean || b.customerPhone == phone;
+    }).toList();
+  }
+
+  /// Lấy danh sách đơn F&B / Dịch vụ của khách hàng (lọc theo số điện thoại)
+  List<ServiceOrderModel> getServiceOrdersByPhone(String phone) {
+    final clean = phone.replaceAll(RegExp(r'[^\d]'), '');
+    if (clean.isEmpty) return [];
+    return _serviceOrders.where((o) {
+      final oPhone = o.customerPhone?.replaceAll(RegExp(r'[^\d]'), '') ?? '';
+      return oPhone.isNotEmpty && (oPhone == clean || o.customerPhone == phone);
+    }).toList();
   }
 
   /// Đẩy đơn Order F&B & Dịch vụ lên Firebase Realtime Database (/serviceOrders)
@@ -922,6 +937,10 @@ class BookingProvider extends ChangeNotifier {
     required String roomName,
     required Map<String, int> cartQuantities,
     String? note,
+    String? customerName,
+    String? customerPhone,
+    String paymentMethod = 'pay_at_bay',
+    String paymentStatus = 'pending',
   }) async {
     final now = DateTime.now();
     final dateStr =
@@ -945,6 +964,14 @@ class BookingProvider extends ChangeNotifier {
       }
     });
 
+    // Xác định thông tin khách hàng nếu chưa truyền vào
+    final resolvedName = (customerName != null && customerName.trim().isNotEmpty)
+        ? customerName.trim()
+        : (_isLoggedIn ? _currentGolfer.name : 'Khách vãng lai');
+    final resolvedPhone = (customerPhone != null && customerPhone.trim().isNotEmpty)
+        ? customerPhone.trim()
+        : (_isLoggedIn ? _currentGolfer.phone : null);
+
     final order = ServiceOrderModel(
       id: orderId,
       roomName: roomName,
@@ -953,12 +980,19 @@ class BookingProvider extends ChangeNotifier {
       status: 'preparing',
       orderType: 'fnb_order',
       note: (note != null && note.trim().isNotEmpty) ? note.trim() : null,
+      customerName: resolvedName,
+      customerPhone: resolvedPhone,
+      paymentMethod: paymentMethod,
+      paymentStatus: paymentStatus,
       createdAt: now,
     );
 
     _serviceOrders = List<ServiceOrderModel>.from(_serviceOrders)
       ..insert(0, order);
     await StorageService.saveServiceOrders(_serviceOrders);
+    if (resolvedName.isNotEmpty && resolvedPhone != null && resolvedPhone.isNotEmpty) {
+      await StorageService.saveCustomerProfile(resolvedName, resolvedPhone);
+    }
     notifyListeners();
 
     if (autoSyncFirebase) {
@@ -971,9 +1005,18 @@ class BookingProvider extends ChangeNotifier {
   Future<void> submitQuickRoomRequest({
     required String roomName,
     required String requestTitle,
+    String? customerName,
+    String? customerPhone,
   }) async {
     final now = DateTime.now();
     final orderId = 'REQ-${now.millisecondsSinceEpoch}';
+    final resolvedName = (customerName != null && customerName.trim().isNotEmpty)
+        ? customerName.trim()
+        : (_isLoggedIn ? _currentGolfer.name : 'Khách vãng lai');
+    final resolvedPhone = (customerPhone != null && customerPhone.trim().isNotEmpty)
+        ? customerPhone.trim()
+        : (_isLoggedIn ? _currentGolfer.phone : null);
+
     final reqOrder = ServiceOrderModel(
       id: orderId,
       roomName: roomName,
@@ -984,6 +1027,8 @@ class BookingProvider extends ChangeNotifier {
       status: 'preparing',
       orderType: 'quick_request',
       note: requestTitle,
+      customerName: resolvedName,
+      customerPhone: resolvedPhone,
       createdAt: now,
     );
 
