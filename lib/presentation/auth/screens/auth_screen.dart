@@ -155,6 +155,8 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final isSmallMobile = screenWidth < 360;
     final isDesktop = Responsive.isDesktop(context);
 
     return Scaffold(
@@ -180,19 +182,23 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
 
           // Bộ chuyển đổi ngôn ngữ quốc tế ở góc trên bên phải
           Positioned(
-            top: MediaQuery.paddingOf(context).top + 16,
-            right: 18,
+            top: MediaQuery.paddingOf(context).top + 10,
+            right: 14,
             child: const LanguageSelectorPill(),
           ),
 
           // Nội dung chính
           Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 32),
+              physics: const BouncingScrollPhysics(),
+              padding: EdgeInsets.symmetric(
+                horizontal: isSmallMobile ? 12 : 20,
+                vertical: isSmallMobile ? 16 : 30,
+              ),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 480),
                 child: Container(
-                  padding: EdgeInsets.all(isDesktop ? 32 : 24),
+                  padding: EdgeInsets.all(isDesktop ? 32 : (isSmallMobile ? 16 : 22)),
                   decoration: BoxDecoration(
                     color: const Color(0xFF0F172A).withValues(alpha: 0.95),
                     borderRadius: BorderRadius.circular(20),
@@ -217,12 +223,12 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       // Header Logo & Branding
-                      _buildHeader(),
-                      const SizedBox(height: 24),
+                      _buildHeader(isSmallMobile),
+                      SizedBox(height: isSmallMobile ? 16 : 22),
 
                       // Tab selector: Đăng nhập / Đăng ký
-                      _buildTabBar(),
-                      const SizedBox(height: 24),
+                      _buildTabBar(isSmallMobile),
+                      SizedBox(height: isSmallMobile ? 16 : 22),
 
                       // Tab views
                       AnimatedSize(
@@ -267,12 +273,12 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(bool isNarrow) {
     return Column(
       children: [
         Container(
-          width: 64,
-          height: 64,
+          width: isNarrow ? 52 : 64,
+          height: isNarrow ? 52 : 64,
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               colors: [AppColors.primaryGold, AppColors.darkGold],
@@ -288,41 +294,47 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
               ),
             ],
           ),
-          child: const Center(
+          child: Center(
             child: Icon(
               Icons.sports_golf_rounded,
-              size: 34,
+              size: isNarrow ? 28 : 34,
               color: Colors.black,
             ),
           ),
         ),
-        const SizedBox(height: 14),
-        const Text(
-          'OKAMURA GOLFZON LOUNGE',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: AppColors.primaryGold,
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.5,
+        SizedBox(height: isNarrow ? 10 : 14),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            'OKAMURA GOLFZON LOUNGE',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: AppColors.primaryGold,
+              fontSize: isNarrow ? 16 : 18,
+              fontWeight: FontWeight.w900,
+              letterSpacing: isNarrow ? 0.8 : 1.5,
+            ),
           ),
         ),
         const SizedBox(height: 4),
-        const Text(
-          'HỆ THỐNG ĐIỀU HÀNH & ĐẶT BAY CAO CẤP',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: Colors.white70,
-            fontSize: 11.5,
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.8,
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            'HỆ THỐNG ĐIỀU HÀNH & ĐẶT BAY CAO CẤP',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: isNarrow ? 10.5 : 11.5,
+              fontWeight: FontWeight.w600,
+              letterSpacing: isNarrow ? 0.4 : 0.8,
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildTabBar() {
+  Widget _buildTabBar(bool isNarrow) {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF070B14),
@@ -339,11 +351,17 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
         indicatorSize: TabBarIndicatorSize.tab,
         labelColor: Colors.black,
         unselectedLabelColor: Colors.white60,
-        labelStyle: const TextStyle(fontWeight: FontWeight.w900, fontSize: 13),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-        tabs: const [
-          Tab(text: 'ĐĂNG NHẬP'),
-          Tab(text: 'ĐĂNG KÝ HỘI VIÊN'),
+        labelStyle: TextStyle(
+          fontWeight: FontWeight.w900,
+          fontSize: isNarrow ? 11.5 : 13,
+        ),
+        unselectedLabelStyle: TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: isNarrow ? 11.5 : 13,
+        ),
+        tabs: [
+          const Tab(text: 'ĐĂNG NHẬP'),
+          Tab(text: isNarrow ? 'ĐĂNG KÝ' : 'ĐĂNG KÝ HỘI VIÊN'),
         ],
       ),
     );
@@ -410,9 +428,12 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
                   )
-                : const Text(
-                    'ĐĂNG NHẬP HỆ THỐNG',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+                : const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'ĐĂNG NHẬP HỆ THỐNG',
+                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+                    ),
                   ),
           ),
         ],
@@ -458,46 +479,90 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
           ),
           const SizedBox(height: 14),
 
-          Row(
-            children: [
-              Expanded(
-                child: _buildTextField(
-                  controller: _regPasswordController,
-                  label: 'Mật khẩu *',
-                  hintText: 'Tối thiểu 6 ký tự',
-                  icon: Icons.lock_outline_rounded,
-                  obscureText: _obscureRegPassword,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureRegPassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
-                      color: Colors.white54,
-                      size: 18,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isStack = constraints.maxWidth < 360;
+              if (isStack) {
+                return Column(
+                  children: [
+                    _buildTextField(
+                      controller: _regPasswordController,
+                      label: 'Mật khẩu *',
+                      hintText: 'Tối thiểu 6 ký tự',
+                      icon: Icons.lock_outline_rounded,
+                      obscureText: _obscureRegPassword,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureRegPassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                          color: Colors.white54,
+                          size: 18,
+                        ),
+                        onPressed: () => setState(() => _obscureRegPassword = !_obscureRegPassword),
+                      ),
+                      validator: (val) => val == null || val.length < 4 ? 'Tối thiểu 4 ký tự' : null,
                     ),
-                    onPressed: () => setState(() => _obscureRegPassword = !_obscureRegPassword),
-                  ),
-                  validator: (val) => val == null || val.length < 4 ? 'Tối thiểu 4 ký tự' : null,
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _buildTextField(
-                  controller: _regConfirmPasswordController,
-                  label: 'Xác nhận mật khẩu *',
-                  hintText: 'Nhập lại mật khẩu',
-                  icon: Icons.lock_reset_rounded,
-                  obscureText: _obscureRegConfirmPassword,
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureRegConfirmPassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
-                      color: Colors.white54,
-                      size: 18,
+                    const SizedBox(height: 14),
+                    _buildTextField(
+                      controller: _regConfirmPasswordController,
+                      label: 'Xác nhận mật khẩu *',
+                      hintText: 'Nhập lại mật khẩu',
+                      icon: Icons.lock_reset_rounded,
+                      obscureText: _obscureRegConfirmPassword,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureRegConfirmPassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                          color: Colors.white54,
+                          size: 18,
+                        ),
+                        onPressed: () => setState(() => _obscureRegConfirmPassword = !_obscureRegConfirmPassword),
+                      ),
+                      validator: (val) => val == null || val.isEmpty ? 'Vui lòng xác nhận' : null,
                     ),
-                    onPressed: () => setState(() => _obscureRegConfirmPassword = !_obscureRegConfirmPassword),
+                  ],
+                );
+              }
+              return Row(
+                children: [
+                  Expanded(
+                    child: _buildTextField(
+                      controller: _regPasswordController,
+                      label: 'Mật khẩu *',
+                      hintText: 'Tối thiểu 6 ký tự',
+                      icon: Icons.lock_outline_rounded,
+                      obscureText: _obscureRegPassword,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureRegPassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                          color: Colors.white54,
+                          size: 18,
+                        ),
+                        onPressed: () => setState(() => _obscureRegPassword = !_obscureRegPassword),
+                      ),
+                      validator: (val) => val == null || val.length < 4 ? 'Tối thiểu 4 ký tự' : null,
+                    ),
                   ),
-                  validator: (val) => val == null || val.isEmpty ? 'Vui lòng xác nhận' : null,
-                ),
-              ),
-            ],
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _buildTextField(
+                      controller: _regConfirmPasswordController,
+                      label: 'Xác nhận mật khẩu *',
+                      hintText: 'Nhập lại mật khẩu',
+                      icon: Icons.lock_reset_rounded,
+                      obscureText: _obscureRegConfirmPassword,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureRegConfirmPassword ? Icons.visibility_off_rounded : Icons.visibility_rounded,
+                          color: Colors.white54,
+                          size: 18,
+                        ),
+                        onPressed: () => setState(() => _obscureRegConfirmPassword = !_obscureRegConfirmPassword),
+                      ),
+                      validator: (val) => val == null || val.isEmpty ? 'Vui lòng xác nhận' : null,
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
           const SizedBox(height: 14),
 
@@ -525,9 +590,12 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
                     width: 20,
                     child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                   )
-                : const Text(
-                    'ĐĂNG KÝ HỘI VIÊN & NHẬN 100 ĐIỂM',
-                    style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+                : const FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(
+                      'ĐĂNG KÝ HỘI VIÊN & NHẬN 100 ĐIỂM',
+                      style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w900, letterSpacing: 0.5),
+                    ),
                   ),
           ),
         ],

@@ -3,14 +3,14 @@ import '../../core/theme/app_colors.dart';
 import 'ai_chat_bottom_sheet.dart';
 
 /// Nút nổi (Floating Action Button) hình tròn biểu tượng chữ "C" kích hoạt Trợ lý ảo AI Caddie
-/// Thiết kế siêu gọn (50x50dp), chuẩn Quiet Luxury, hạn chế tối đa việc lấn khung hình mobile
+/// Thiết kế siêu gọn (50x50dp), chuẩn Quiet Luxury, nép sát mép trên thanh bottom navigation
 class AiFloatingButton extends StatelessWidget {
   final double bottomOffset;
   final double rightOffset;
 
   const AiFloatingButton({
     super.key,
-    this.bottomOffset = 84,
+    this.bottomOffset = 14,
     this.rightOffset = 16,
   });
 
@@ -20,7 +20,7 @@ class AiFloatingButton extends StatelessWidget {
       bottom: bottomOffset,
       right: rightOffset,
       child: Tooltip(
-        message: 'Okamura AI Caddie - Trợ lý thông minh',
+        message: 'AI Caddie - Trợ lý thông minh',
         child: Material(
           color: Colors.transparent,
           child: InkWell(

@@ -80,7 +80,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Xác nhận các thành phần cốt lõi của Chatbot xuất hiện
-      expect(find.text('OKAMURA AI CADDIE'), findsOneWidget);
+      expect(find.text('AI CADDIE'), findsOneWidget);
       expect(find.text('GEMINI 24/7'), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget);
       expect(find.byIcon(Icons.send_rounded), findsOneWidget);
@@ -113,7 +113,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Kiểm tra tiêu đề và huy hiệu hiển thị gọn gàng, không bị tràn (overflow)
-      expect(find.text('OKAMURA AI CADDIE'), findsOneWidget);
+      expect(find.text('AI CADDIE'), findsOneWidget);
       expect(find.text('GEMINI 24/7'), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget);
       expect(find.byIcon(Icons.send_rounded), findsOneWidget);
@@ -172,7 +172,7 @@ void main() {
       );
 
       await tester.pumpAndSettle();
-      expect(find.text('OKAMURA AI CADDIE'), findsOneWidget);
+      expect(find.text('AI CADDIE'), findsOneWidget);
       expect(find.text('GEMINI 24/7'), findsOneWidget);
       expect(find.byType(TextField), findsOneWidget);
     });

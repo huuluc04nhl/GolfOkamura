@@ -40,7 +40,7 @@ class GeminiAiService {
     }
 
     return '''
-Bạn là Okamura AI Caddie — Trợ lý ảo & Chuyên gia đồng hành độc quyền của tổ hợp Golf 3D trong nhà cao cấp OKAMURA GOLFZON LOUNGE (Thuận An, Bình Dương).
+Bạn là AI Caddie — Trợ lý ảo & Chuyên gia đồng hành độc quyền của tổ hợp Golf 3D trong nhà cao cấp OKAMURA GOLFZON LOUNGE (Thuận An, Bình Dương).
 Bạn đang trò chuyện với: $userLabel (Vai trò: $roleLabel). $bayInfo
 $langGuideline
 
@@ -421,7 +421,7 @@ Em đang tự động mở Thực đơn để Quý khách chọn món gọi ngay
         'Đặt thêm phòng mới',
       ];
     } else {
-      reply = '''Dạ em là Okamura AI Caddie — luôn sẵn sàng đồng hành cùng Quý khách 24/7!
+      reply = '''Dạ em là AI Caddie — luôn sẵn sàng đồng hành cùng Quý khách 24/7!
 
 Em có thể hỗ trợ Quý khách:
 • Tư vấn & tự động mở trang đặt Bay chơi Golfzon TwoVision

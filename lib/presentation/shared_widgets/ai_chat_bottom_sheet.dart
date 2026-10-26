@@ -96,7 +96,7 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
       ChatMessageModel(
         id: 'welcome',
         isUser: false,
-        text: 'Dạ kính chào Quý khách đến với **Okamura Golfzon Lounge**! Em là **Okamura AI Caddie** đồng hành riêng của mình hôm nay.\n\nEm luôn sẵn sàng hỗ trợ Quý khách:\n• Tư vấn & tự động mở trang đặt Bay TwoVision NX 3D phù hợp\n• Báo giá ca chơi & thời gian hoàn thành 18 hố\n• Tự động gửi yêu cầu gọi phục vụ, xin thêm đá, khăn lạnh tận Bay\n• Đặt món, gọi bia tháp & ẩm thực phục vụ tận phòng\n\nQuý khách chỉ cần trò chuyện, em sẽ tự động xử lý mọi thao tác cho mình ạ!',
+        text: 'Dạ kính chào Quý khách đến với **Okamura Golfzon Lounge**! Em là **AI Caddie** đồng hành riêng của mình hôm nay.\n\nEm luôn sẵn sàng hỗ trợ Quý khách:\n• Tư vấn & tự động mở trang đặt Bay TwoVision NX 3D phù hợp\n• Báo giá ca chơi & thời gian hoàn thành 18 hố\n• Tự động gửi yêu cầu gọi phục vụ, xin thêm đá, khăn lạnh tận Bay\n• Đặt món, gọi bia tháp & ẩm thực phục vụ tận phòng\n\nQuý khách chỉ cần trò chuyện, em sẽ tự động xử lý mọi thao tác cho mình ạ!',
         timestamp: DateTime.now(),
         quickPrompts: _initialSuggestions,
         actionRoute: '/booking',
@@ -261,7 +261,7 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
         ChatMessageModel(
           id: 'reset',
           isUser: false,
-          text: 'Dạ cuộc trò chuyện đã được làm mới. Em là Okamura AI Caddie, Quý khách cần em hỗ trợ gì thêm không ạ?',
+          text: 'Dạ cuộc trò chuyện đã được làm mới. Em là AI Caddie, Quý khách cần em hỗ trợ gì thêm không ạ?',
           timestamp: DateTime.now(),
           quickPrompts: _initialSuggestions,
           actionRoute: '/booking',
@@ -348,12 +348,12 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'OKAMURA AI CADDIE',
+                            'AI CADDIE',
                             style: TextStyle(
                               color: AppColors.primaryGold,
-                              fontSize: isCompact ? 12.0 : 13.5,
+                              fontSize: isCompact ? 13.0 : 14.5,
                               fontWeight: FontWeight.w900,
-                              letterSpacing: 0.3,
+                              letterSpacing: 0.5,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -853,30 +853,54 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
     final extraBottomPadding = bottomInset > 0 ? 8.0 : (bottomSafeArea > 0 ? bottomSafeArea : 10.0);
 
     return Container(
-      padding: EdgeInsets.fromLTRB(12, 8, 12, extraBottomPadding),
+      padding: EdgeInsets.fromLTRB(14, 8, 14, extraBottomPadding),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
-        border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
+        color: const Color(0xFF0F172A),
+        border: Border(
+          top: BorderSide(color: Colors.white.withValues(alpha: 0.06)),
+        ),
       ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(22),
-                border: Border.all(color: AppColors.userBorder),
-              ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E293B),
+          borderRadius: BorderRadius.circular(28),
+          border: Border.all(
+            color: AppColors.primaryGold.withValues(alpha: 0.45),
+            width: 1.2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.35),
+              blurRadius: 10,
+              offset: const Offset(0, 3),
+            ),
+            BoxShadow(
+              color: AppColors.primaryGold.withValues(alpha: 0.08),
+              blurRadius: 8,
+              spreadRadius: 1,
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.fromLTRB(16, 4, 5, 4),
+        child: Row(
+          children: [
+            Expanded(
               child: TextField(
                 controller: _textController,
-                style: const TextStyle(color: Colors.white, fontSize: 13),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w500,
+                ),
                 decoration: InputDecoration(
                   hintText: context.tr('ai_ask_hint'),
-                  hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+                  hintStyle: const TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 12.5,
+                  ),
                   border: InputBorder.none,
                   isDense: true,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 9),
                 ),
                 textInputAction: TextInputAction.send,
                 onSubmitted: (_) => _handleSendMessage(),
@@ -885,47 +909,48 @@ class _AiChatBottomSheetState extends State<AiChatBottomSheet> {
                 },
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: _isAiTyping ? null : () => _handleSendMessage(),
-              borderRadius: BorderRadius.circular(20),
-              child: Container(
-                width: 38,
-                height: 38,
-                decoration: BoxDecoration(
-                  gradient: _isAiTyping
-                      ? null
-                      : const LinearGradient(
-                          colors: [Color(0xFFD4AF37), AppColors.primaryGold],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                  color: _isAiTyping ? AppColors.userCardDark : null,
-                  shape: BoxShape.circle,
-                  boxShadow: _isAiTyping
-                      ? null
-                      : [
-                          BoxShadow(
-                            color: AppColors.primaryGold.withValues(alpha: 0.35),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
+            const SizedBox(width: 6),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _isAiTyping ? null : () => _handleSendMessage(),
+                borderRadius: BorderRadius.circular(22),
+                splashColor: AppColors.primaryGold.withValues(alpha: 0.3),
+                child: Container(
+                  width: 36,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    gradient: _isAiTyping
+                        ? null
+                        : const LinearGradient(
+                            colors: [Color(0xFFD4AF37), AppColors.primaryGold],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
-                        ],
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.send_rounded,
-                    color: _isAiTyping ? AppColors.textMuted : Colors.black,
-                    size: 17,
+                    color: _isAiTyping ? Colors.white12 : null,
+                    shape: BoxShape.circle,
+                    boxShadow: _isAiTyping
+                        ? null
+                        : [
+                            BoxShadow(
+                              color: AppColors.primaryGold.withValues(alpha: 0.35),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.send_rounded,
+                      color: _isAiTyping ? AppColors.textMuted : Colors.black,
+                      size: 18,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
