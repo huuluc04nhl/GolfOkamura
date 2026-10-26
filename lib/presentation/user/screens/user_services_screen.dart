@@ -49,15 +49,9 @@ class _UserServicesScreenState extends State<UserServicesScreen>
       _customerNameController.text = provider.currentGolfer.name;
       _customerPhoneController.text = provider.currentGolfer.phone;
     } else {
-      final profile = await StorageService.loadCustomerProfile();
-      if (mounted) {
-        if ((profile['name'] ?? '').isNotEmpty) {
-          _customerNameController.text = profile['name']!;
-        }
-        if ((profile['phone'] ?? '').isNotEmpty) {
-          _customerPhoneController.text = profile['phone']!;
-        }
-      }
+      // Đối với Khách vãng lai: Tuyệt đối KHÔNG tự động nhập sẵn dữ liệu cũ, để trường nhập trống hoàn toàn
+      _customerNameController.clear();
+      _customerPhoneController.clear();
     }
   }
 
@@ -1295,12 +1289,14 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                                       controller: _customerNameController,
                                       style: const TextStyle(color: Colors.white, fontSize: 13),
                                       decoration: InputDecoration(
-                                        hintText: 'Họ và tên Golfer (VD: Anh Nam)',
-                                        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+                                        labelText: 'Họ và tên Golfer (*)',
+                                        hintText: 'Nhập họ và tên quý khách...',
+                                        labelStyle: const TextStyle(color: AppColors.textMuted, fontSize: 12.5),
+                                        hintStyle: const TextStyle(color: Colors.white24, fontSize: 12),
                                         prefixIcon: const Icon(Icons.person_outline_rounded, color: AppColors.primaryGold, size: 18),
                                         filled: true,
                                         fillColor: const Color(0xFF0F172A),
-                                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(24),
                                           borderSide: BorderSide.none,
@@ -1315,18 +1311,20 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
+                                    const SizedBox(height: 10),
                                     TextField(
                                       controller: _customerPhoneController,
                                       keyboardType: TextInputType.phone,
                                       style: const TextStyle(color: Colors.white, fontSize: 13),
                                       decoration: InputDecoration(
-                                        hintText: 'Số điện thoại nhận hỗ trợ (VD: 0901234567)',
-                                        hintStyle: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+                                        labelText: 'Số điện thoại nhận hỗ trợ (*)',
+                                        hintText: 'Nhập số điện thoại liên hệ...',
+                                        labelStyle: const TextStyle(color: AppColors.textMuted, fontSize: 12.5),
+                                        hintStyle: const TextStyle(color: Colors.white24, fontSize: 12),
                                         prefixIcon: const Icon(Icons.phone_outlined, color: AppColors.primaryGold, size: 18),
                                         filled: true,
                                         fillColor: const Color(0xFF0F172A),
-                                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(24),
                                           borderSide: BorderSide.none,

@@ -8,7 +8,6 @@ import '../../../core/utils/formatters.dart';
 import '../../../core/utils/responsive.dart';
 import '../../../shared/models/room_model.dart';
 import '../../../shared/providers/booking_provider.dart';
-import '../../../shared/services/storage_service.dart';
 import '../../shared_widgets/language_selector_pill.dart';
 import '../../shared_widgets/status_badge.dart';
 import '../../shared_widgets/vietqr_payment_dialog.dart';
@@ -61,19 +60,16 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
 
   Future<void> _loadPreviousCustomerProfile() async {
     final provider = context.read<BookingProvider>();
-    final profile = await StorageService.loadCustomerProfile();
     if (!mounted) return;
-    if (provider.currentGolfer.isCustomer) {
+    if (provider.isLoggedIn && !provider.isGuest) {
       _nameController.text = provider.currentGolfer.name;
       _phoneController.text = provider.currentGolfer.phone;
       _emailController.text = provider.currentGolfer.email ?? '';
     } else {
-      if (profile['name']!.isNotEmpty) {
-        _nameController.text = profile['name']!;
-      }
-      if (profile['phone']!.isNotEmpty) {
-        _phoneController.text = profile['phone']!;
-      }
+      // Đối với Khách vãng lai: Tuyệt đối KHÔNG tự động nhập sẵn dữ liệu cũ, để trường nhập trống hoàn toàn
+      _nameController.clear();
+      _phoneController.clear();
+      _emailController.clear();
     }
   }
 
