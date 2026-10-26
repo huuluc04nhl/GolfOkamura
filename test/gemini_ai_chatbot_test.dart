@@ -193,6 +193,34 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('C'), findsOneWidget);
       expect(find.byIcon(Icons.auto_awesome), findsOneWidget);
+      expect(find.byIcon(Icons.chevron_left_rounded), findsOneWidget);
+    });
+
+    testWidgets('AiFloatingButton hỗ trợ kéo thả và tự động dock sang mép trái', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: Stack(
+              children: [
+                AiFloatingButton(),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      // Kéo nút từ bên phải sang mép bên trái bằng TestGesture
+      final buttonFinder = find.byType(AiFloatingButton);
+      final gesture = await tester.startGesture(tester.getCenter(buttonFinder));
+      await gesture.moveBy(const Offset(-400, 0));
+      await tester.pump();
+      await gesture.up();
+      await tester.pumpAndSettle();
+
+      // Sau khi buông tay ở nửa trái, nút tự hít mép trái và đổi mũi tên chỉ sang phải
+      expect(find.byIcon(Icons.chevron_right_rounded), findsOneWidget);
+      expect(find.text('C'), findsOneWidget);
     });
   });
 }

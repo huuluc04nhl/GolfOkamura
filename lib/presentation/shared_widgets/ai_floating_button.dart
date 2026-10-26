@@ -4,10 +4,10 @@ import 'ai_chat_bottom_sheet.dart';
 
 /// Nút nổi (Floating Action Button) kích hoạt Trợ lý ảo AI Caddie
 /// Thiết kế Quiet Luxury chuẩn mực:
-/// - Mặc định thu gọn thành Tab bo viền sang trọng bám sát mép phải màn hình (Edge-docked)
+/// - Tự động hít (magnetic snap) và thu gọn thành Tab bo viền sang trọng ở CẢ HAI BÊN (mép trái hoặc mép phải tùy theo cử chỉ kéo thả)
 /// - Giới hạn an toàn tuyệt đối: Không bao giờ bị kéo lọt ra sau hoặc rớt xuống thanh bottom bar
-/// - Hỗ trợ kéo thả tức thì (Zero-latency raw pointer tracking) để tùy chỉnh độ cao theo tầm tay
-/// - Tự động hít (magnetic snap) về mép phải khi buông tay
+/// - Hỗ trợ kéo thả tức thì (Zero-latency raw pointer tracking 120Hz) để tùy chỉnh độ cao và vị trí theo tầm tay
+/// - Chạm 1 chạm là mở ngay Chatbot AI Caddie
 class AiFloatingButton extends StatefulWidget {
   final double bottomBarHeight;
   final double initialBottomOffset;
@@ -23,10 +23,11 @@ class AiFloatingButton extends StatefulWidget {
 }
 
 class _AiFloatingButtonState extends State<AiFloatingButton> {
-  // Trạng thái vị trí
+  // Trạng thái vị trí & Docking
   double? _x;
   double? _y;
   bool _isDocked = true;
+  bool _dockOnRight = true; // true: bám mép phải, false: bám mép trái
   bool _isDragging = false;
 
   // Tracking pointer cho gesture tức thì 120Hz
@@ -58,7 +59,7 @@ class _AiFloatingButtonState extends State<AiFloatingButton> {
     final currentHeight = _isDocked && !_isDragging ? _dockedHeight : _expandedSize;
 
     // Giới hạn an toàn không bị trôi ra khỏi màn hình hoặc chui ra sau thanh bottom bar
-    final minX = leftEdge + 4.0;
+    final minX = leftEdge;
     final maxX = rightEdge - currentWidth;
     final minY = safePadding.top + 8.0;
     final maxY = (availableHeight - currentHeight - 8.0).clamp(minY, availableHeight);
@@ -120,11 +121,17 @@ class _AiFloatingButtonState extends State<AiFloatingButton> {
             });
             AiChatBottomSheet.show(context);
           } else {
-            // Vừa kéo xong -> Tự động hít nhẹ nhàng về mép phải và thu gọn lại thành Tab bám viền
+            // Vừa kéo xong -> Xác định nửa màn hình bên trái hay bên phải để hít vào mép gần nhất
+            final midX = (leftEdge + rightEdge) / 2;
+            final buttonCenterX = safeX + (currentWidth / 2);
+            final snapToRight = buttonCenterX >= midX;
+
             setState(() {
               _isDragging = false;
               _isDocked = true;
-              _x = rightEdge - _dockedWidth;
+              _dockOnRight = snapToRight;
+              // Nếu ở nửa phải: snap sát mép phải; Nếu ở nửa trái: snap sát mép trái
+              _x = snapToRight ? (rightEdge - _dockedWidth) : leftEdge;
               // Giữ nguyên độ cao Y người dùng vừa chọn, đảm bảo an toàn tuyệt đối
               _y = safeY.clamp(minY, (availableHeight - _dockedHeight - 8.0).clamp(minY, availableHeight));
             });
@@ -137,13 +144,13 @@ class _AiFloatingButtonState extends State<AiFloatingButton> {
           setState(() {
             _isDragging = false;
             _isDocked = true;
-            _x = rightEdge - _dockedWidth;
+            _x = _dockOnRight ? (rightEdge - _dockedWidth) : leftEdge;
           });
           _pointerDownPosition = null;
           _initialButtonPosition = null;
         },
         child: Tooltip(
-          message: 'AI Caddie - Chạm để trò chuyện, kéo để đổi độ cao',
+          message: 'AI Caddie - Chạm để trò chuyện, kéo sang trái/phải để đổi mép bám',
           child: Material(
             color: Colors.transparent,
             child: AnimatedContainer(
@@ -152,11 +159,17 @@ class _AiFloatingButtonState extends State<AiFloatingButton> {
               width: currentWidth,
               height: currentHeight,
               decoration: BoxDecoration(
+                // Bo góc: Khi bám mép phải thì bo bên trái, khi bám mép trái thì bo bên phải
                 borderRadius: _isDocked && !_isDragging
-                    ? const BorderRadius.only(
-                        topLeft: Radius.circular(24),
-                        bottomLeft: Radius.circular(24),
-                      )
+                    ? (_dockOnRight
+                        ? const BorderRadius.only(
+                            topLeft: Radius.circular(24),
+                            bottomLeft: Radius.circular(24),
+                          )
+                        : const BorderRadius.only(
+                            topRight: Radius.circular(24),
+                            bottomRight: Radius.circular(24),
+                          ))
                     : BorderRadius.circular(25),
                 gradient: const LinearGradient(
                   colors: [
@@ -167,29 +180,27 @@ class _AiFloatingButtonState extends State<AiFloatingButton> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
-                border: _isDocked && !_isDragging
-                    ? const Border(
-                        left: BorderSide(color: AppColors.primaryGold, width: 1.8),
-                        top: BorderSide(color: AppColors.primaryGold, width: 1.8),
-                        bottom: BorderSide(color: AppColors.primaryGold, width: 1.8),
-                      )
-                    : Border.all(
-                        color: _isDragging ? const Color(0xFFFFDF7A) : AppColors.primaryGold,
-                        width: _isDragging ? 2.2 : 1.8,
-                      ),
+                border: Border.all(
+                  color: _isDragging ? const Color(0xFFFFDF7A) : AppColors.primaryGold,
+                  width: _isDragging ? 2.2 : 1.8,
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.primaryGold.withValues(
                       alpha: _isDragging ? 0.65 : (_isDocked ? 0.35 : 0.4),
                     ),
                     blurRadius: _isDragging ? 20 : 12,
-                    offset: _isDocked && !_isDragging ? const Offset(-2, 2) : Offset(0, _isDragging ? 6 : 4),
+                    offset: _isDocked && !_isDragging
+                        ? (_dockOnRight ? const Offset(-2, 2) : const Offset(2, 2))
+                        : Offset(0, _isDragging ? 6 : 4),
                     spreadRadius: _isDragging ? 2 : 1,
                   ),
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.6),
                     blurRadius: 8,
-                    offset: _isDocked && !_isDragging ? const Offset(-2, 0) : const Offset(0, 3),
+                    offset: _isDocked && !_isDragging
+                        ? (_dockOnRight ? const Offset(-2, 0) : const Offset(2, 0))
+                        : const Offset(0, 3),
                   ),
                 ],
               ),
@@ -212,12 +223,13 @@ class _AiFloatingButtonState extends State<AiFloatingButton> {
                       ),
                     ),
 
-                  // Mũi tên nhỏ bên trái khi ở dạng Tab thu gọn để báo hiệu kéo / chạm
+                  // Mũi tên nhỏ khi ở dạng Tab thu gọn: chỉ hướng tương tác
                   if (_isDocked && !_isDragging)
                     Positioned(
-                      left: 2,
+                      left: _dockOnRight ? 2 : null,
+                      right: _dockOnRight ? null : 2,
                       child: Icon(
-                        Icons.chevron_left_rounded,
+                        _dockOnRight ? Icons.chevron_left_rounded : Icons.chevron_right_rounded,
                         color: AppColors.primaryGold.withValues(alpha: 0.7),
                         size: 13,
                       ),
@@ -225,7 +237,10 @@ class _AiFloatingButtonState extends State<AiFloatingButton> {
 
                   // Biểu tượng chữ "C" đại diện cho Caddie / Concierge
                   Padding(
-                    padding: EdgeInsets.only(left: (_isDocked && !_isDragging) ? 6.0 : 0.0),
+                    padding: EdgeInsets.only(
+                      left: (_isDocked && !_isDragging) ? (_dockOnRight ? 6.0 : 0.0) : 0.0,
+                      right: (_isDocked && !_isDragging) ? (!_dockOnRight ? 6.0 : 0.0) : 0.0,
+                    ),
                     child: Text(
                       'C',
                       style: TextStyle(
@@ -244,10 +259,13 @@ class _AiFloatingButtonState extends State<AiFloatingButton> {
                     ),
                   ),
 
-                  // Ngôi sao lấp lánh AI ở góc trên bên phải
+                  // Ngôi sao lấp lánh AI
                   Positioned(
                     top: (_isDocked && !_isDragging) ? 6 : 8,
-                    right: (_isDocked && !_isDragging) ? 4 : 8,
+                    left: (_isDocked && !_isDragging && !_dockOnRight) ? 4 : null,
+                    right: (_isDocked && !_isDragging && _dockOnRight)
+                        ? 4
+                        : ((!_isDocked || _isDragging) ? 8 : null),
                     child: Container(
                       padding: const EdgeInsets.all(1.5),
                       decoration: const BoxDecoration(
