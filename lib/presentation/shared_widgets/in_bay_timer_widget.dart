@@ -170,16 +170,20 @@ class _InBayTimerWidgetState extends State<InBayTimerWidget> {
                 decoration: BoxDecoration(color: statusColor, shape: BoxShape.circle),
               ),
               const SizedBox(width: 8),
-              Text(
-                'PHIÊN CHƠI GOLFZON: ${widget.roomName.toUpperCase()}',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                  letterSpacing: 0.5,
+              Expanded(
+                child: Text(
+                  'PHIÊN CHƠI GOLFZON: ${widget.roomName.toUpperCase()}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11.5,
+                    letterSpacing: 0.5,
+                  ),
                 ),
               ),
-              const Spacer(),
+              const SizedBox(width: 6),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
@@ -219,19 +223,27 @@ class _InBayTimerWidgetState extends State<InBayTimerWidget> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Khung giờ: ${widget.timeSlot}',
-                          style: const TextStyle(color: Colors.white54, fontSize: 11),
+                        Flexible(
+                          child: Text(
+                            'Khung: ${widget.timeSlot}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(color: Colors.white54, fontSize: 10.5),
+                          ),
                         ),
-                        Text(
-                          _isOverdue
-                              ? 'ĐÃ QUÁ GIỜ: $timeStr'
-                              : 'CÒN LẠI: $timeStr',
-                          style: TextStyle(
-                            color: statusColor,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 12,
-                            fontFamily: 'monospace',
+                        const SizedBox(width: 6),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            _isOverdue
+                                ? 'ĐÃ QUÁ GIỜ: $timeStr'
+                                : 'CÒN LẠI: $timeStr',
+                            style: TextStyle(
+                              color: statusColor,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 11.5,
+                              fontFamily: 'monospace',
+                            ),
                           ),
                         ),
                       ],

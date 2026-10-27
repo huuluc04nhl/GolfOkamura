@@ -558,16 +558,19 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'TIẾP TỤC CHỌN GIỜ',
-                  style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13.5),
-                ),
-                SizedBox(width: 6),
-                Icon(Icons.arrow_forward_rounded, size: 16),
-              ],
+            child: const FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'TIẾP TỤC CHỌN GIỜ',
+                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13.5),
+                  ),
+                  SizedBox(width: 6),
+                  Icon(Icons.arrow_forward_rounded, size: 16),
+                ],
+              ),
             ),
           ),
         ),
@@ -1572,11 +1575,14 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: Text(
-                          'XÁC NHẬN GIỮ CHỖ • ${Formatters.formatCurrency(totalPrice)}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 13.5,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            'XÁC NHẬN GIỮ CHỖ • ${Formatters.formatCurrency(totalPrice)}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13.5,
+                            ),
                           ),
                         ),
                       ),
@@ -2235,12 +2241,17 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                     children: [
                       const Icon(Icons.check_circle_rounded, size: 18),
                       const SizedBox(width: 8),
-                      Text(
-                        'XÁC NHẬN GIỮ CHỖ • ${Formatters.formatCurrency(totalPrice)}',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 13.5,
-                          letterSpacing: 0.3,
+                      Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            'XÁC NHẬN GIỮ CHỖ • ${Formatters.formatCurrency(totalPrice)}',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13.5,
+                              letterSpacing: 0.3,
+                            ),
+                          ),
                         ),
                       ),
                     ],

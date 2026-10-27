@@ -554,8 +554,8 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                   onTap: () => _showCartReviewSheet(context, provider, catalog),
                   borderRadius: BorderRadius.circular(14),
                   child: Container(
-                    height: 54,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    height: 52,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
                         colors: [AppColors.lightGold, AppColors.primaryGold],
@@ -593,28 +593,41 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                         ),
                         const SizedBox(width: 10),
                         Expanded(
-                          child: Text(
-                            Formatters.formatCurrency(totalPrice),
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w900,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              Formatters.formatCurrency(totalPrice),
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 14.5,
+                                fontWeight: FontWeight.w900,
+                              ),
                             ),
                           ),
                         ),
-                        const Text(
-                          'XEM & GỬI ORDER',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 12.5,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        const Icon(
-                          Icons.arrow_forward_rounded,
-                          color: Colors.black,
-                          size: 18,
+                        const SizedBox(width: 6),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: Text(
+                                'XEM & GỬI ORDER',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 11.5,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 3),
+                            Icon(
+                              Icons.arrow_forward_rounded,
+                              color: Colors.black,
+                              size: 16,
+                            ),
+                          ],
                         ),
                       ],
                     ),
@@ -935,31 +948,37 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: AppColors.primaryGold.withValues(alpha: 0.16),
-                                borderRadius: BorderRadius.circular(8),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryGold.withValues(alpha: 0.16),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.room_service_rounded,
+                                  color: AppColors.primaryGold,
+                                  size: 18,
+                                ),
                               ),
-                              child: const Icon(
-                                Icons.room_service_rounded,
-                                color: AppColors.primaryGold,
-                                size: 18,
+                              const SizedBox(width: 8),
+                              const Flexible(
+                                child: Text(
+                                  'XÁC NHẬN ORDER TẬN PHÒNG',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: AppColors.primaryGold,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'XÁC NHẬN ORDER TẬN PHÒNG',
-                              style: TextStyle(
-                                color: AppColors.primaryGold,
-                                fontSize: 13.5,
-                                fontWeight: FontWeight.w900,
-                                letterSpacing: 0.3,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         TextButton(
                           onPressed: () {
@@ -1025,6 +1044,7 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                                         const SizedBox(height: 2),
                                         DropdownButtonHideUnderline(
                                           child: DropdownButton<String>(
+                                            isExpanded: true,
                                             value: roomNames.contains(_selectedRoomName)
                                                 ? _selectedRoomName
                                                 : (roomNames.isNotEmpty ? roomNames.first : null),
@@ -1556,30 +1576,36 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                     // Thanh Tổng Tiền & Nút Gửi Order
                     const Divider(color: Colors.white10),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             const Text(
                               'Tổng thanh toán:',
                               style: TextStyle(
                                 color: AppColors.textMuted,
-                                fontSize: 12,
+                                fontSize: 11,
                               ),
                             ),
-                            Text(
-                              Formatters.formatCurrency(modalTotal),
-                              style: const TextStyle(
-                                color: AppColors.primaryGold,
-                                fontSize: 18,
-                                fontWeight: FontWeight.w900,
+                            FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                Formatters.formatCurrency(modalTotal),
+                                style: const TextStyle(
+                                  color: AppColors.primaryGold,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w900,
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        ElevatedButton.icon(
-                          onPressed: () async {
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: () async {
                             final room = _selectedRoomName;
                             final cartSnapshot = Map<String, int>.from(_cart);
                             final noteText = _orderNoteController.text.trim();
@@ -1622,28 +1648,32 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                             Icons.check_circle_outline_rounded,
                             size: 18,
                           ),
-                          label: const Text(
-                            'GỬI ORDER ĐẾN BẾP',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 13,
-                              letterSpacing: 0.3,
+                          label: const FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              'GỬI ORDER ĐẾN BẾP',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w800,
+                                fontSize: 12.5,
+                                letterSpacing: 0.3,
+                              ),
                             ),
                           ),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: AppColors.primaryGold,
                             foregroundColor: Colors.black,
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 12,
+                              horizontal: 10,
+                              vertical: 11,
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(24),
                             ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
                   ],
                 ),
               ),
@@ -1777,12 +1807,17 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                             'Vị trí phục vụ:',
                             style: TextStyle(color: AppColors.textMuted, fontSize: 11.5),
                           ),
-                          Text(
-                            order.roomName,
-                            style: const TextStyle(
-                              color: AppColors.primaryGold,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w800,
+                          Flexible(
+                            child: Text(
+                              order.roomName,
+                              textAlign: TextAlign.end,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: AppColors.primaryGold,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                              ),
                             ),
                           ),
                         ],
@@ -1795,12 +1830,17 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                             'Người đặt:',
                             style: TextStyle(color: AppColors.textMuted, fontSize: 11.5),
                           ),
-                          Text(
-                            order.customerName ?? 'Khách vãng lai',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
+                          Flexible(
+                            child: Text(
+                              order.customerName ?? 'Khách vãng lai',
+                              textAlign: TextAlign.end,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
                         ],
@@ -1870,11 +1910,14 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                         );
                       },
                       icon: const Icon(Icons.qr_code_rounded, size: 18),
-                      label: const Text(
-                        'QUÉT MÃ VIETQR THANH TOÁN NGAY',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
+                      label: const FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          'QUÉT MÃ VIETQR THANH TOÁN NGAY',
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
                       ),
                       style: ElevatedButton.styleFrom(
@@ -1993,30 +2036,36 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF10B981).withValues(alpha: 0.16),
-                                borderRadius: BorderRadius.circular(8),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF10B981).withValues(alpha: 0.16),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Icon(
+                                  Icons.receipt_long_rounded,
+                                  color: Color(0xFF10B981),
+                                  size: 18,
+                                ),
                               ),
-                              child: const Icon(
-                                Icons.receipt_long_rounded,
-                                color: Color(0xFF10B981),
-                                size: 18,
+                              const SizedBox(width: 8),
+                              const Flexible(
+                                child: Text(
+                                  'ĐƠN DỊCH VỤ TẬN PHÒNG',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    color: AppColors.primaryGold,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w900,
+                                  ),
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'ĐƠN DỊCH VỤ TẬN PHÒNG',
-                              style: TextStyle(
-                                color: AppColors.primaryGold,
-                                fontSize: 13.5,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         IconButton(
                           onPressed: () => Navigator.pop(ctx),
@@ -2125,20 +2174,28 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                                       Expanded(
                                         child: Row(
                                           children: [
-                                            Text(
-                                              order.roomName,
-                                              style: const TextStyle(
-                                                color: AppColors.primaryGold,
-                                                fontSize: 12.5,
-                                                fontWeight: FontWeight.w800,
+                                            Flexible(
+                                              child: Text(
+                                                order.roomName,
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  color: AppColors.primaryGold,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w800,
+                                                ),
                                               ),
                                             ),
                                             const SizedBox(width: 6),
-                                            Text(
-                                              '• ${order.id}',
-                                              style: const TextStyle(
-                                                color: AppColors.textMuted,
-                                                fontSize: 11,
+                                            Flexible(
+                                              child: Text(
+                                                '• ${order.id}',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(
+                                                  color: AppColors.textMuted,
+                                                  fontSize: 11,
+                                                ),
                                               ),
                                             ),
                                           ],
@@ -2319,7 +2376,7 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                           side: const BorderSide(color: AppColors.primaryGold),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        child: const Text('Gia hạn giờ chơi'),
+                        child: const FittedBox(fit: BoxFit.scaleDown, child: Text('Gia hạn giờ chơi')),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -2346,9 +2403,12 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                           foregroundColor: Colors.black,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        child: const Text(
-                          'Gọi Phục Vụ Ngay',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                        child: const FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            'Gọi Phục Vụ Ngay',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ),
                     ),
@@ -2420,7 +2480,7 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
-                    child: const Text('+30 Phút (+250k)'),
+                    child: const FittedBox(fit: BoxFit.scaleDown, child: Text('+30 Phút (+250k)')),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -2447,7 +2507,7 @@ class _UserServicesScreenState extends State<UserServicesScreen>
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
-                    child: const Text('+1 Giờ (+450k)', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: const FittedBox(fit: BoxFit.scaleDown, child: Text('+1 Giờ (+450k)', style: TextStyle(fontWeight: FontWeight.bold))),
                   ),
                 ),
               ],
