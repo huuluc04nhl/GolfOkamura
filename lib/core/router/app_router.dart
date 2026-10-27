@@ -6,6 +6,7 @@ import '../../presentation/admin/screens/admin_bookings_screen.dart';
 import '../../presentation/admin/screens/admin_dashboard_screen.dart';
 import '../../presentation/admin/screens/admin_revenue_screen.dart';
 import '../../presentation/admin/screens/admin_rooms_screen.dart';
+import '../../presentation/admin/screens/admin_service_orders_screen.dart';
 import '../../presentation/admin/shells/admin_shell.dart';
 import '../../presentation/auth/screens/auth_screen.dart';
 import '../../presentation/user/screens/user_ai_assistant_screen.dart';
@@ -92,6 +93,13 @@ class AppRouter {
           GoRoute(
             path: '/admin/bookings',
             builder: (context, state) => const AdminBookingsScreen(),
+          ),
+          GoRoute(
+            path: '/admin/orders',
+            builder: (context, state) {
+              final room = state.uri.queryParameters['room'];
+              return AdminServiceOrdersScreen(initialRoomFilter: room);
+            },
           ),
           GoRoute(
             path: '/admin/rooms',

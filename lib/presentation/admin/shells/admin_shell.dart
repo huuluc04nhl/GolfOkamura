@@ -17,8 +17,9 @@ class AdminShell extends StatelessWidget {
   int _calculateSelectedIndex(BuildContext context) {
     final String location = GoRouterState.of(context).uri.path;
     if (location.startsWith('/admin/bookings')) return 1;
-    if (location.startsWith('/admin/rooms')) return 2;
-    if (location.startsWith('/admin/revenue')) return 3;
+    if (location.startsWith('/admin/orders')) return 2;
+    if (location.startsWith('/admin/rooms')) return 3;
+    if (location.startsWith('/admin/revenue')) return 4;
     return 0; // Điều Hành Phòng Bay
   }
 
@@ -31,9 +32,12 @@ class AdminShell extends StatelessWidget {
         context.go('/admin/bookings');
         break;
       case 2:
-        context.go('/admin/rooms');
+        context.go('/admin/orders');
         break;
       case 3:
+        context.go('/admin/rooms');
+        break;
+      case 4:
         context.go('/admin/revenue');
         break;
     }
@@ -178,13 +182,28 @@ class AdminShell extends StatelessWidget {
                               icon: Icons.calendar_month_outlined,
                               selectedIcon: Icons.calendar_month_rounded,
                               label: 'Lịch Đặt & Tiếp Đón',
-                              subtitle: 'Tiếp đón & Yêu cầu phòng',
-                              badgeText: pendingOrdersCount > 0
-                                  ? '$pendingOrdersCount yêu cầu'
+                              subtitle: 'Lịch đặt & Đón khách',
+                              badgeText: activeBookingsCount > 0
+                                  ? '$activeBookingsCount đặt'
                                   : null,
-                              badgeColor: const Color(0xFFEF4444),
+                              badgeColor: const Color(0xFF38BDF8),
                               isSelected: selectedIndex == 1,
                               onTap: () => _onItemTapped(1, context),
+                              isDesktop: isDesktop,
+                            ),
+                            const SizedBox(height: 8),
+                            _buildMenuItem(
+                              context: context,
+                              icon: Icons.room_service_outlined,
+                              selectedIcon: Icons.room_service_rounded,
+                              label: 'Quản Lý Đơn Dịch Vụ',
+                              subtitle: 'Tiếp nhận & Điều phối F&B',
+                              badgeText: pendingOrdersCount > 0
+                                  ? '$pendingOrdersCount đơn mới'
+                                  : null,
+                              badgeColor: const Color(0xFFF59E0B),
+                              isSelected: selectedIndex == 2,
+                              onTap: () => _onItemTapped(2, context),
                               isDesktop: isDesktop,
                             ),
                             const SizedBox(height: 8),
@@ -197,8 +216,8 @@ class AdminShell extends StatelessWidget {
                               badgeText:
                                   '${provider.rooms.length} Phòng • ${provider.serviceItems.length} Món',
                               badgeColor: const Color(0xFF38BDF8),
-                              isSelected: selectedIndex == 2,
-                              onTap: () => _onItemTapped(2, context),
+                              isSelected: selectedIndex == 3,
+                              onTap: () => _onItemTapped(3, context),
                               isDesktop: isDesktop,
                             ),
                             const SizedBox(height: 8),
@@ -209,8 +228,8 @@ class AdminShell extends StatelessWidget {
                               label: 'Báo Cáo & Thống Kê',
                               subtitle: 'Hiệu suất vận hành & Doanh thu',
                               badgeColor: AppColors.primaryGold,
-                              isSelected: selectedIndex == 3,
-                              onTap: () => _onItemTapped(3, context),
+                              isSelected: selectedIndex == 4,
+                              onTap: () => _onItemTapped(4, context),
                               isDesktop: isDesktop,
                             ),
                           ],

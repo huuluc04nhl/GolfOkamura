@@ -251,6 +251,7 @@ class ServiceOrderModel {
   final String? note;
   final String? customerName;
   final String? customerPhone;
+  final String? assignedStaff;
   final String paymentMethod; // 'pay_at_bay' (Gộp hóa đơn Bay) hoặc 'vietqr' (Quét QR ngay)
   final String paymentStatus; // 'pending' (chưa thanh toán / gộp phòng) hoặc 'paid' (đã trả)
   final DateTime createdAt;
@@ -265,6 +266,7 @@ class ServiceOrderModel {
     this.note,
     this.customerName,
     this.customerPhone,
+    this.assignedStaff,
     this.paymentMethod = 'pay_at_bay',
     this.paymentStatus = 'pending',
     required this.createdAt,
@@ -280,6 +282,7 @@ class ServiceOrderModel {
     String? note,
     String? customerName,
     String? customerPhone,
+    String? assignedStaff,
     String? paymentMethod,
     String? paymentStatus,
     DateTime? createdAt,
@@ -294,20 +297,33 @@ class ServiceOrderModel {
       note: note ?? this.note,
       customerName: customerName ?? this.customerName,
       customerPhone: customerPhone ?? this.customerPhone,
+      assignedStaff: assignedStaff ?? this.assignedStaff,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       paymentStatus: paymentStatus ?? this.paymentStatus,
       createdAt: createdAt ?? this.createdAt,
     );
   }
 
+  bool get isPending => status == 'pending' || status == 'preparing';
+  bool get isProcessing => status == 'processing';
+  bool get isDelivering => status == 'delivering';
+  bool get isServed => status == 'served';
+  bool get isCancelled => status == 'cancelled';
+
   String get statusLabel {
     switch (status) {
       case 'served':
         return 'Đã phục vụ';
+      case 'delivering':
+        return 'Đang giao phòng';
+      case 'processing':
+        return 'Đang chuẩn bị';
       case 'cancelled':
         return 'Đã hủy';
+      case 'pending':
+      case 'preparing':
       default:
-        return 'Đang chuẩn bị';
+        return 'Chờ tiếp nhận';
     }
   }
 
@@ -338,6 +354,7 @@ class ServiceOrderModel {
         'note': note,
         'customerName': customerName,
         'customerPhone': customerPhone,
+        'assignedStaff': assignedStaff,
         'paymentMethod': paymentMethod,
         'paymentStatus': paymentStatus,
         'createdAt': createdAt.toIso8601String(),
@@ -365,6 +382,7 @@ class ServiceOrderModel {
       note: map['note']?.toString(),
       customerName: map['customerName']?.toString(),
       customerPhone: map['customerPhone']?.toString(),
+      assignedStaff: map['assignedStaff']?.toString(),
       paymentMethod: (map['paymentMethod'] ?? 'pay_at_bay').toString(),
       paymentStatus: (map['paymentStatus'] ?? 'pending').toString(),
       createdAt: DateTime.tryParse(map['createdAt']?.toString() ?? '') ??

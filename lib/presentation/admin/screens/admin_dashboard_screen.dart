@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_colors.dart';
@@ -119,7 +120,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     final roomOrders = _getRoomOrders(provider, selectedRoom);
 
     final occupiedCount = rooms.where((r) => _getActiveBooking(provider, r.id) != null).length;
-    final pendingOrdersCount = provider.serviceOrders.where((o) => o.status == 'preparing').length;
+    final pendingOrdersCount = provider.serviceOrders
+        .where((o) =>
+            o.status == 'pending' ||
+            o.status == 'preparing' ||
+            o.status == 'processing' ||
+            o.status == 'delivering')
+        .length;
     final totalBookingsToday = provider.bookings.length;
 
     return LayoutBuilder(
@@ -1333,7 +1340,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       backgroundColor: const Color(0xFF0F172A),
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
       builder: (ctx) {
-        final pending = provider.serviceOrders.where((o) => o.status == 'preparing').toList();
+        final pending = provider.serviceOrders
+            .where((o) =>
+                o.status == 'pending' ||
+                o.status == 'preparing' ||
+                o.status == 'processing' ||
+                o.status == 'delivering')
+            .toList();
         return Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
@@ -1343,8 +1356,20 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('YÊU CẦU DỊCH VỤ PHÒNG CHỜ XỬ LÝ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-                  IconButton(icon: const Icon(Icons.close, color: Colors.white60, size: 18), onPressed: () => Navigator.pop(ctx)),
+                  const Text('YÊU CẦU DỊCH VỤ & F&B PHÒNG CHỜ XỬ LÝ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          context.go('/admin/orders');
+                        },
+                        child: const Text('Mở trung tâm điều phối →', style: TextStyle(color: AppColors.primaryGold, fontSize: 11.5, fontWeight: FontWeight.bold)),
+                      ),
+                      IconButton(icon: const Icon(Icons.close, color: Colors.white60, size: 18), onPressed: () => Navigator.pop(ctx)),
+                    ],
+                  ),
                 ],
               ),
               const Divider(color: Color(0xFF1E293B)),
@@ -1361,16 +1386,31 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     itemBuilder: (context, idx) {
                       final order = pending[idx];
                       return ListTile(
-                        leading: const CircleAvatar(backgroundColor: Colors.orange, child: Icon(Icons.room_service, size: 16, color: Colors.white)),
+                        leading: CircleAvatar(
+                          backgroundColor: order.isDelivering
+                              ? const Color(0xFF818CF8)
+                              : order.isProcessing
+                                  ? const Color(0xFF38BDF8)
+                                  : Colors.orange,
+                          child: Icon(
+                            order.isDelivering
+                                ? Icons.delivery_dining_rounded
+                                : order.isProcessing
+                                    ? Icons.blender_rounded
+                                    : Icons.room_service_rounded,
+                            size: 16,
+                            color: Colors.white,
+                          ),
+                        ),
                         title: Text('${order.roomName} • ${order.summaryText}', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                        subtitle: Text('Tổng: ${Formatters.currency(order.totalPrice)}', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
+                        subtitle: Text('Trạng thái: ${order.statusLabel} • ${Formatters.currency(order.totalPrice)}', style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
                         trailing: ElevatedButton(
                           onPressed: () async {
                             await provider.updateServiceOrderStatus(order.id, 'served');
                             if (ctx.mounted) Navigator.pop(ctx);
                           },
                           style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
-                          child: const Text('Bàn giao', style: TextStyle(color: Colors.white, fontSize: 11)),
+                          child: const Text('Giao xong', style: TextStyle(color: Colors.white, fontSize: 11)),
                         ),
                       );
                     },
