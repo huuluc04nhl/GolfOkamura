@@ -56,3 +56,6 @@ app.*.map.json
 .env.*
 ai_secrets.json
 lib/core/config/ai_secrets.dart
+
+*.apk
+

@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="golf_booking"
+        android:label="Okamura Golf"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
