@@ -135,7 +135,7 @@ class AdminShell extends StatelessWidget {
                                     ),
                                     const SizedBox(height: 2),
                                     const Text(
-                                      'GOLF LOUNGE MANAGER',
+                                      'QUẢN TRỊ VẬN HÀNH',
                                       style: TextStyle(
                                         color: AppColors.primaryGold,
                                         fontWeight: FontWeight.w700,
@@ -160,12 +160,12 @@ class AdminShell extends StatelessWidget {
                           children: [
                             _buildMenuItem(
                               context: context,
-                              icon: Icons.grid_view_outlined,
-                              selectedIcon: Icons.grid_view_rounded,
-                              label: 'Điều Hành Phòng Bay',
-                              subtitle: 'Sơ đồ & Phục vụ tại Bay',
+                              icon: Icons.dashboard_outlined,
+                              selectedIcon: Icons.dashboard_rounded,
+                              label: 'Trung Tâm Điều Hành',
+                              subtitle: 'Sơ đồ phòng & Ca chơi',
                               badgeText: activeBookingsCount > 0
-                                  ? '$activeBookingsCount'
+                                  ? '$activeBookingsCount đang chơi'
                                   : null,
                               badgeColor: const Color(0xFF10B981),
                               isSelected: selectedIndex == 0,
@@ -177,10 +177,10 @@ class AdminShell extends StatelessWidget {
                               context: context,
                               icon: Icons.calendar_month_outlined,
                               selectedIcon: Icons.calendar_month_rounded,
-                              label: 'Lịch Trình Đặt Chỗ',
-                              subtitle: 'GSM Timeline & Quầy Bar',
+                              label: 'Lịch Đặt & Tiếp Đón',
+                              subtitle: 'Tiếp đón & Yêu cầu phòng',
                               badgeText: pendingOrdersCount > 0
-                                  ? '$pendingOrdersCount đơn mới'
+                                  ? '$pendingOrdersCount yêu cầu'
                                   : null,
                               badgeColor: const Color(0xFFEF4444),
                               isSelected: selectedIndex == 1,
@@ -190,12 +190,12 @@ class AdminShell extends StatelessWidget {
                             const SizedBox(height: 8),
                             _buildMenuItem(
                               context: context,
-                              icon: Icons.inventory_2_outlined,
-                              selectedIcon: Icons.inventory_2_rounded,
-                              label: 'Quản Lý Danh Mục & Bay',
-                              subtitle: 'Phòng Bay, Thể Loại, F&B & Dịch Vụ',
+                              icon: Icons.meeting_room_outlined,
+                              selectedIcon: Icons.meeting_room_rounded,
+                              label: 'Quản Lý Phòng & Dịch Vụ',
+                              subtitle: 'Cấu hình phòng & Thực đơn',
                               badgeText:
-                                  '${provider.rooms.length} Bay • ${provider.serviceItems.length} Món',
+                                  '${provider.rooms.length} Phòng • ${provider.serviceItems.length} Món',
                               badgeColor: const Color(0xFF38BDF8),
                               isSelected: selectedIndex == 2,
                               onTap: () => _onItemTapped(2, context),
@@ -206,8 +206,8 @@ class AdminShell extends StatelessWidget {
                               context: context,
                               icon: Icons.insights_outlined,
                               selectedIcon: Icons.insights_rounded,
-                              label: 'Thống Kê Doanh Thu',
-                              subtitle: 'Báo cáo & Phân tích',
+                              label: 'Báo Cáo & Thống Kê',
+                              subtitle: 'Hiệu suất vận hành & Doanh thu',
                               badgeColor: AppColors.primaryGold,
                               isSelected: selectedIndex == 3,
                               onTap: () => _onItemTapped(3, context),
