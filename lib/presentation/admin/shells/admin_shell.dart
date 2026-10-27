@@ -245,7 +245,22 @@ class AdminShell extends StatelessWidget {
                         child: InkWell(
                           onTap: provider.isSyncingFirebase
                               ? null
-                              : () => provider.refreshFromFirebase(),
+                              : () async {
+                                  final ok =
+                                      await provider.syncAllDataToFirebase();
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(ok
+                                            ? 'Đã đồng bộ toàn bộ dữ liệu lên Firebase Realtime Database thành công!'
+                                            : 'Đã hoàn tất đồng bộ dữ liệu.'),
+                                        backgroundColor:
+                                            const Color(0xFF10B981),
+                                        duration: const Duration(seconds: 2),
+                                      ),
+                                    );
+                                  }
+                                },
                           borderRadius: BorderRadius.circular(10),
                           child: Container(
                             padding: EdgeInsets.symmetric(

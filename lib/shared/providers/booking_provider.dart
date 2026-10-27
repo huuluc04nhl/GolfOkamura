@@ -180,6 +180,24 @@ class BookingProvider extends ChangeNotifier {
     }
   }
 
+  /// Đẩy và đồng bộ toàn diện tất cả các bảng dữ liệu thực tế lên Firebase Realtime Database
+  Future<bool> syncAllDataToFirebase() async {
+    _isSyncingFirebase = true;
+    notifyListeners();
+
+    try {
+      await FirebaseRealtimeService.seedInitialData();
+      await refreshFromFirebase();
+      return true;
+    } catch (e) {
+      debugPrint('Lỗi syncAllDataToFirebase: $e');
+      return false;
+    } finally {
+      _isSyncingFirebase = false;
+      notifyListeners();
+    }
+  }
+
   /// Cập nhật hồ sơ định danh Golfer / Hội viên
   Future<void> updateGolferProfile(GolferModel updated) async {
     _currentGolfer = updated;
