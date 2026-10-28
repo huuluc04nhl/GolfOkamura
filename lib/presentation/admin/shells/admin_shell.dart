@@ -166,8 +166,8 @@ class AdminShell extends StatelessWidget {
                               context: context,
                               icon: Icons.dashboard_outlined,
                               selectedIcon: Icons.dashboard_rounded,
-                              label: 'Trung Tâm Điều Hành',
-                              subtitle: 'Sơ đồ phòng & Ca chơi',
+                              label: 'Sơ Đồ Điều Hành',
+                              subtitle: 'Giám sát ma trận phòng bay',
                               badgeText: activeBookingsCount > 0
                                   ? '$activeBookingsCount đang chơi'
                                   : null,
@@ -181,8 +181,8 @@ class AdminShell extends StatelessWidget {
                               context: context,
                               icon: Icons.calendar_month_outlined,
                               selectedIcon: Icons.calendar_month_rounded,
-                              label: 'Lịch Đặt & Tiếp Đón',
-                              subtitle: 'Lịch đặt & Đón khách',
+                              label: 'Lịch Đặt Phòng',
+                              subtitle: 'Tiếp đón & quản lý booking',
                               badgeText: activeBookingsCount > 0
                                   ? '$activeBookingsCount đặt'
                                   : null,
@@ -196,8 +196,8 @@ class AdminShell extends StatelessWidget {
                               context: context,
                               icon: Icons.room_service_outlined,
                               selectedIcon: Icons.room_service_rounded,
-                              label: 'Quản Lý Đơn Dịch Vụ',
-                              subtitle: 'Tiếp nhận & Điều phối F&B',
+                              label: 'Đơn Dịch Vụ F&B',
+                              subtitle: 'Tiếp nhận & điều phối bếp/bar',
                               badgeText: pendingOrdersCount > 0
                                   ? '$pendingOrdersCount đơn mới'
                                   : null,
@@ -211,8 +211,8 @@ class AdminShell extends StatelessWidget {
                               context: context,
                               icon: Icons.meeting_room_outlined,
                               selectedIcon: Icons.meeting_room_rounded,
-                              label: 'Quản Lý Phòng & Dịch Vụ',
-                              subtitle: 'Cấu hình phòng & Thực đơn',
+                              label: 'Cấu Hình Phòng & Menu',
+                              subtitle: 'Cài đặt phòng bay & thực đơn',
                               badgeText:
                                   '${provider.rooms.length} Phòng • ${provider.serviceItems.length} Món',
                               badgeColor: const Color(0xFF38BDF8),
@@ -225,8 +225,8 @@ class AdminShell extends StatelessWidget {
                               context: context,
                               icon: Icons.insights_outlined,
                               selectedIcon: Icons.insights_rounded,
-                              label: 'Báo Cáo & Thống Kê',
-                              subtitle: 'Hiệu suất vận hành & Doanh thu',
+                              label: 'Báo Cáo Doanh Thu',
+                              subtitle: 'Hiệu suất vận hành & tài chính',
                               badgeColor: AppColors.primaryGold,
                               isSelected: selectedIndex == 4,
                               onTap: () => _onItemTapped(4, context),

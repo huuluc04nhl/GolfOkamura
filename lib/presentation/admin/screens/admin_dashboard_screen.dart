@@ -11,7 +11,6 @@ import '../../../shared/models/service_order_model.dart';
 import '../../../shared/providers/booking_provider.dart';
 import 'dashboard_widgets/fnb_menu_grid.dart';
 import 'dashboard_widgets/golf_services_grid.dart';
-import 'dashboard_widgets/gsm_timeline_view.dart';
 
 /// Màn hình Trung tâm Điều hành & Quản trị Vận hành Tổ hợp Golf (Admin Operations & Facility Workflow Hub)
 /// Tập trung vào luồng nghiệp vụ quản lý ca chơi, giám sát phòng thời gian thực và điều phối phục vụ
@@ -23,9 +22,6 @@ class AdminDashboardScreen extends StatefulWidget {
 }
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
-  // Chế độ xem: 0 = Sơ đồ & Điều phối Vận hành, 1 = Lịch Đặt Chỗ Trong Ngày
-  int _viewMode = 0;
-
   // Phòng đang chọn để theo dõi và điều phối
   String _selectedRoomId = 'room_a4';
 
@@ -159,32 +155,25 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
                 // 3. Nội dung điều hành
                 Expanded(
-                  child: _viewMode == 1
-                      ? GsmTimelineView(
-                          provider: provider,
-                          rooms: rooms,
-                          isMobile: isMobile,
-                          onQuickCheckin: (room) => _showQuickCheckinDialog(context, provider, room),
+                  child: isMobile
+                      ? _buildMobileWorkflowView(
+                          context,
+                          provider,
+                          rooms,
+                          selectedRoom,
+                          activeBooking,
+                          roomOrders,
+                          occupiedCount,
                         )
-                      : (isMobile
-                          ? _buildMobileWorkflowView(
-                              context,
-                              provider,
-                              rooms,
-                              selectedRoom,
-                              activeBooking,
-                              roomOrders,
-                              occupiedCount,
-                            )
-                          : _buildDesktopWorkflowView(
-                              context,
-                              provider,
-                              rooms,
-                              selectedRoom,
-                              activeBooking,
-                              roomOrders,
-                              occupiedCount,
-                            )),
+                      : _buildDesktopWorkflowView(
+                          context,
+                          provider,
+                          rooms,
+                          selectedRoom,
+                          activeBooking,
+                          roomOrders,
+                          occupiedCount,
+                        ),
                 ),
               ],
             ),
@@ -214,7 +203,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       ),
       child: Row(
         children: [
-          // Tiêu đề & trạng thái vận hành
+          // Tiêu đề phân hệ điều hành sơ đồ phòng
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -222,28 +211,28 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
               Row(
                 children: [
                   const Text(
-                    'OKAMURA GOLFZON',
+                    'Sơ Đồ Phòng Bay',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w900,
-                      fontSize: 13.5,
-                      letterSpacing: 0.8,
+                      fontSize: 14,
+                      letterSpacing: 0.5,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryGold.withValues(alpha: 0.15),
+                      color: const Color(0xFF10B981).withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: AppColors.primaryGold.withValues(alpha: 0.4)),
+                      border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.4)),
                     ),
                     child: const Text(
-                      'TRUNG TÂM ĐIỀU HÀNH VẬN HÀNH',
+                      'REALTIME CLOUD',
                       style: TextStyle(
-                        color: AppColors.primaryGold,
+                        color: Color(0xFF10B981),
                         fontWeight: FontWeight.w800,
-                        fontSize: 10,
+                        fontSize: 9.5,
                         letterSpacing: 0.4,
                       ),
                     ),
@@ -251,37 +240,41 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 ],
               ),
               const SizedBox(height: 3),
-              Row(
-                children: [
-                  Container(
-                    width: 7,
-                    height: 7,
-                    decoration: BoxDecoration(
-                      color: occupiedCount > 0 ? const Color(0xFF10B981) : AppColors.primaryGold,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  Text(
-                    'ĐANG PHỤC VỤ $occupiedCount/${rooms.length} PHÒNG • $pendingOrdersCount YÊU CẦU CẦN ĐIỀU PHỐI',
-                    style: const TextStyle(
-                      color: Color(0xFF10B981),
-                      fontWeight: FontWeight.w700,
-                      fontSize: 10,
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                ],
+              const Text(
+                'Giám sát phiên chơi, gia hạn ca và điều phối phục vụ phòng thời gian thực',
+                style: TextStyle(
+                  color: Colors.white54,
+                  fontSize: 10.5,
+                ),
               ),
             ],
           ),
 
           const Spacer(),
 
+          // Nút Đồng bộ thời gian thực từ Cloud
+          IconButton(
+            tooltip: 'Đồng bộ Firebase Cloud',
+            onPressed: () async {
+              await provider.refreshFromFirebase();
+              if (mounted) {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Đã cập nhật trạng thái mới nhất từ Firebase Cloud!'),
+                    backgroundColor: Color(0xFF10B981),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+              }
+            },
+            icon: const Icon(Icons.sync_rounded, color: AppColors.primaryGold, size: 20),
+          ),
+
           // Thông báo yêu cầu phục vụ từ khách tại phòng
           if (pendingOrdersCount > 0)
             Padding(
-              padding: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.only(left: 6),
               child: InkWell(
                 onTap: () => _showLiveGuestOrdersModal(context, provider),
                 borderRadius: BorderRadius.circular(8),
@@ -310,80 +303,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                 ),
               ),
             ),
-
-          // Chuyển đổi chế độ: Sơ Đồ Phòng vs Lịch Đặt Hôm Nay
-          Container(
-            padding: const EdgeInsets.all(3),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1E293B),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                InkWell(
-                  onTap: () => setState(() => _viewMode = 0),
-                  borderRadius: BorderRadius.circular(6),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: _viewMode == 0 ? AppColors.primaryGold : Colors.transparent,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.grid_view_rounded,
-                          size: 13,
-                          color: _viewMode == 0 ? Colors.black : Colors.white70,
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          'Sơ Đồ Phòng',
-                          style: TextStyle(
-                            color: _viewMode == 0 ? Colors.black : Colors.white70,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                InkWell(
-                  onTap: () => setState(() => _viewMode = 1),
-                  borderRadius: BorderRadius.circular(6),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                    decoration: BoxDecoration(
-                      color: _viewMode == 1 ? AppColors.primaryGold : Colors.transparent,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.calendar_month_rounded,
-                          size: 13,
-                          color: _viewMode == 1 ? Colors.black : Colors.white70,
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          'Lịch Đặt Hôm Nay',
-                          style: TextStyle(
-                            color: _viewMode == 1 ? Colors.black : Colors.white70,
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
