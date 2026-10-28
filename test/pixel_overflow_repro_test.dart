@@ -114,5 +114,70 @@ void main() {
         expect(find.text('TIẾP TỤC CHỌN GIỜ'), findsOneWidget);
       }
     });
+
+    Future<void> testBookingFlow(WidgetTester tester, Size size) async {
+      tester.view.physicalSize = size;
+      tester.view.devicePixelRatio = 1.0;
+
+      final provider = BookingProvider();
+      await provider.initFuture;
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<BookingProvider>.value(
+          value: provider,
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: UserTheme.theme,
+            home: const UserShell(child: UserBookingScreen()),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // 3 Bước chuẩn Quiet Luxury
+      expect(find.text('Ngày chơi'), findsOneWidget);
+      expect(find.text('Khung giờ'), findsOneWidget);
+      expect(find.text('Chọn phòng'), findsOneWidget);
+      // Không còn bước 4 rườm rà
+      expect(find.text('Nhập TT'), findsNothing);
+
+      // Chuyển sang Bước 2
+      await tester.tap(find.text('TIẾP TỤC CHỌN GIỜ'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('CHỌN PHÒNG KHUNG'), findsOneWidget);
+
+      // Chuyển sang Bước 3 qua nút cuộn tới
+      await tester.ensureVisible(find.textContaining('CHỌN PHÒNG KHUNG'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.textContaining('CHỌN PHÒNG KHUNG'));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('Tất cả ('), findsOneWidget);
+
+      // Mở Phiếu Xác Nhận Đặt Chỗ (BottomSheet)
+      final bookButtons = find.text('Đặt phòng');
+      expect(bookButtons, findsWidgets);
+      await tester.ensureVisible(bookButtons.first);
+      await tester.pumpAndSettle();
+      await tester.tap(bookButtons.first);
+      await tester.pumpAndSettle();
+
+      // Phiếu xác nhận giữ chỗ mở hoàn hảo
+      expect(find.textContaining('XÁC NHẬN GIỮ CHỖ'), findsOneWidget);
+      expect(find.text('Họ và tên quý khách'), findsOneWidget);
+      expect(find.text('Số điện thoại nhận mã vé'), findsOneWidget);
+
+      // Đóng sheet
+      final navigator = tester.state<NavigatorState>(find.byType(Navigator).last);
+      navigator.pop();
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('Quy trình 3 bước & Phiếu Xác Nhận Đặt Chỗ mượt mà trên iPhone SE (375 x 667)', (tester) async {
+      await testBookingFlow(tester, const Size(375, 667));
+    });
+
+    testWidgets('Quy trình 3 bước & Phiếu Xác Nhận Đặt Chỗ mượt mà trên iPhone 14/15 Pro (390 x 844)', (tester) async {
+      await testBookingFlow(tester, const Size(390, 844));
+    });
   });
 }

@@ -544,7 +544,6 @@ class _UserHomeScreenState extends State<UserHomeScreen>
     final activeBookingsCount = provider.bookings
         .where((b) => b.status.name == 'confirmed')
         .length;
-    final fnbCount = provider.serviceItems.length;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
@@ -588,17 +587,29 @@ class _UserHomeScreenState extends State<UserHomeScreen>
           _buildTelemetryMetric(
             icon: Icons.event_available_rounded,
             value: '$activeBookingsCount Lịch đặt',
-            label: 'Xem vé Cloud →',
+            label: 'Xem vé của bạn →',
             color: AppColors.primaryGold,
             onTap: () => context.go('/my-bookings'),
           ),
           Container(width: 1, height: 24, color: AppColors.userBorder),
           _buildTelemetryMetric(
-            icon: Icons.restaurant_menu_rounded,
-            value: '$fnbCount Dịch vụ',
-            label: 'Mở Menu F&B →',
+            icon: Icons.headset_mic_rounded,
+            value: 'Hỗ trợ 24/7',
+            label: 'Hotline Lounge',
             color: const Color(0xFF38BDF8),
-            onTap: () => context.go('/services'),
+            onTap: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                    'Hotline CSKH Okamura Golf: 1900 6868 (Phục vụ 24/7)',
+                  ),
+                  behavior: SnackBarBehavior.floating,
+                  backgroundColor: Color(0xFF1E293B),
+                  duration: Duration(seconds: 3),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -898,32 +909,32 @@ class _UserHomeScreenState extends State<UserHomeScreen>
     );
   }
 
-  /// 4 Tiện ích cốt lõi có hiệu ứng màu sắc riêng biệt & chạm tương tác trực tiếp
+  /// Thanh Lọc Nhanh Phân Loại Phòng Chơi Golfzon (Tương tác trực tiếp với danh sách phòng)
   Widget _buildQuickPerksBar(BuildContext context) {
-    final perks = [
+    final categories = [
       {
-        'icon': Icons.videocam_rounded,
-        'label': 'Đồ họa 4K',
+        'key': 'all',
+        'icon': Icons.apps_rounded,
+        'label': 'Tất cả phòng',
         'color': AppColors.primaryGold,
-        'action': () => setState(() => _selectedCategory = 'vip'),
       },
       {
-        'icon': Icons.sports_golf_rounded,
-        'label': 'Thuê Gậy Pro',
-        'color': const Color(0xFF10B981),
-        'action': () => context.go('/services'),
-      },
-      {
-        'icon': Icons.smoke_free_rounded,
-        'label': 'Phòng riêng',
-        'color': const Color(0xFF38BDF8),
-        'action': () => setState(() => _selectedCategory = 'standard'),
-      },
-      {
-        'icon': Icons.room_service_rounded,
-        'label': 'F&B tận phòng',
+        'key': 'vip',
+        'icon': Icons.diamond_rounded,
+        'label': 'Phòng VIP 4K',
         'color': const Color(0xFFF59E0B),
-        'action': () => context.go('/services'),
+      },
+      {
+        'key': 'gdr',
+        'icon': Icons.sports_golf_rounded,
+        'label': 'Cảm biến GDR+',
+        'color': const Color(0xFF10B981),
+      },
+      {
+        'key': 'standard',
+        'icon': Icons.meeting_room_rounded,
+        'label': 'Tiêu chuẩn',
+        'color': const Color(0xFF38BDF8),
       },
     ];
 
@@ -936,42 +947,67 @@ class _UserHomeScreenState extends State<UserHomeScreen>
         border: Border.all(color: AppColors.userBorder),
       ),
       child: Row(
-        children: perks.map((item) {
+        children: categories.map((item) {
+          final key = item['key'] as String;
+          final isSelected = _selectedCategory == key;
           final color = item['color'] as Color;
+
           return Expanded(
             child: InkWell(
-              onTap: item['action'] as VoidCallback,
+              onTap: () {
+                setState(() => _selectedCategory = key);
+              },
               borderRadius: BorderRadius.circular(12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    width: 32,
-                    height: 32,
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: color.withValues(alpha: 0.35)),
-                    ),
-                    child: Icon(
-                      item['icon'] as IconData,
-                      color: color,
-                      size: 18,
-                    ),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                decoration: BoxDecoration(
+                  color: isSelected
+                      ? color.withValues(alpha: 0.16)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: isSelected
+                        ? color.withValues(alpha: 0.6)
+                        : Colors.transparent,
+                    width: 1.2,
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    item['label'] as String,
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: AppColors.textLight,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? color
+                            : color.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: isSelected ? color : color.withValues(alpha: 0.35),
+                        ),
+                      ),
+                      child: Icon(
+                        item['icon'] as IconData,
+                        color: isSelected ? Colors.black : color,
+                        size: 18,
+                      ),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 5),
+                    Text(
+                      item['label'] as String,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: isSelected ? Colors.white : AppColors.textLight,
+                        fontSize: 11,
+                        fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           );

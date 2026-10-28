@@ -24,7 +24,7 @@ class UserBookingScreen extends StatefulWidget {
 }
 
 class _UserBookingScreenState extends State<UserBookingScreen> {
-  int _currentStep = 1; // 1: Ngày chơi, 2: Khung giờ & Thời lượng, 3: Chọn phòng, 4: Thông tin khách vãng lai
+  int _currentStep = 1; // 1: Ngày chơi, 2: Khung giờ & Thời lượng, 3: Chọn phòng & Xác nhận
   DateTime _selectedDate = DateTime.now();
   String _selectedTimeSlot = AppConstants.standardTimeSlots[0];
   String _roomFilter = 'all';
@@ -37,7 +37,6 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
   final _emailController = TextEditingController();
   final _noteController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final _guestFormKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -128,19 +127,10 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
               child: GestureDetector(
                 behavior: HitTestBehavior.translucent,
                 onHorizontalDragEnd: (details) {
-                  final maxStep = provider.isGuest ? 4 : 3;
+                  const maxStep = 3;
                   final v = details.primaryVelocity ?? 0;
                   if (v < -350 && _currentStep < maxStep) {
-                    if (_currentStep == 3 && provider.isGuest && _selectedRoom == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Vui lòng chọn phòng ở Bước 3 trước khi sang bước nhập thông tin'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    } else {
-                      setState(() => _currentStep++);
-                    }
+                    setState(() => _currentStep++);
                   } else if (v > 350 && _currentStep > 1) {
                     setState(() => _currentStep--);
                   }
@@ -166,10 +156,6 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                           if (_currentStep == 1) _buildStep1DateSelection(),
                           if (_currentStep == 2) _buildStep2TimeSelection(),
                           if (_currentStep == 3) _buildStep3RoomSelection(),
-                          if (_currentStep == 4)
-                            _selectedRoom != null
-                                ? _buildStep4GuestInfo(_selectedRoom!, provider)
-                                : _buildStep3RoomSelection(),
                         ],
                       ),
                     ),
@@ -233,16 +219,7 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
           if (preRoom != null) ...[
             const SizedBox(width: 6),
             InkWell(
-              onTap: () {
-                if (provider.isGuest) {
-                  setState(() {
-                    _selectedRoom = preRoom;
-                    _currentStep = 4;
-                  });
-                } else {
-                  _showBookingBottomSheet(preRoom);
-                }
-              },
+              onTap: () => _showBookingBottomSheet(preRoom),
               borderRadius: BorderRadius.circular(8),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -281,9 +258,8 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
     );
   }
 
-  /// Thanh chỉ báo tiến trình đặt phòng (3 bước cho hội viên, 4 bước cho khách vãng lai)
+  /// Thanh chỉ báo tiến trình đặt phòng 3 bước chuẩn Quiet Luxury
   Widget _buildStepIndicator(double hPadding) {
-    final isGuest = context.watch<BookingProvider>().isGuest;
     return Container(
       decoration: BoxDecoration(
         color: AppColors.glassBg,
@@ -315,12 +291,6 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
           Expanded(
             child: _buildStepPill(3, context.tr('step_3_room'), Icons.meeting_room_rounded),
           ),
-          if (isGuest) ...[
-            Icon(Icons.chevron_right, size: 13, color: AppColors.primaryGold.withValues(alpha: 0.3)),
-            Expanded(
-              child: _buildStepPill(4, context.tr('step_4_info'), Icons.person_pin_rounded),
-            ),
-          ],
         ],
       ),
     );
@@ -332,15 +302,6 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
 
     return GestureDetector(
       onTap: () {
-        if (step == 4 && _selectedRoom == null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Vui lòng chọn phòng ở Bước 3 trước khi sang bước nhập thông tin'),
-              duration: Duration(seconds: 2),
-            ),
-          );
-          return;
-        }
         setState(() => _currentStep = step);
       },
       behavior: HitTestBehavior.opaque,
@@ -588,28 +549,35 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '2. CHỌN CA CHƠI & THỜI LƯỢNG',
-                  style: TextStyle(
-                    color: AppColors.primaryGold,
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    '2. CHỌN CA CHƠI & THỜI LƯỢNG',
+                    style: TextStyle(
+                      color: AppColors.primaryGold,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  Formatters.formatDate(_selectedDate),
-                  style: const TextStyle(
-                    color: AppColors.textMuted,
-                    fontSize: 12,
+                  const SizedBox(height: 2),
+                  Text(
+                    Formatters.formatDate(_selectedDate),
+                    style: const TextStyle(
+                      color: AppColors.textMuted,
+                      fontSize: 12,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+            const SizedBox(width: 8),
             TextButton.icon(
               onPressed: () => setState(() => _currentStep = 1),
               icon: const Icon(
@@ -910,19 +878,13 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
             final isAvailable = status == RoomBookingStatus.available;
             final isMaintenance = status == RoomBookingStatus.maintenance;
             final isPreselected = preRoom?.id == room.id;
-            final isChosen = isPreselected || (provider.isGuest && _selectedRoom?.id == room.id);
+            final isChosen = isPreselected || _selectedRoom?.id == room.id;
 
             return InkWell(
               onTap: isAvailable
                   ? () {
-                      if (provider.isGuest) {
-                        setState(() {
-                          _selectedRoom = room;
-                          _currentStep = 4;
-                        });
-                      } else {
-                        _showBookingBottomSheet(room);
-                      }
+                      setState(() => _selectedRoom = room);
+                      _showBookingBottomSheet(room);
                     }
                   : null,
               borderRadius: BorderRadius.circular(14),
@@ -996,23 +958,24 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
+                        Wrap(
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: 5,
+                          runSpacing: 2,
                           children: [
-                            Flexible(
-                              child: Text(
-                                room.name,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 13.5,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                overflow: TextOverflow.ellipsis,
+                            Text(
+                              room.name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            const SizedBox(width: 6),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
+                                horizontal: 5,
                                 vertical: 1.5,
                               ),
                               decoration: BoxDecoration(
@@ -1033,7 +996,7 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                                       : room.isVip
                                           ? AppColors.primaryGold
                                           : AppColors.textMuted,
-                                  fontSize: 9.5,
+                                  fontSize: 9,
                                   fontWeight: FontWeight.w800,
                                 ),
                               ),
@@ -1059,14 +1022,8 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                   else
                     ElevatedButton(
                       onPressed: () {
-                        if (provider.isGuest) {
-                          setState(() {
-                            _selectedRoom = room;
-                            _currentStep = 4;
-                          });
-                        } else {
-                          _showBookingBottomSheet(room);
-                        }
+                        setState(() => _selectedRoom = room);
+                        _showBookingBottomSheet(room);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primaryGold,
@@ -1080,9 +1037,9 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                         ),
                         minimumSize: Size.zero,
                       ),
-                      child: Text(
-                        provider.isGuest ? 'Chọn phòng' : 'Đặt ngay',
-                        style: const TextStyle(
+                      child: const Text(
+                        'Đặt phòng',
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -1141,24 +1098,31 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(22)),
       ),
       builder: (ctx) {
-        return StatefulBuilder(
-          builder: (ctx, setModalState) {
-            final totalPrice = room.pricePerHour * _durationHours;
+        return SafeArea(
+          top: false,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(ctx).size.height * 0.88,
+            ),
+            child: StatefulBuilder(
+              builder: (ctx, setModalState) {
+                final totalPrice = room.pricePerHour * _durationHours;
 
-            return SingleChildScrollView(
-              padding: EdgeInsets.only(
-                left: 20,
-                right: 20,
-                top: 16,
-                bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
+                return SingleChildScrollView(
+                  physics: const BouncingScrollPhysics(),
+                  padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    top: 16,
+                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Center(
                       child: Container(
                         width: 36,
                         height: 4,
@@ -1218,14 +1182,19 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Text(
-                                'Thời lượng chơi:',
-                                style: TextStyle(
-                                  color: AppColors.textLight,
-                                  fontSize: 12.5,
-                                  fontWeight: FontWeight.w600,
+                              const Expanded(
+                                child: Text(
+                                  'Thời lượng chơi:',
+                                  style: TextStyle(
+                                    color: AppColors.textLight,
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
+                              const SizedBox(width: 6),
                               Row(
                                 children: [1, 2, 3, 4].map((hrs) {
                                   final selected = _durationHours == hrs;
@@ -1275,14 +1244,19 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                'Số lượng Golfer (Tối đa ${room.capacity}):',
-                                style: const TextStyle(
-                                  color: AppColors.textLight,
-                                  fontSize: 12.5,
-                                  fontWeight: FontWeight.w600,
+                              Expanded(
+                                child: Text(
+                                  'Số lượng Golfer (Tối đa ${room.capacity}):',
+                                  style: const TextStyle(
+                                    color: AppColors.textLight,
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
+                              const SizedBox(width: 6),
                               Container(
                                 decoration: BoxDecoration(
                                   color: AppColors.userCardDark,
@@ -1592,693 +1566,10 @@ class _UserBookingScreenState extends State<UserBookingScreen> {
               ),
             );
           },
-        );
-      },
+        ),
+      ),
     );
-  }
-
-  /// Bước 4: Nhập thông tin liên hệ chi tiết dành riêng cho Khách vãng lai
-  Widget _buildStep4GuestInfo(RoomModel room, BookingProvider provider) {
-    final totalPrice = room.pricePerHour * _durationHours;
-    final quickNotes = [
-      'Gậy TaylorMade tay phải',
-      'Gậy tay trái',
-      'Ướp lạnh bia Asahi',
-      'Cần Caddie hỗ trợ',
-      'Tập Driving Range trước 30p',
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Header Bước 4
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(7),
-                    decoration: BoxDecoration(
-                      color: AppColors.primaryGold.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      Icons.assignment_ind_rounded,
-                      color: AppColors.primaryGold,
-                      size: 18,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          'BƯỚC 4: THÔNG TIN KHÁCH HÀNG',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 0.4,
-                          ),
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          'Dành cho khách vãng lai đặt phòng trực tuyến',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            color: AppColors.textMuted,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            TextButton.icon(
-              onPressed: () => setState(() => _currentStep = 3),
-              icon: const Icon(Icons.edit, size: 14, color: AppColors.primaryGold),
-              label: const Text(
-                'Đổi phòng',
-                style: TextStyle(
-                  color: AppColors.primaryGold,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
-
-        // Banner thông báo khách vãng lai & gợi ý đăng nhập
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.amber.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.amber.withValues(alpha: 0.3)),
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Icon(Icons.info_outline_rounded, color: Colors.amber, size: 18),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Đặt phòng với tư cách Khách vãng lai',
-                      style: TextStyle(
-                        color: Colors.amber,
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    const SizedBox(height: 3),
-                    const Text(
-                      'Vui lòng nhập chính xác họ tên và số điện thoại để lễ tân gửi mã PIN nhận phòng và liên hệ xác nhận giờ chơi.',
-                      style: TextStyle(
-                        color: AppColors.textLight,
-                        fontSize: 11.5,
-                        height: 1.35,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 12,
-                      runSpacing: 6,
-                      children: [
-                        InkWell(
-                          onTap: () => context.push('/login?tab=register'),
-                          borderRadius: BorderRadius.circular(6),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              Icon(Icons.card_membership_rounded, color: AppColors.primaryGold, size: 14),
-                              SizedBox(width: 4),
-                              Text(
-                                'Đăng ký Hội viên VIP →',
-                                style: TextStyle(
-                                  color: AppColors.primaryGold,
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        InkWell(
-                          onTap: () => context.push('/login?tab=login'),
-                          borderRadius: BorderRadius.circular(6),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: const [
-                              Icon(Icons.login_rounded, color: Colors.white70, size: 14),
-                              SizedBox(width: 4),
-                              Text(
-                                'Đăng nhập',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w600,
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 14),
-
-        // Card tóm tắt phòng & cấu hình ca chơi
-        Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            color: AppColors.userCardDark,
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.primaryGold.withValues(alpha: 0.4)),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.25),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          room.name,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w800,
-                          ),
-                        ),
-                        const SizedBox(height: 3),
-                        Text(
-                          '${room.categoryLabel} • Cảm biến ${room.sensorModel}',
-                          style: const TextStyle(
-                            color: AppColors.textMuted,
-                            fontSize: 11.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    Formatters.formatCurrency(totalPrice),
-                    style: const TextStyle(
-                      color: AppColors.primaryGold,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ],
-              ),
-              const Divider(color: AppColors.userBorder, height: 20, thickness: 1),
-
-              // Ngày & Giờ
-              Row(
-                children: [
-                  const Icon(Icons.calendar_today_rounded, size: 14, color: AppColors.primaryGold),
-                  const SizedBox(width: 6),
-                  Text(
-                    Formatters.formatDate(_selectedDate),
-                    style: const TextStyle(color: Colors.white, fontSize: 12.5, fontWeight: FontWeight.w600),
-                  ),
-                  const SizedBox(width: 14),
-                  const Icon(Icons.access_time_rounded, size: 14, color: AppColors.primaryGold),
-                  const SizedBox(width: 6),
-                  Text(
-                    '$_selectedTimeSlot (${_durationHours}h)',
-                    style: const TextStyle(color: Colors.white, fontSize: 12.5, fontWeight: FontWeight.w600),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Bộ chỉnh thời lượng
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Thời lượng chơi:',
-                    style: TextStyle(
-                      color: AppColors.textLight,
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Row(
-                    children: [1, 2, 3, 4].map((hrs) {
-                      final selected = _durationHours == hrs;
-                      return Padding(
-                        padding: const EdgeInsets.only(left: 6),
-                        child: InkWell(
-                          onTap: () => setState(() => _durationHours = hrs),
-                          borderRadius: BorderRadius.circular(20),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 180),
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: selected ? null : AppColors.glassBg,
-                              gradient: selected ? AppColors.goldGradient : null,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: selected ? AppColors.primaryGold : AppColors.glassBorder,
-                                width: 1.2,
-                              ),
-                              boxShadow: selected
-                                  ? [
-                                      BoxShadow(
-                                        color: AppColors.primaryGold.withValues(alpha: 0.35),
-                                        blurRadius: 8,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ]
-                                  : null,
-                            ),
-                            child: Text(
-                              '${hrs}h',
-                              style: TextStyle(
-                                color: selected ? Colors.black : Colors.white70,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w900,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Bộ chỉnh số lượng Golfer
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Số lượng Golfer (Tối đa ${room.capacity}):',
-                    style: const TextStyle(
-                      color: AppColors.textLight,
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.userSurfaceDark,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(
-                        color: AppColors.primaryGold.withValues(alpha: 0.4),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        InkWell(
-                          onTap: _playerCount > 1
-                              ? () => setState(() => _playerCount--)
-                              : null,
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            child: Icon(Icons.remove, size: 15, color: AppColors.primaryGold),
-                          ),
-                        ),
-                        Text(
-                          '$_playerCount người',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        InkWell(
-                          onTap: _playerCount < room.capacity
-                              ? () => setState(() => _playerCount++)
-                              : null,
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            child: Icon(Icons.add, size: 15, color: AppColors.primaryGold),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 18),
-
-        // Form điền thông tin cá nhân bắt buộc (có validation trapping nghiêm ngặt)
-        Form(
-          key: _guestFormKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'THÔNG TIN LIÊN HỆ ĐẶT PHÒNG (*)',
-                style: TextStyle(
-                  color: AppColors.textLight,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 0.5,
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              // Họ tên
-              TextFormField(
-                controller: _nameController,
-                style: const TextStyle(color: Colors.white, fontSize: 13.5),
-                decoration: InputDecoration(
-                  labelText: 'Họ và tên quý khách (*)',
-                  hintText: 'Ví dụ: Trần Văn Nam',
-                  labelStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13),
-                  hintStyle: TextStyle(color: AppColors.textMuted.withValues(alpha: 0.4), fontSize: 12.5),
-                  prefixIcon: const Icon(Icons.person_rounded, color: AppColors.primaryGold, size: 20),
-                  filled: true,
-                  fillColor: AppColors.userCardDark,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: AppColors.userBorder),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: AppColors.userBorder),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: AppColors.primaryGold, width: 1.5),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: Colors.redAccent),
-                  ),
-                ),
-                validator: (val) {
-                  final trimmed = val?.trim() ?? '';
-                  if (trimmed.isEmpty) return 'Vui lòng nhập họ và tên';
-                  if (trimmed.length < 2) return 'Họ và tên phải có ít nhất 2 ký tự';
-                  return null;
-                },
-              ),
-              const SizedBox(height: 12),
-
-              // Số điện thoại
-              TextFormField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                style: const TextStyle(color: Colors.white, fontSize: 13.5),
-                decoration: InputDecoration(
-                  labelText: 'Số điện thoại nhận mã vé (*)',
-                  hintText: 'Ví dụ: 0912345678',
-                  labelStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13),
-                  hintStyle: TextStyle(color: AppColors.textMuted.withValues(alpha: 0.4), fontSize: 12.5),
-                  prefixIcon: const Icon(Icons.phone_iphone_rounded, color: AppColors.primaryGold, size: 20),
-                  filled: true,
-                  fillColor: AppColors.userCardDark,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: AppColors.userBorder),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: AppColors.userBorder),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: AppColors.primaryGold, width: 1.5),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: Colors.redAccent),
-                  ),
-                ),
-                validator: (val) {
-                  final trimmed = val?.replaceAll(RegExp(r'[\s\.\-]'), '') ?? '';
-                  if (trimmed.isEmpty) return 'Vui lòng nhập số điện thoại';
-                  if (trimmed.length < 9) return 'Số điện thoại tối thiểu 9-10 chữ số';
-                  return null;
-                },
-              ),
-              const SizedBox(height: 12),
-
-              // Email nhận hóa đơn/vé (Không bắt buộc)
-              TextFormField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                style: const TextStyle(color: Colors.white, fontSize: 13.5),
-                decoration: InputDecoration(
-                  labelText: 'Email nhận vé điện tử (Không bắt buộc)',
-                  hintText: 'Ví dụ: customer@gmail.com',
-                  labelStyle: const TextStyle(color: AppColors.textMuted, fontSize: 13),
-                  hintStyle: TextStyle(color: AppColors.textMuted.withValues(alpha: 0.4), fontSize: 12.5),
-                  prefixIcon: const Icon(Icons.email_outlined, color: AppColors.primaryGold, size: 20),
-                  filled: true,
-                  fillColor: AppColors.userCardDark,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: AppColors.userBorder),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: AppColors.userBorder),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: AppColors.primaryGold, width: 1.5),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: Colors.redAccent),
-                  ),
-                ),
-                validator: (val) {
-                  final trimmed = val?.trim() ?? '';
-                  if (trimmed.isEmpty) return null; // Không bắt buộc
-                  final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
-                  if (!emailRegex.hasMatch(trimmed)) {
-                    return 'Email không đúng định dạng (ví dụ: golfer@gmail.com)';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 12),
-
-              // Ghi chú đặc biệt
-              TextFormField(
-                controller: _noteController,
-                style: const TextStyle(color: Colors.white, fontSize: 13),
-                decoration: InputDecoration(
-                  labelText: 'Yêu cầu đặc biệt (gậy, đồ uống, caddie...)',
-                  labelStyle: const TextStyle(color: AppColors.textMuted, fontSize: 12.5),
-                  prefixIcon: const Icon(Icons.edit_note_rounded, color: AppColors.primaryGold, size: 20),
-                  filled: true,
-                  fillColor: AppColors.userCardDark,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 13),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: AppColors.userBorder),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: AppColors.userBorder),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(24),
-                    borderSide: const BorderSide(color: AppColors.primaryGold, width: 1.5),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-
-              // Quick tags
-              Wrap(
-                spacing: 6,
-                runSpacing: 6,
-                children: quickNotes.map((tag) {
-                  final hasTag = _noteController.text.contains(tag);
-                  return InkWell(
-                    onTap: () {
-                      final current = _noteController.text.trim();
-                      if (hasTag) {
-                        _noteController.text = current
-                            .replaceAll(tag, '')
-                            .replaceAll(', ,', ',')
-                            .trim();
-                      } else {
-                        _noteController.text = current.isEmpty ? tag : '$current, $tag';
-                      }
-                      setState(() {});
-                    },
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: hasTag
-                            ? AppColors.primaryGold.withValues(alpha: 0.2)
-                            : AppColors.userCardDark,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: hasTag ? AppColors.primaryGold : AppColors.userBorder,
-                        ),
-                      ),
-                      child: Text(
-                        tag,
-                        style: TextStyle(
-                          color: hasTag ? AppColors.primaryGold : AppColors.textMuted,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-              const SizedBox(height: 22),
-
-              // Nút xác nhận đặt chỗ & mở mã QR thanh toán
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (_guestFormKey.currentState?.validate() ?? false) {
-                      final name = _nameController.text.trim();
-                      final phone = _phoneController.text.trim();
-                      final email = _emailController.text.trim();
-                      final notes = _noteController.text.trim();
-
-                      final success = await provider.createBooking(
-                        customerName: name,
-                        customerPhone: phone,
-                        customerEmail: email,
-                        room: room,
-                        bookingDate: _selectedDate,
-                        timeSlot: _selectedTimeSlot,
-                        durationHours: _durationHours,
-                        playerCount: _playerCount,
-                        notes: notes,
-                      );
-
-                      if (success && mounted) {
-                        final bookingList = provider.bookings;
-                        final newBooking = bookingList.isNotEmpty ? bookingList.first : null;
-                        final bId = newBooking?.id ?? 'OGZ-CONFIRMED';
-
-                        showDialog(
-                          context: context,
-                          barrierDismissible: false,
-                          builder: (qrCtx) => VietQrPaymentDialog(
-                            bookingId: bId,
-                            roomName: room.name,
-                            amount: totalPrice,
-                            customerName: name,
-                            onPaymentConfirmed: () {
-                              context.go('/my-bookings');
-                            },
-                          ),
-                        ).then((_) {
-                          if (mounted) {
-                            context.go('/my-bookings');
-                          }
-                        });
-                      } else if (mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Phòng "${room.name}" hiện đang bận hoặc bảo trì trong khung giờ $_selectedTimeSlot. Vui lòng chọn khung giờ khác!',
-                            ),
-                            backgroundColor: Colors.redAccent,
-                          ),
-                        );
-                      }
-                    }
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryGold,
-                    foregroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    elevation: 3,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.check_circle_rounded, size: 18),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            'XÁC NHẬN GIỮ CHỖ • ${Formatters.formatCurrency(totalPrice)}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 13.5,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Nút quay lại chọn phòng
-              Center(
-                child: TextButton.icon(
-                  onPressed: () => setState(() => _currentStep = 3),
-                  icon: const Icon(Icons.arrow_back, size: 16, color: AppColors.textMuted),
-                  label: const Text(
-                    'Quay lại bước chọn phòng',
-                    style: TextStyle(
-                      color: AppColors.textMuted,
-                      fontSize: 12.5,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
+  },
+);
   }
 }
